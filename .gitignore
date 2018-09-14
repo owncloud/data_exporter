@@ -1,0 +1,7 @@
+git clo/.idea
+/build/
+/vendor
+tests/output
+.php_cs.cache
+vendor-bin/**/vendor
+vendor-bin/**/composer.lock
