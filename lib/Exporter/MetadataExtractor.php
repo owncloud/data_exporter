@@ -54,6 +54,9 @@ class MetadataExtractor {
 	/**
 	 * @param UserExtractor $userExtractor
 	 * @param PreferencesExtractor $preferencesExtractor
+	 * @param FilesExtractor $filesExtractor
+	 * @param SharesExtractor $sharesExtractor
+	 * @param IURLGenerator $urlGenerator
 	 */
 	public function __construct(
 		UserExtractor $userExtractor,

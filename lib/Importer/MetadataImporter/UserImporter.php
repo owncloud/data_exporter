@@ -74,10 +74,10 @@ class UserImporter {
 	 * Backends such as LDAP or SAML will reject to create new users (they're considered as read-only)
 	 *
 	 * This method is used mainly on testing to allow the creation of users in the Dummy backend. Note that
-	 * this backend is just for tests, so unless explictly set, it will also reject the creation of new users
+	 * this backend is just for tests, so unless explicitly set, it will also reject the creation of new users
 	 *
 	 * This method will overwrite any previously allowed backend. If you want to add new backends, get the list
-	 * first, add the new backend to the list and finaly set the new list.
+	 * first, add the new backend to the list and finally set the new list.
 	 * @param string[] $backendNames the name of the backends that will allow you to create
 	 * a new user account during the import of the user.
 	 * @return bool true if the list is set properly, false otherwise

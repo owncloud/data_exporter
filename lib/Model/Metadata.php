@@ -57,7 +57,7 @@ class Metadata {
 
 	/**
 	 * @param string $originServer the address of the exporting server,
-	 * incuding port, like "10.10.10.10:8080" or "my.server:443"
+	 * including port, like "10.10.10.10:8080" or "my.server:443"
 	 * @return Metadata
 	 */
 	public function setOriginServer(string $originServer): Metadata {
