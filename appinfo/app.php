@@ -1,6 +1,5 @@
 <?php
 /**
-
  *
  * @copyright Copyright (c) 2018, ownCloud GmbH
  * @license GPL-2.0

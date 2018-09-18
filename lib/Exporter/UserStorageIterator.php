@@ -29,7 +29,7 @@ use OCP\Files\Storage\IStorage;
 use OCP\Files\Storage\StorageAdapter;
 
 /**
- * Iterates trough nodes while ingnoring shares, blacklisted paths and
+ * Iterates through nodes while ignoring shares, blacklisted paths and
  * ext. storages.
  *
  * TODO: Nodes are still internally traversed even if the parent is excluded
