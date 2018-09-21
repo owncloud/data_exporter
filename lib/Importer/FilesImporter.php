@@ -64,7 +64,12 @@ class FilesImporter {
 
 			if ($fileMetadata->getType() === File::TYPE_FILE) {
 				$file = $userFolder->newFile($fileCachePath);
-				$file->putContent(\file_get_contents($pathToFileInExport));
+				$source = \fopen($pathToFileInExport, 'rb');
+				$target = $file->fopen('wb');
+				\stream_copy_to_stream($source, $target);
+				\fclose($source);
+				\fclose($target);
+
 				$file->getStorage()->getCache()->update($file->getId(), [
 					'etag' => $fileMetadata->getETag(),
 					'permissions' => $fileMetadata->getPermissions()

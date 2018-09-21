@@ -57,10 +57,17 @@ class FilesExporter {
 			if (\strpos($nodePath, "/$userId/") === 0) {
 				$relativeFileCachePath = \substr($nodePath, \strlen("/$userId/"));
 			}
+
 			$path = "$exportPath/$relativeFileCachePath";
 
 			if ($node instanceof File) {
-				$this->filesystem->dumpFile($path, $node->getContent());
+				$this->filesystem->touch($path);
+				$source = $node->fopen('rb');
+				$target = \fopen($path, 'wb');
+				\stream_copy_to_stream($source, $target);
+				\fclose($source);
+				\fclose($target);
+
 				continue;
 			}
 
