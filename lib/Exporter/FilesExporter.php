@@ -51,7 +51,7 @@ class FilesExporter {
 		$userFolder = $this->rootFolder->getUserFolder($userId)->getParent();
 
 		/** @var \OCP\Files\Node $node */
-		foreach (new UserStorageIterator($userFolder) as $node) {
+		foreach (RecursiveNodeIterator::create($userFolder) as $node) {
 			$nodePath = $node->getPath();
 			$relativeFileCachePath = $nodePath;
 			if (\strpos($nodePath, "/$userId/") === 0) {

@@ -22,25 +22,98 @@
  */
 namespace OCA\DataExporter\Exporter;
 
-use OC\Files\Node\File;
-use OC\Files\Node\Folder;
 use OCP\Files\FileInfo;
+use OC\Files\Storage\FailedStorage;
+use OCP\Files\Storage\IStorage;
+use OCP\Files\Storage\StorageAdapter;
 
+/**
+ * Iterates over all given filesystem nodes recursively skipping ext. storages, shares and
+ * failed storages. Also ignores paths starting with $ignorePaths
+ *
+ * Use RecursiveNodeIterator::create() to correctly instantiate the iterator.
+ *
+ * @package OCA\DataExporter\Exporter
+ */
 class RecursiveNodeIterator implements \RecursiveIterator {
 
-	/** @var Folder[]|File[] $rootNodes  */
+	/** @var array  */
 	private $rootNodes;
 	/** @var int  */
 	private $nodeCount;
 	/** @var int  */
 	private $currentIndex;
+	/** @var string[]  */
+	private $ignorePaths = [
+		'cache',
+		'thumbnails',
+		'uploads'
+	];
 
+	/**
+	 * @param \OCP\Files\Node[] $nodes
+	 */
 	public function __construct(array $nodes) {
-		$this->rootNodes = $nodes;
-		$this->nodeCount = \count($nodes);
+		$this->rootNodes = \array_values(
+			\array_filter($nodes, function (\OCP\Files\Node $node) {
+				return !$this->isIgnoredPath($node) && $this->isUserStorage($node->getStorage());
+			})
+		);
+
+		$this->nodeCount = \count($this->rootNodes);
 		$this->currentIndex = 0;
 	}
-	public function hasChildren() {
+
+	/**
+	 * @param \OCP\Files\Folder $folder
+	 * @return \RecursiveIteratorIterator
+	 * @throws \OCP\Files\NotFoundException
+	 */
+	public static function create(\OCP\Files\Folder $folder) : \RecursiveIteratorIterator {
+		return new \RecursiveIteratorIterator(
+			new RecursiveNodeIterator($folder->getDirectoryListing()),
+			\RecursiveIteratorIterator::SELF_FIRST
+		);
+	}
+
+	/**
+	 * @param \OCP\Files\Node $node
+	 * @return bool
+	 */
+	private function isIgnoredPath(\OCP\Files\Node $node) : bool {
+		$path = $node->getPath();
+		$relativePath = $path;
+		$uidOwner = $node->getOwner()->getUID();
+
+		if (\strpos($path, "/$uidOwner/") === 0) {
+			$relativePath = \substr($path, \strlen("/$uidOwner/"));
+		}
+
+		foreach ($this->ignorePaths as $ignorePath) {
+			if (\substr($relativePath, 0, \strlen($ignorePath)) === $ignorePath) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	private function isUserStorage(IStorage $storage) : bool {
+		$isSharedStorage = false;
+
+		// sharing app could be disabled
+		if (\interface_exists("OCA\Files_Sharing\ISharedStorage")) {
+			$isSharedStorage = $storage
+				/* @phan-suppress-next-line PhanUndeclaredClassConstant */
+				->instanceOfStorage(\OCA\Files_Sharing\ISharedStorage::class);
+		}
+
+		return !$isSharedStorage &&
+			!$storage->instanceOfStorage(StorageAdapter::class) &&
+			!$storage->instanceOfStorage(FailedStorage::class);
+	}
+
+	public function hasChildren() : bool {
 		return ($this->rootNodes[$this->currentIndex]->getType() === FileInfo::TYPE_FOLDER) &&
 			(\count($this->rootNodes[$this->currentIndex]->getDirectoryListing()) > 0);
 	}
