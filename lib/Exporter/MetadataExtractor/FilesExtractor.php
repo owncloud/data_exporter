@@ -23,7 +23,7 @@
  */
 namespace OCA\DataExporter\Exporter\MetadataExtractor;
 
-use OCA\DataExporter\Exporter\UserStorageIterator;
+use OCA\DataExporter\Exporter\RecursiveNodeIterator;
 use OCA\DataExporter\Model\User\File;
 use OCP\Files\IRootFolder;
 use OCP\Files\Node;
@@ -48,7 +48,7 @@ class FilesExtractor {
 		$userFolder = $this->rootFolder->getUserFolder($userId)->getParent();
 		$files = [];
 
-		foreach (new UserStorageIterator($userFolder) as $node) {
+		foreach (RecursiveNodeIterator::create($userFolder) as $node) {
 			$nodePath = $node->getPath();
 			$relativePath = $nodePath;
 			if (\strpos($nodePath, "/$userId/") === 0) {
