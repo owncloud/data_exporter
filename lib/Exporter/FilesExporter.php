@@ -63,7 +63,10 @@ class FilesExporter {
 			if ($node instanceof File) {
 				$this->filesystem->touch($path);
 				$source = $node->fopen('rb');
-				$target = \fopen($path, 'wb');
+				$target = @\fopen($path, 'wb');
+				if ($source === false || $target === false) {
+					throw new \RuntimeException("Error while writing file $path.");
+				}
 				\stream_copy_to_stream($source, $target);
 				\fclose($source);
 				\fclose($target);

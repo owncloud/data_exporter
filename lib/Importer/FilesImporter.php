@@ -66,6 +66,9 @@ class FilesImporter {
 				$file = $userFolder->newFile($fileCachePath);
 				$source = \fopen($pathToFileInExport, 'rb');
 				$target = $file->fopen('wb');
+				if ($source === false || $target === false) {
+					throw new \RuntimeException("Error while reading $pathToFileInExport");
+				}
 				\stream_copy_to_stream($source, $target);
 				\fclose($source);
 				\fclose($target);
