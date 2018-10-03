@@ -52,8 +52,8 @@ class FilesExporter {
 		foreach ($iterator as $node) {
 			$nodePath = $node->getPath();
 			$relativeFileCachePath = $baseFolder->getRelativePath($nodePath);
-
-			$path = "$exportPath/$relativeFileCachePath";
+			// $relativeFileCachePath is expected to have a leading slash always
+			$path = "${exportPath}${relativeFileCachePath}";
 
 			if ($node instanceof File) {
 				$this->filesystem->dumpFile($path, $node->getContent());
