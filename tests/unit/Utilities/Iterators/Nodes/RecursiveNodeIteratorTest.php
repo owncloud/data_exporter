@@ -54,7 +54,7 @@ class RecursiveNodeIteratorTest extends TestCase {
 		$node31 = $this->createMock(Node::class);
 		$node31->method('getPath')->willReturn('/foo/bar/zzz1.png');
 
-		$node32 = $this->createMock(Folder::class);
+		$node32 = $this->createMock(Node::class);
 		$node32->method('getPath')->willReturn('/foo/bar/zzz2.png');
 
 		$node4 = $this->createMock(Folder::class);
@@ -77,6 +77,7 @@ class RecursiveNodeIteratorTest extends TestCase {
 	}
 
 	public function testBasicIteratorEmptyFolder() {
+		$this->folder->method('getDirectoryListing')->willReturn([]);
 		$expectedPathList = [];
 		$currentPathList = [];
 		foreach ($this->iterator as $item) {

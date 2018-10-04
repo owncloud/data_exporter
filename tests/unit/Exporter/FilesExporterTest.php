@@ -55,7 +55,7 @@ class FilesExporterTest extends TestCase {
 		$userFolderParent->method('getRelativePath')
 			->will($this->returnCallback(function ($path) {
 				if (\strpos($path, '/usertest/') === 0) {
-					return substr($path, \strlen('/usertest'));
+					return \substr($path, \strlen('/usertest'));
 				} else {
 					return null;
 				}
@@ -79,7 +79,7 @@ class FilesExporterTest extends TestCase {
 		$userFolderParent->method('getRelativePath')
 			->will($this->returnCallback(function ($path) {
 				if (\strpos($path, '/usertest/') === 0) {
-					return substr($path, \strlen('/usertest'));
+					return \substr($path, \strlen('/usertest'));
 				} else {
 					return null;
 				}
@@ -114,7 +114,7 @@ class FilesExporterTest extends TestCase {
 		$userFolderParent->method('getRelativePath')
 			->will($this->returnCallback(function ($path) {
 				if (\strpos($path, '/usertest/') === 0) {
-					return substr($path, \strlen('/usertest'));
+					return \substr($path, \strlen('/usertest'));
 				} else {
 					return null;
 				}

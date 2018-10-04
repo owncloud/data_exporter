@@ -3,3 +3,5 @@ parameters:
   ignoreErrors:
     - '#If condition is always true#'
     # lib/Exporter/MetadataExtractor/SharesExtractor.php:132 (require changes in core)
+    - '#Strict comparison using === between string and null will always evaluate to false#'
+    # lib/Utilities/Iterators/Nodes/SkipNodeConditionIgnorePath.php:47 (require changes in core, mismatch between interface and implementation)

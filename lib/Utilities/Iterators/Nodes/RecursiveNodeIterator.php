@@ -39,7 +39,7 @@ class RecursiveNodeIterator implements \RecursiveIterator {
 	/** @var int */
 	private $currentIndex = 0;
 
-	/** @var ISkipNodeCondition */
+	/** @var ISkipNodeCondition[] */
 	private $skipConditions = [];
 
 	public function __construct(Folder $folder) {
@@ -75,7 +75,16 @@ class RecursiveNodeIterator implements \RecursiveIterator {
 	}
 
 	public function getChildren(): RecursiveNodeIterator {
+		/** @var Folder $childFolder */
 		$childFolder = $this->folderNodes[$this->currentIndex];
+		/**
+		 * $childFolder should always be a \OCP\Files\Folder instance because
+		 * the `hasChildren` method checking if the current node is a Folder
+		 * should has been called before. If `hasChildren` has returned false
+		 * this method shouldn't have been called (the \RecursiveIterator interface,
+		 * doesn't specify a way to deal with this)
+		 */
+		// @phan-suppress-next-line PhanTypeMismatchArgument
 		$childIterator = new RecursiveNodeIterator($childFolder);
 
 		foreach ($this->getSkipConditions() as $skipCondition) {
@@ -115,7 +124,7 @@ class RecursiveNodeIterator implements \RecursiveIterator {
 	 *
 	 * Use this method BEFORE start iterating. Using it during the iteration might
 	 * return confusing results.
-	 * @param ISkipCondition $condition the skip condition
+	 * @param ISkipNodeCondition $condition the skip condition
 	 */
 	public function addSkipCondition(ISkipNodeCondition $condition) {
 		$this->skipConditions[] = $condition;

@@ -61,7 +61,7 @@ class RecursiveNodeIteratorFactoryTest extends TestCase {
 		$parentUserFolder->method('getRelativePath')
 			->will($this->returnCallback(function ($path) {
 				if (\strpos($path, '/usertest/') === 0) {
-					return substr($path, \strlen('/usertest'));
+					return \substr($path, \strlen('/usertest'));
 				} else {
 					return null;
 				}
@@ -99,7 +99,7 @@ class RecursiveNodeIteratorFactoryTest extends TestCase {
 		$node31->method('getPath')->willReturn("$basePath/foo/bar/zzz1.png");
 		$node31->method('getStorage')->willReturn($storage1);
 
-		$node32 = $this->createMock(Folder::class);
+		$node32 = $this->createMock(Node::class);
 		$node32->method('getPath')->willReturn("$basePath/foo/bar/zzz2.png");
 		$node32->method('getStorage')->willReturn($storage1);
 
@@ -144,6 +144,8 @@ class RecursiveNodeIteratorFactoryTest extends TestCase {
 		$node31->method('getStorage')->willReturn($storage1);
 
 		$node3->method('getDirectoryListing')->willReturn([$node31]);
+		$node2->method('getDirectoryListing')->willReturn([]);
+		$node1->method('getDirectoryListing')->willReturn([]);
 
 		return [$node1, $node2, $node3];
 	}

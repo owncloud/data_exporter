@@ -57,12 +57,14 @@ class MigrateShare extends Command {
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output) {
+		/** @var string $userId */
 		$userId = $input->getArgument('userId');
 		if (!$this->userManager->userExists($userId)) {
 			$output->writeln("<error>$userId doesn't exists</error>");
 			return self::ERROR_MISSING_USER;
 		}
 
+		/** @var string $remoteServer */
 		$remoteServer = $input->getArgument('remoteServer');
 		$remoteServerStatusPage = \rtrim($remoteServer, '/') . '/status.php';
 
