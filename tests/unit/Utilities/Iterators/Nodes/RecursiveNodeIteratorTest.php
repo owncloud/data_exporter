@@ -90,10 +90,15 @@ class RecursiveNodeIteratorTest extends TestCase {
 		$this->setFolderStructure();
 
 		// it won't iterate recursively
-		$expectedPathList = ['/foo/bar1.txt', '/foo/bar2.txt', '/foo/bar', '/foo/pom'];
+		$expectedPathList = [
+			'/foo/bar1.txt' => '/foo/bar1.txt',
+			'/foo/bar2.txt' => '/foo/bar2.txt',
+			'/foo/bar' => '/foo/bar',
+			'/foo/pom' => '/foo/pom'
+		];
 		$currentPathList = [];
-		foreach ($this->iterator as $item) {
-			$currentPathList[] = $item->getPath();
+		foreach ($this->iterator as $key => $item) {
+			$currentPathList[$key] = $item->getPath();
 		}
 		$this->assertEquals($expectedPathList, $currentPathList);
 	}
@@ -102,20 +107,20 @@ class RecursiveNodeIteratorTest extends TestCase {
 		$this->setFolderStructure();
 
 		$expectedPathList = [
-			'/foo/bar1.txt',
-			'/foo/bar2.txt',
-			'/foo/bar',
-			'/foo/bar/zzz1.png',
-			'/foo/bar/zzz2.png',
-			'/foo/pom',
-			'/foo/pom/food',
-			'/foo/pom/food/aaa.txt',
-			'/foo/pom/hue.txt'
+			'/foo/bar1.txt' => '/foo/bar1.txt',
+			'/foo/bar2.txt' => '/foo/bar2.txt',
+			'/foo/bar' => '/foo/bar',
+			'/foo/bar/zzz1.png' => '/foo/bar/zzz1.png',
+			'/foo/bar/zzz2.png' => '/foo/bar/zzz2.png',
+			'/foo/pom' => '/foo/pom',
+			'/foo/pom/food' => '/foo/pom/food',
+			'/foo/pom/food/aaa.txt' => '/foo/pom/food/aaa.txt',
+			'/foo/pom/hue.txt' => '/foo/pom/hue.txt'
 		];
 		$currentPathList = [];
 		$recIterator = new \RecursiveIteratorIterator($this->iterator, \RecursiveIteratorIterator::SELF_FIRST);
-		foreach ($recIterator as $item) {
-			$currentPathList[] = $item->getPath();
+		foreach ($recIterator as $key => $item) {
+			$currentPathList[$key] = $item->getPath();
 		}
 		$this->assertEquals($expectedPathList, $currentPathList);
 	}
@@ -154,10 +159,14 @@ class RecursiveNodeIteratorTest extends TestCase {
 		$this->setFolderStructure();
 
 		// it won't iterate recursively
-		$expectedPathList = ['/foo/bar1.txt', '/foo/bar2.txt', '/foo/bar'];
+		$expectedPathList = [
+			'/foo/bar1.txt' => '/foo/bar1.txt',
+			'/foo/bar2.txt' => '/foo/bar2.txt',
+			'/foo/bar' => '/foo/bar',
+		];
 		$currentPathList = [];
-		foreach ($this->iterator as $item) {
-			$currentPathList[] = $item->getPath();
+		foreach ($this->iterator as $key => $item) {
+			$currentPathList[$key] = $item->getPath();
 		}
 		$this->assertEquals($expectedPathList, $currentPathList);
 	}
@@ -176,15 +185,15 @@ class RecursiveNodeIteratorTest extends TestCase {
 		$this->setFolderStructure();
 
 		$expectedPathList = [
-			'/foo/bar1.txt',
-			'/foo/bar2.txt',
-			'/foo/bar',
-			'/foo/bar/zzz2.png',
+			'/foo/bar1.txt' => '/foo/bar1.txt',
+			'/foo/bar2.txt' => '/foo/bar2.txt',
+			'/foo/bar' => '/foo/bar',
+			'/foo/bar/zzz2.png' => '/foo/bar/zzz2.png',
 		];
 		$currentPathList = [];
 		$recIterator = new \RecursiveIteratorIterator($this->iterator, \RecursiveIteratorIterator::SELF_FIRST);
-		foreach ($recIterator as $item) {
-			$currentPathList[] = $item->getPath();
+		foreach ($recIterator as $key => $item) {
+			$currentPathList[$key] = $item->getPath();
 		}
 		$this->assertEquals($expectedPathList, $currentPathList);
 	}

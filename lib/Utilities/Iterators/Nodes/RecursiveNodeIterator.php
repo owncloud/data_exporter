@@ -63,7 +63,7 @@ class RecursiveNodeIterator implements \RecursiveIterator {
 	}
 
 	public function key() {
-		return $this->currentIndex;
+		return $this->folderNodes[$this->currentIndex]->getPath();
 	}
 
 	public function current(): Node {

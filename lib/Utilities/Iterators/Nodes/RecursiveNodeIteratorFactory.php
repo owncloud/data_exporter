@@ -41,6 +41,17 @@ class RecursiveNodeIteratorFactory {
 	 *
 	 * Note that a SkipNodeConditionDifferentStorage is already set in the iterator in order to traverse
 	 * only the primary storage
+	 *
+	 * Consider to use something like:
+	 * ```
+	 * list($iterator, $baseFolder) = $factory->getUserFolderRecursiveIterator($userId);
+	 * ```
+	 *
+	 * You can traverse the iterator like:
+	 * ```
+	 * foreach ($iterator as $key => $node) { .... }
+	 * ```
+	 * Note that the $key will always be the path of the node, the same as $node->getPath()
 	 * @param string $userId the id of the user
 	 * @param int $mode one of the \RecursiveIteratorIterator constants
 	 * @return array a RecursiveIteratorIterator wrapping a RecursiveNodeIterator and the base Folder node
@@ -68,6 +79,17 @@ class RecursiveNodeIteratorFactory {
 	 * Note that a SkipNodeConditionDifferentStorage is already set in the iterator in order to traverse
 	 * only the primary storage, and also a SkipNodeConditionIgnorePath to skip some folders containing
 	 * temporary information
+	 *
+	 * Consider to use something like:
+	 * ```
+	 * list($iterator, $baseFolder) = $factory->getUserFolderParentRecursiveIterator($userId);
+	 * ```
+	 *
+	 * You can traverse the iterator like:
+	 * ```
+	 * foreach ($iterator as $key => $node) { .... }
+	 * ```
+	 * Note that the $key will always be the path of the node, the same as $node->getPath()
 	 * @param string $userId the id of the user
 	 * @param int $mode one of the \RecursiveIteratorIterator constants
 	 * @return array a RecursiveIteratorIterator wrapping a RecursiveNodeIterator and the base Folder node
