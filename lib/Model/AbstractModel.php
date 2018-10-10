@@ -1,6 +1,6 @@
 <?php
 /**
- * @author Ilja Neumann <ineumann@owncloud.com>
+ * @author Juan Pablo Villafáñez <jvillafanez@solidgeargroup.com>
  *
  * @copyright Copyright (c) 2018, ownCloud GmbH
  * @license GPL-2.0
@@ -20,33 +20,27 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-namespace OCA\DataExporter\Importer\MetadataImporter;
+namespace OCA\DataExporter\Model;
 
-use OCA\DataExporter\Model\UserMetadata\User\Preference;
-use OCP\IConfig;
+abstract class AbstractModel {
+	/** @var AbstractModel|null */
+	private $parent = null;
 
-class PreferencesImporter {
-
-	/** @var IConfig  */
-	private $config;
-
-	public function __construct(IConfig $config) {
-		$this->config = $config;
+	/**
+	 * Set the parent model of this one. Note that each model can only have
+	 * one parent, and setting a different parent will overwrite the previous one
+	 * @param AbstractModel $model the model to be set as parent
+	 */
+	final public function setParent(AbstractModel $model) {
+		$this->parent = $model;
 	}
 
 	/**
-	 * @param string $userId
-	 * @param Preference[] $preferences
-	 * @throws \OCP\PreConditionNotMetException
+	 * Get the parent set or null if no parent is set
+	 * @return AbstractModel|null no model set with setParent or null if no parent
+	 * has been set
 	 */
-	public function import(string $userId, array $preferences) {
-		foreach ($preferences as $preference) {
-			$this->config->setUserValue(
-				$userId,
-				$preference->getAppId(),
-				$preference->getConfigKey(),
-				$preference->getConfigValue()
-			);
-		}
+	final public function getParent() {
+		return $this->parent;
 	}
 }

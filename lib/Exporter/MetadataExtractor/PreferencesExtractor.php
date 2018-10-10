@@ -22,7 +22,7 @@
  */
 namespace OCA\DataExporter\Exporter\MetadataExtractor;
 
-use OCA\DataExporter\Model\User\Preference;
+use OCA\DataExporter\Model\UserMetadata\User\Preference;
 use OCP\IAppConfig;
 use OCP\IConfig;
 

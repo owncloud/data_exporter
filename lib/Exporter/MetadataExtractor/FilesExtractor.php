@@ -24,7 +24,7 @@
 namespace OCA\DataExporter\Exporter\MetadataExtractor;
 
 use OCA\DataExporter\Utilities\Iterators\Nodes\RecursiveNodeIteratorFactory;
-use OCA\DataExporter\Model\User\File;
+use OCA\DataExporter\Model\UserMetadata\User\File;
 use OCP\Files\Node;
 
 class FilesExtractor {

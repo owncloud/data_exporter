@@ -24,7 +24,7 @@ namespace OCA\DataExporter\Importer;
 
 use OCA\DataExporter\Importer\MetadataImporter\PreferencesImporter;
 use OCA\DataExporter\Importer\MetadataImporter\UserImporter;
-use OCA\DataExporter\Model\Metadata;
+use OCA\DataExporter\Model\UserMetadata;
 
 class MetadataImporter {
 
@@ -39,10 +39,10 @@ class MetadataImporter {
 	}
 
 	/**
-	 * @param Metadata $metadata
+	 * @param UserMetadata $metadata
 	 * @throws \OCP\PreConditionNotMetException
 	 */
-	public function import(Metadata $metadata) {
+	public function import(UserMetadata $metadata) {
 		$user = $metadata->getUser();
 		$this->userImporter->import($user);
 		$this->preferencesImporter->import(

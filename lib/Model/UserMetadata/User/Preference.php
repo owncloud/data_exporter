@@ -1,7 +1,6 @@
 <?php
 /**
  * @author Ilja Neumann <ineumann@owncloud.com>
- * @author Patrick Jahns <github@patrickjahns.de>
  *
  * @copyright Copyright (c) 2018, ownCloud GmbH
  * @license GPL-2.0
@@ -21,81 +20,63 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-namespace OCA\DataExporter\Model\User;
+namespace OCA\DataExporter\Model\UserMetadata\User;
 
-class File {
-	const TYPE_FOLDER = 'folder';
-	const TYPE_FILE = 'file';
+use OCA\DataExporter\Model\AbstractModel;
 
-	private $type;
+class Preference extends AbstractModel {
 	/** @var string */
-	private $path;
-	/** @var mixed */
-	private $eTag;
-	/** @var int */
-	private $permissions;
+	private $appId;
+	/** @var string */
+	private $configKey;
+	/** @var string */
+	private $configValue;
 
 	/**
 	 * @return string
 	 */
-	public function getType() {
-		return $this->type;
+	public function getAppId(): string {
+		return $this->appId;
 	}
 
 	/**
-	 * @param string $type
-	 * @return File
+	 * @param string $appId
+	 * @return Preference
 	 */
-	public function setType(string $type) : File {
-		$this->type = $type;
+	public function setAppId(string $appId): Preference {
+		$this->appId = $appId;
 		return $this;
 	}
 
 	/**
 	 * @return string
 	 */
-	public function getPath(): string {
-		return $this->path;
+	public function getConfigKey(): string {
+		return $this->configKey;
 	}
 
 	/**
-	 * @param string $path
-	 * @return File
+	 * @param string $configKey
+	 * @return Preference
 	 */
-	public function setPath(string $path): File {
-		$this->path = $path;
+	public function setConfigKey(string $configKey): Preference {
+		$this->configKey = $configKey;
 		return $this;
 	}
 
 	/**
-	 * @return mixed
+	 * @return string
 	 */
-	public function getETag() {
-		return $this->eTag;
+	public function getConfigValue(): string {
+		return $this->configValue;
 	}
 
 	/**
-	 * @param string $eTag
-	 * @return File
+	 * @param string $configValue
+	 * @return Preference
 	 */
-	public function setETag($eTag) : File {
-		$this->eTag = $eTag;
-		return $this;
-	}
-
-	/**
-	 * @return int
-	 */
-	public function getPermissions(): int {
-		return $this->permissions;
-	}
-
-	/**
-	 * @param int $permissions
-	 * @return File
-	 */
-	public function setPermissions(int $permissions): File {
-		$this->permissions = $permissions;
+	public function setConfigValue(string $configValue): Preference {
+		$this->configValue = $configValue;
 		return $this;
 	}
 }

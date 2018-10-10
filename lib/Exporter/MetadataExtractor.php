@@ -27,7 +27,7 @@ use OCA\DataExporter\Exporter\MetadataExtractor\FilesExtractor;
 use OCA\DataExporter\Exporter\MetadataExtractor\PreferencesExtractor;
 use OCA\DataExporter\Exporter\MetadataExtractor\UserExtractor;
 use OCA\DataExporter\Exporter\MetadataExtractor\SharesExtractor;
-use OCA\DataExporter\Model\Metadata;
+use OCA\DataExporter\Model\UserMetadata;
 use OCP\IURLGenerator;
 
 /**
@@ -76,11 +76,11 @@ class MetadataExtractor {
 	 * Extract all metadata required for export in to the database
 	 *
 	 * @param string $uid
-	 * @return Metadata
+	 * @return UserMetadata
 	 * @throws \Exception
 	 * @throws \RuntimeException if user can not be read
 	 */
-	public function extract(string $uid) : Metadata {
+	public function extract(string $uid) : UserMetadata {
 		$user = $this->userExtractor->extract($uid);
 		$user->setPreferences(
 			$this->preferencesExtractor->extract($uid)
@@ -90,7 +90,7 @@ class MetadataExtractor {
 			$this->sharesExtractor->extract($uid)
 		);
 
-		$metadata = new Metadata();
+		$metadata = new UserMetadata();
 		$metadata->setDate(new \DateTimeImmutable())
 			->setUser($user)
 			->setOriginServer($this->urlGenerator->getAbsoluteURL('/'));

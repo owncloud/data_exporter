@@ -21,13 +21,14 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-namespace OCA\DataExporter\Model;
+namespace OCA\DataExporter\Model\UserMetadata;
 
-use OCA\DataExporter\Model\User\File;
-use OCA\DataExporter\Model\User\Preference;
-use OCA\DataExporter\Model\User\Share;
+use OCA\DataExporter\Model\AbstractModel;
+use OCA\DataExporter\Model\UserMetadata\User\File;
+use OCA\DataExporter\Model\UserMetadata\User\Preference;
+use OCA\DataExporter\Model\UserMetadata\User\Share;
 
-class User {
+class User extends AbstractModel {
 
 	/** @var string */
 	private $userId;
@@ -174,6 +175,9 @@ class User {
 	 * @return User
 	 */
 	public function setPreferences(array $preferences): User {
+		foreach ($preferences as $preference) {
+			$preference->setParent($this);
+		}
 		$this->preferences = $preferences;
 		return $this;
 	}
@@ -190,6 +194,9 @@ class User {
 	 * @return User
 	 */
 	public function setFiles(array $files): User {
+		foreach ($files as $file) {
+			$file->setParent($this);
+		}
 		$this->files = $files;
 		return $this;
 	}
@@ -206,6 +213,9 @@ class User {
 	 * @return User
 	 */
 	public function setShares(array $shares): User {
+		foreach ($shares as $share) {
+			$share->setParent($this);
+		}
 		$this->shares = $shares;
 		return $this;
 	}

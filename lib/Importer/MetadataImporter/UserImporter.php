@@ -22,7 +22,7 @@
  */
 namespace OCA\DataExporter\Importer\MetadataImporter;
 
-use OCA\DataExporter\Model\User;
+use OCA\DataExporter\Model\UserMetadata\User;
 use OCA\DataExporter\Importer\ImportException;
 use OCP\IGroupManager;
 use OCP\IUserManager;

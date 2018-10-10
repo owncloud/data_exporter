@@ -23,7 +23,7 @@
 namespace OCA\DataExporter\Tests\Unit\Exporter\MetadataExtractor;
 
 use OCA\DataExporter\Exporter\MetadataExtractor\SharesExtractor;
-use OCA\DataExporter\Model\User\Share;
+use OCA\DataExporter\Model\UserMetadata\User\Share;
 use OCP\Share\IShare;
 use OCP\Share as ShareConstants;
 use OCP\Share\IManager;

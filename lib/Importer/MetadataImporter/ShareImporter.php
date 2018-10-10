@@ -29,7 +29,7 @@ use OCP\IGroupManager;
 use OCP\Share as ShareConstants;
 use OCP\IURLGenerator;
 use OCP\ILogger;
-use OCA\DataExporter\Model\User\Share;
+use OCA\DataExporter\Model\UserMetadata\User\Share;
 use OCA\DataExporter\Utilities\ShareConverter;
 
 class ShareImporter {
