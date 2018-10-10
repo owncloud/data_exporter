@@ -23,18 +23,16 @@
  */
 namespace OCA\DataExporter\Exporter\MetadataExtractor;
 
-use OCA\DataExporter\Exporter\UserStorageIterator;
+use OCA\DataExporter\Utilities\Iterators\Nodes\RecursiveNodeIteratorFactory;
 use OCA\DataExporter\Model\User\File;
-use OCP\Files\IRootFolder;
 use OCP\Files\Node;
 
 class FilesExtractor {
+	/** @var RecursiveNodeIteratorFactory  */
+	private $iteratorFactory;
 
-	/** @var IRootFolder  */
-	private $rootFolder;
-
-	public function __construct(IRootFolder $rootFolder) {
-		$this->rootFolder = $rootFolder;
+	public function __construct(RecursiveNodeIteratorFactory $iteratorFactory) {
+		$this->iteratorFactory = $iteratorFactory;
 	}
 
 	/**
@@ -44,16 +42,13 @@ class FilesExtractor {
 	 * @throws \OCP\Files\NotFoundException
 	 */
 	public function extract(string $userId) : array {
-		/** @var \OCP\Files\Folder $userFolder */
-		$userFolder = $this->rootFolder->getUserFolder($userId)->getParent();
+		list($iterator, $baseFolder) = $this->iteratorFactory->getUserFolderParentRecursiveIterator($userId);
 		$files = [];
 
-		foreach (new UserStorageIterator($userFolder) as $node) {
+		foreach ($iterator as $node) {
 			$nodePath = $node->getPath();
-			$relativePath = $nodePath;
-			if (\strpos($nodePath, "/$userId/") === 0) {
-				$relativePath = \substr($nodePath, \strlen("/$userId/"));
-			}
+			$relativePath = $baseFolder->getRelativePath($nodePath);
+
 			$file = new File();
 
 			$file->setPath($relativePath);
