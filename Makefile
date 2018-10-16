@@ -97,3 +97,8 @@ test-php-integration:
 .PHONY: test-php-integration-dbg
 test-php-integration-dbg:
 	$(PHPDBG) --configuration ./phpunit.xml --testsuite integration
+
+.PHONY: test-acceptance-cli
+test-acceptance-api:       ## Run API acceptance tests
+test-acceptance-api: vendor/bin/phpunit
+	../../tests/acceptance/run.sh --config tests/acceptance/config/behat.yml --type cli
