@@ -87,6 +87,18 @@ pipeline:
     commands:
       - make test-php-integration-dbg
 
+  cli-acceptance-tests:
+    image: owncloudci/php:${PHP_VERSION}
+    pull: true
+    environment:
+    - TEST_SERVER_URL=http://owncloud
+    - PLATFORM=Linux
+    - BEHAT_SUITE=${BEHAT_SUITE}
+    commands:
+    - make test-acceptance-cli
+    when:
+      matrix:
+        TEST_SUITE: cli-acceptance
 
   codecov:
     image: plugins/codecov:2
