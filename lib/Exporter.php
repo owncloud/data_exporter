@@ -24,7 +24,7 @@ namespace OCA\DataExporter;
 
 use OCA\DataExporter\Exporter\FilesExporter;
 use OCA\DataExporter\Exporter\MetadataExtractor;
-use Symfony\Component\Filesystem\Filesystem;
+use OCA\DataExporter\Utilities\FSAccess\FSAccess;
 
 class Exporter {
 
@@ -34,25 +34,18 @@ class Exporter {
 	private $metadataExtractor;
 	/** @var FilesExporter  */
 	private $filesExporter;
-	/** @var Filesystem  */
-	private $filesystem;
 
-	public function __construct(Serializer $serializer, MetadataExtractor $metadataExtractor, FilesExporter $filesExporter, Filesystem $filesystem) {
+	public function __construct(Serializer $serializer, MetadataExtractor $metadataExtractor, FilesExporter $filesExporter) {
 		$this->serializer = $serializer;
 		$this->metadataExtractor = $metadataExtractor;
 		$this->filesExporter = $filesExporter;
-		$this->filesystem = $filesystem;
 	}
 
-	public function export(string $uid, string $exportDirectoryPath) {
-		$exportPath = "$exportDirectoryPath/$uid";
-		$metaData = $this->metadataExtractor->extract($uid);
-		$this->filesystem->dumpFile(
-			"$exportPath/metadata.json",
-			$this->serializer->serialize($metaData)
-		);
+	public function export(string $uid, FSAccess $fsAccessBase) {
+		$metaData = $this->metadataExtractor->extract($uid, $fsAccessBase);
 
-		$filesPath = \ltrim("$exportPath/files");
-		$this->filesExporter->export($uid, $filesPath);
+		$fsAccessBase->copyContentToPath($this->serializer->serialize($metaData), '/metadata.json');
+
+		$this->filesExporter->export($uid, $fsAccessBase);
 	}
 }

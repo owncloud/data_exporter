@@ -26,7 +26,7 @@ namespace OCA\DataExporter;
 use OCA\DataExporter\Importer\ImportException;
 use OCA\DataExporter\Importer\MetadataImporter;
 use OCA\DataExporter\Model\UserMetadata;
-use Symfony\Component\Filesystem\Filesystem;
+use OCA\DataExporter\Utilities\FSAccess\FSAccess;
 use OCA\DataExporter\Importer\FilesImporter;
 use OCA\DataExporter\Importer\MetadataImporter\ShareImporter;
 
@@ -36,8 +36,6 @@ class Importer {
 	private $metadataImporter;
 	/** @var Serializer  */
 	private $serializer;
-	/** @var Filesystem  */
-	private $filesystem;
 	/** @var FilesImporter  */
 	private $filesImporter;
 	/** @var ShareImporter */
@@ -47,11 +45,9 @@ class Importer {
 		Serializer $serializer,
 		MetadataImporter $metadataImporter,
 		FilesImporter $filesImporter,
-		ShareImporter $shareImporter,
-		Filesystem $filesystem
+		ShareImporter $shareImporter
 	) {
 		$this->metadataImporter = $metadataImporter;
-		$this->filesystem = $filesystem;
 		$this->serializer = $serializer;
 		$this->filesImporter = $filesImporter;
 		$this->shareImporter = $shareImporter;
@@ -66,16 +62,14 @@ class Importer {
 	 * @throws \OCP\Files\StorageNotAvailableException
 	 * @throws \OCP\PreConditionNotMetException
 	 */
-	public function import(string $pathToExportDir, $alias = null) {
-		$metaDataPath = "$pathToExportDir/metadata.json";
-
-		if (!$this->filesystem->exists($metaDataPath)) {
-			throw new ImportException("metadata.json not found in '$metaDataPath'");
+	public function import(FSAccess $fsAccess, $alias = null) {
+		if (!$fsAccess->fileExists('/metadata.json')) {
+			throw new ImportException("metadata.json not found in '{$fsAccess->getRoot()}'");
 		}
 
 		/** @var UserMetadata $metadata */
 		$metadata = $this->serializer->deserialize(
-			\file_get_contents($metaDataPath),
+			$fsAccess->getContentFromPath('/metadata.json'),
 			UserMetadata::class
 		);
 
@@ -84,10 +78,13 @@ class Importer {
 		}
 
 		$this->metadataImporter->import($metadata);
+
+		\OC_Util::setupFS($metadata->getUser()->getUserId());
+
 		$this->filesImporter->import(
 			$metadata->getUser()->getUserId(),
 			$metadata->getUser()->getFiles(),
-			"$pathToExportDir/files"
+			$fsAccess
 		);
 		$this->shareImporter->import(
 			$metadata->getUser()->getUserId(),

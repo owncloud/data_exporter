@@ -24,6 +24,7 @@
 namespace OCA\DataExporter\Model\UserMetadata\User;
 
 use OCA\DataExporter\Model\AbstractModel;
+use OCA\DataExporter\Model\UserMetadata\User\File\Version;
 
 class File extends AbstractModel {
 	const TYPE_FOLDER = 'folder';
@@ -36,6 +37,8 @@ class File extends AbstractModel {
 	private $eTag;
 	/** @var int */
 	private $permissions;
+	/** @var Version[] */
+	private $versions;
 
 	/**
 	 * @return string
@@ -98,6 +101,18 @@ class File extends AbstractModel {
 	 */
 	public function setPermissions(int $permissions): File {
 		$this->permissions = $permissions;
+		return $this;
+	}
+
+	public function getVersions(): array {
+		return $this->versions;
+	}
+
+	public function setVersions(array $versions): File {
+		foreach ($versions as $version) {
+			$version->setParent($this);
+		}
+		$this->versions = $versions;
 		return $this;
 	}
 }

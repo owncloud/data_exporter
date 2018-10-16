@@ -28,6 +28,7 @@ use OCA\DataExporter\Exporter\MetadataExtractor\PreferencesExtractor;
 use OCA\DataExporter\Exporter\MetadataExtractor\UserExtractor;
 use OCA\DataExporter\Exporter\MetadataExtractor\SharesExtractor;
 use OCA\DataExporter\Model\UserMetadata;
+use OCA\DataExporter\Utilities\FSAccess\FSAccess;
 use OCP\IURLGenerator;
 
 /**
@@ -80,12 +81,12 @@ class MetadataExtractor {
 	 * @throws \Exception
 	 * @throws \RuntimeException if user can not be read
 	 */
-	public function extract(string $uid) : UserMetadata {
+	public function extract(string $uid, FSAccess $fsAccess) : UserMetadata {
 		$user = $this->userExtractor->extract($uid);
 		$user->setPreferences(
 			$this->preferencesExtractor->extract($uid)
 		)->setFiles(
-			$this->filesExtractor->extract($uid)
+			$this->filesExtractor->extract($uid, $fsAccess)
 		)->setShares(
 			$this->sharesExtractor->extract($uid)
 		);

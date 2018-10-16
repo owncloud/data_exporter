@@ -21,9 +21,12 @@
  *
  */
 namespace OCA\DataExporter\Tests\Integration;
+
+use org\bovigo\vfs\vfsStream;
 use OCA\DataExporter\Exporter\MetadataExtractor;
 use OCA\DataExporter\Importer\MetadataImporter;
 use OCA\DataExporter\Importer\MetadataImporter\UserImporter;
+use OCA\DataExporter\Utilities\FSAccess\FSAccessFactory;
 use OCA\DataExporter\Serializer;
 use OCP\IUser;
 use OCP\IUserManager;
@@ -62,7 +65,13 @@ class MetadataImportExportTest extends \Test\TestCase {
 		/** @var MetadataImporter $importer */
 		$importer = \OC::$server->query(MetadataImporter::class);
 
-		$export = $extractor->extract($this->testUser->getUID());
+		$fsAccessFactory = \OC::$server->query(FSAccessFactory::class);
+		$vfsRoot = vfsStream::setup('root');
+		$prefix = \uniqid();
+		$baseVfsDir = vfsStream::newDirectory($prefix)->at($vfsRoot);
+		$fsAccess = $fsAccessFactory->getFSAccess($baseVfsDir->url());
+
+		$export = $extractor->extract($this->testUser->getUID(), $fsAccess);
 		// Don't test files for now
 		$export->getUser()->setFiles([]);
 
@@ -70,7 +79,7 @@ class MetadataImportExportTest extends \Test\TestCase {
 
 		$importer->import($export);
 
-		$reExport = $extractor->extract($this->testUser->getUID());
+		$reExport = $extractor->extract($this->testUser->getUID(), $fsAccess);
 		// Don't test files for now
 		$reExport->getUser()->setFiles([]);
 

@@ -23,7 +23,9 @@
 namespace OCA\DataExporter\Tests\Unit\Exporter\MetadataExtractor;
 
 use OCA\DataExporter\Exporter\MetadataExtractor\FilesExtractor;
+use OCA\DataExporter\Exporter\MetadataExtractor\VersionsExtractor;
 use OCA\DataExporter\Utilities\Iterators\Nodes\RecursiveNodeIteratorFactory;
+use OCA\DataExporter\Utilities\FSAccess\FSAccess;
 use OCA\DataExporter\Model\UserMetadata\User\File;
 use OCP\Files\Node;
 use OCP\Files\Folder;
@@ -33,13 +35,17 @@ class FilesExtractorTest extends TestCase {
 	/** @var RecursiveNodeIteratorFactory  */
 	private $iteratorFactory;
 
+	/** @var VersionsExtractor */
+	private $versionsExtractor;
+
 	/** @var FilesExtractor */
 	private $filesExtractor;
 
 	protected function setUp() {
 		$this->iteratorFactory = $this->createMock(RecursiveNodeIteratorFactory::class);
+		$this->versionsExtractor = $this->createMock(VersionsExtractor::class);
 
-		$this->filesExtractor = new FilesExtractor($this->iteratorFactory);
+		$this->filesExtractor = new FilesExtractor($this->iteratorFactory, $this->versionsExtractor);
 	}
 
 	public function testExtract() {
@@ -85,28 +91,36 @@ class FilesExtractorTest extends TestCase {
 		$expectedFolder1->setPath('/files/foo')
 			->setEtag('123qweasdzxc')
 			->setPermissions(31)
-			->setType(File::TYPE_FOLDER);
+			->setType(File::TYPE_FOLDER)
+			->setVersions([]);
 
 		$expectedFolder2 = new File();
 		$expectedFolder2->setPath('/files/foo/courses')
 			->setEtag('zaqxswcde')
 			->setPermissions(31)
-			->setType(File::TYPE_FOLDER);
+			->setType(File::TYPE_FOLDER)
+			->setVersions([]);
 
 		$expectedFile1 = new File();
 		$expectedFile1->setPath('/files/foo/courses/awesome qwerty')
 			->setEtag('poiulkjhmnbv')
 			->setPermissions(1)
-			->setType(File::TYPE_FILE);
+			->setType(File::TYPE_FILE)
+			->setVersions([]);
 
 		$expectedFile2 = new File();
 		$expectedFile2->setPath('/files/foo/bar.txt')
 			->setEtag('123456789')
 			->setPermissions(9)
-			->setType(File::TYPE_FILE);
+			->setType(File::TYPE_FILE)
+			->setVersions([]);
+
+		$this->versionsExtractor->method('extract')->willReturn([]);
+
+		$fsAccessMock = $this->createMock(FSAccess::class);
 
 		$expectedFileModels = [$expectedFolder1, $expectedFolder2, $expectedFile1, $expectedFile2];
-		$currentFileModels = $this->filesExtractor->extract('usertest');
+		$currentFileModels = $this->filesExtractor->extract('usertest', $fsAccessMock);
 		$this->assertEquals($expectedFileModels, $currentFileModels);
 	}
 }

@@ -23,6 +23,7 @@
 namespace OCA\DataExporter\Command;
 
 use OCA\DataExporter\Exporter;
+use OCA\DataExporter\Utilities\FSAccess\FSAccessFactory;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -33,9 +34,13 @@ class ExportUser extends Command {
 	/** @var Exporter  */
 	private $exporter;
 
-	public function __construct(Exporter $importer) {
+	/** @var FSAccessFactory */
+	private $fsAccessFactory;
+
+	public function __construct(Exporter $importer, FSAccessFactory $fsAccessFactory) {
 		parent::__construct();
 		$this->exporter = $importer;
+		$this->fsAccessFactory = $fsAccessFactory;
 	}
 
 	protected function configure() {
@@ -46,11 +51,15 @@ class ExportUser extends Command {
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output) {
+		$userId = $input->getArgument('userId');
+		$targetDir = $input->getArgument('exportDirectory');
+
+		$fsAccessExportingDir = $this->fsAccessFactory->getFSAccess($targetDir);
+		$fsAccessExportingDir->mkdir($userId);
+
+		$fsAccess = $this->fsAccessFactory->getFSAccess("$targetDir/$userId");
 		try {
-			$this->exporter->export(
-				$input->getArgument('userId'),
-				$input->getArgument('exportDirectory')
-			);
+			$this->exporter->export($userId, $fsAccess);
 		} catch (\Exception $e) {
 			$output->writeln("<error>{$e->getMessage()}</error>");
 		}

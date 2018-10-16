@@ -25,14 +25,20 @@ namespace OCA\DataExporter\Exporter\MetadataExtractor;
 
 use OCA\DataExporter\Utilities\Iterators\Nodes\RecursiveNodeIteratorFactory;
 use OCA\DataExporter\Model\UserMetadata\User\File;
+use OCA\DataExporter\Exporter\MetadataExtractor\VersionsExtractor;
+use OCA\DataExporter\Utilities\FSAccess\FSAccess;
 use OCP\Files\Node;
 
 class FilesExtractor {
 	/** @var RecursiveNodeIteratorFactory  */
 	private $iteratorFactory;
 
-	public function __construct(RecursiveNodeIteratorFactory $iteratorFactory) {
+	/** @var VersionsExtractor */
+	private $versionsExtractor;
+
+	public function __construct(RecursiveNodeIteratorFactory $iteratorFactory, VersionsExtractor $versionsExtractor) {
 		$this->iteratorFactory = $iteratorFactory;
+		$this->versionsExtractor = $versionsExtractor;
 	}
 
 	/**
@@ -41,7 +47,7 @@ class FilesExtractor {
 	 * @throws \OCP\Files\InvalidPathException
 	 * @throws \OCP\Files\NotFoundException
 	 */
-	public function extract(string $userId) : array {
+	public function extract(string $userId, FSAccess $fsAccess) : array {
 		list($iterator, $baseFolder) = $this->iteratorFactory->getUserFolderParentRecursiveIterator($userId);
 		$files = [];
 
@@ -60,6 +66,7 @@ class FilesExtractor {
 			} else {
 				$file->setType(File::TYPE_FOLDER);
 			}
+			$file->setVersions($this->versionsExtractor->extract($userId, $node->getPath(), $fsAccess));
 
 			$files[] = $file;
 		}

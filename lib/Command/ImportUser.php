@@ -23,6 +23,7 @@
 namespace OCA\DataExporter\Command;
 
 use OCA\DataExporter\Importer;
+use OCA\DataExporter\Utilities\FSAccess\FSAccessFactory;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -34,9 +35,13 @@ class ImportUser extends Command {
 	/** @var Importer */
 	private $importer;
 
-	public function __construct(Importer $importer) {
+	/** @var FSAccessFactory */
+	private $fsAccessFactory;
+
+	public function __construct(Importer $importer, FSAccessFactory $fsAccessFactory) {
 		parent::__construct();
 		$this->importer = $importer;
+		$this->fsAccessFactory = $fsAccessFactory;
 	}
 
 	protected function configure() {
@@ -47,11 +52,10 @@ class ImportUser extends Command {
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output) {
+		$targetDir = $input->getArgument('exportDirectory');
+		$fsAccess = $this->fsAccessFactory->getFSAccess($targetDir);
 		try {
-			$this->importer->import(
-				$input->getArgument('exportDirectory'),
-				$input->getOption('as')
-			);
+			$this->importer->import($fsAccess, $input->getOption('as'));
 		} catch (\Exception $e) {
 			$output->writeln("<error>{$e->getMessage()}</error>");
 		}

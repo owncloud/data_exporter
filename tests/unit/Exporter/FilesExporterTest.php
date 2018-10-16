@@ -24,7 +24,7 @@ namespace OCA\DataExporter\Tests\Unit\Exporter;
 
 use OCA\DataExporter\Exporter\FilesExporter;
 use OCA\DataExporter\Utilities\Iterators\Nodes\RecursiveNodeIteratorFactory;
-use Symfony\Component\Filesystem\Filesystem;
+use OCA\DataExporter\Utilities\FSAccess\FSAccess;
 use OCP\Files\File;
 use OCP\Files\Folder;
 use Test\TestCase;
@@ -33,23 +33,27 @@ class FilesExporterTest extends TestCase {
 	/** @var RecursiveNodeIteratorFactory  */
 	private $iteratorFactory;
 
-	/** @var Filesystem */
-	private $filesystem;
-
 	/** @var FilesExporter */
 	private $filesExporter;
 
+	/** @var FSAccess */
+	private $fsAccess;
+
 	protected function setUp() {
 		$this->iteratorFactory = $this->createMock(RecursiveNodeIteratorFactory::class);
-		$this->filesystem = $this->createMock(Filesystem::class);
 
-		$this->filesExporter = new FilesExporter($this->iteratorFactory, $this->filesystem);
+		$this->filesExporter = new FilesExporter($this->iteratorFactory);
+		// FSAccess instance for the export calls
+		$this->fsAccess = $this->createMock(FSAccess::class);
 	}
 
 	public function testExportFile() {
 		$mockFile = $this->createMock(File::class);
 		$mockFile->method('getPath')->willReturn('/usertest/files/foo/bar.txt');
-		$mockFile->method('getContent')->willReturn('weeee eee eeeeeeeee!');
+		$mockFile->method('fopen')
+			->will($this->returnCallback(function ($mode) {
+				return \fopen('php://memory', $mode);
+			}));
 
 		$userFolderParent = $this->createMock(Folder::class);
 		$userFolderParent->method('getRelativePath')
@@ -64,11 +68,11 @@ class FilesExporterTest extends TestCase {
 		// iterator can return an array because will just need to traverse it
 		$this->iteratorFactory->method('getUserFolderParentRecursiveIterator')->willReturn([[$mockFile], $userFolderParent]);
 
-		$this->filesystem->expects($this->once())
-			->method('dumpFile')
-			->with($this->equalTo('/tmp/randomF/files/foo/bar.txt'), $this->equalTo('weeee eee eeeeeeeee!'));
+		$this->fsAccess->expects($this->once())
+			->method('copyStreamToPath')
+			->with($this->anything(), $this->equalTo('/files/files/foo/bar.txt'));
 
-		$this->filesExporter->export('usertest', '/tmp/randomF');
+		$this->filesExporter->export('usertest', $this->fsAccess);
 	}
 
 	public function testExportFolder() {
@@ -88,11 +92,11 @@ class FilesExporterTest extends TestCase {
 		// iterator can return an array because will just need to traverse it
 		$this->iteratorFactory->method('getUserFolderParentRecursiveIterator')->willReturn([[$mockFolder], $userFolderParent]);
 
-		$this->filesystem->expects($this->once())
+		$this->fsAccess->expects($this->once())
 			->method('mkdir')
-			->with($this->equalTo('/tmp/randomF/files/foo/courses'));
+			->with($this->equalTo('/files/files/foo/courses'));
 
-		$this->filesExporter->export('usertest', '/tmp/randomF');
+		$this->filesExporter->export('usertest', $this->fsAccess);
 	}
 
 	public function testExportFileAndFolder() {
@@ -104,11 +108,17 @@ class FilesExporterTest extends TestCase {
 
 		$mockFile1 = $this->createMock(File::class);
 		$mockFile1->method('getPath')->willReturn('/usertest/files/foo/courses/awesome qwerty');
-		$mockFile1->method('getContent')->willReturn('qwerty!!');
+		$mockFile1->method('fopen')
+			->will($this->returnCallback(function ($mode) {
+				return \fopen('php://memory', $mode);
+			}));
 
 		$mockFile2 = $this->createMock(File::class);
 		$mockFile2->method('getPath')->willReturn('/usertest/files/foo/bar.txt');
-		$mockFile2->method('getContent')->willReturn('weeee eee eeeeeeeee!');
+		$mockFile2->method('fopen')
+			->will($this->returnCallback(function ($mode) {
+				return \fopen('php://memory', $mode);
+			}));
 
 		$userFolderParent = $this->createMock(Folder::class);
 		$userFolderParent->method('getRelativePath')
@@ -124,20 +134,20 @@ class FilesExporterTest extends TestCase {
 		$this->iteratorFactory->method('getUserFolderParentRecursiveIterator')
 			->willReturn([[$mockFolder1, $mockFolder2, $mockFile1, $mockFile2], $userFolderParent]);
 
-		$this->filesystem->expects($this->exactly(2))
+		$this->fsAccess->expects($this->exactly(2))
 			->method('mkdir')
 			->withConsecutive(
-				[$this->equalTo('/tmp/randomF/files/foo')],
-				[$this->equalTo('/tmp/randomF/files/foo/courses')]
+				[$this->equalTo('/files/files/foo')],
+				[$this->equalTo('/files/files/foo/courses')]
 			);
 
-		$this->filesystem->expects($this->exactly(2))
-			->method('dumpFile')
+		$this->fsAccess->expects($this->exactly(2))
+			->method('copyStreamToPath')
 			->withConsecutive(
-				[$this->equalTo('/tmp/randomF/files/foo/courses/awesome qwerty'), $this->equalTo('qwerty!!')],
-				[$this->equalTo('/tmp/randomF/files/foo/bar.txt'), $this->equalTo('weeee eee eeeeeeeee!')]
+				[$this->anything(), $this->equalTo('/files/files/foo/courses/awesome qwerty')],
+				[$this->anything(), $this->equalTo('/files/files/foo/bar.txt')]
 			);
 
-		$this->filesExporter->export('usertest', '/tmp/randomF');
+		$this->filesExporter->export('usertest', $this->fsAccess);
 	}
 }

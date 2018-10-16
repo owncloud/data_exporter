@@ -24,20 +24,16 @@
 namespace OCA\DataExporter\Exporter;
 
 use OCA\DataExporter\Utilities\Iterators\Nodes\RecursiveNodeIteratorFactory;
+use OCA\DataExporter\Utilities\FSAccess\FSAccess;
 use OCP\Files\File;
 use OCP\Files\Folder;
-use Symfony\Component\Filesystem\Filesystem;
 
 class FilesExporter {
 	/** @var RecursiveNodeIteratorFactory  */
 	private $iteratorFactory;
 
-	/** @var Filesystem */
-	private $filesystem;
-
-	public function __construct(RecursiveNodeIteratorFactory $iteratorFactory, Filesystem $filesystem) {
+	public function __construct(RecursiveNodeIteratorFactory $iteratorFactory) {
 		$this->iteratorFactory = $iteratorFactory;
-		$this->filesystem = $filesystem;
 	}
 
 	/**
@@ -46,22 +42,24 @@ class FilesExporter {
 	 * @throws \OCP\Files\NotFoundException
 	 * @throws \OCP\Files\NotPermittedException
 	 */
-	public function export(string $userId, string $exportPath) {
+	public function export(string $userId, FSAccess $fsAccess) {
 		list($iterator, $baseFolder) = $this->iteratorFactory->getUserFolderParentRecursiveIterator($userId);
 		/** @var \OCP\Files\Node $node */
 		foreach ($iterator as $node) {
 			$nodePath = $node->getPath();
 			$relativeFileCachePath = $baseFolder->getRelativePath($nodePath);
 			// $relativeFileCachePath is expected to have a leading slash always
-			$path = "${exportPath}${relativeFileCachePath}";
+			$path = "/files${relativeFileCachePath}";
 
 			if ($node instanceof File) {
-				$this->filesystem->dumpFile($path, $node->getContent());
+				$stream = $node->fopen('rb');
+				$fsAccess->copyStreamToPath($stream, $path);
+				\fclose($stream);
 				continue;
 			}
 
 			if ($node instanceof Folder) {
-				$this->filesystem->mkdir($path);
+				$fsAccess->mkdir($path);
 			}
 		}
 	}
