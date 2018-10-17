@@ -125,7 +125,7 @@ class FSAccess {
 	public function getStream(string $path) {
 		$checkedPath = $this->checkPath($path);
 		$realPath = $this->root . $checkedPath;
-		return \fopen($realPath, 'rb');
+		return @\fopen($realPath, 'rb');
 	}
 
 	/**
@@ -144,7 +144,7 @@ class FSAccess {
 			}
 		}
 
-		return \file_put_contents($realPath, $content);
+		return @\file_put_contents($realPath, $content);
 	}
 
 	/**
@@ -158,7 +158,7 @@ class FSAccess {
 		if (!\file_exists($realPath)) {
 			return false;
 		}
-		return \file_get_contents($realPath);
+		return @\file_get_contents($realPath);
 	}
 
 	/**

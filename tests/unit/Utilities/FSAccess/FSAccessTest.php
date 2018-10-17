@@ -103,12 +103,70 @@ class FSAccessTest extends TestCase {
 		$this->assertTrue($this->fsaccess->fileExists('foo'));
 	}
 
+	public function testGetStream() {
+		$base = $this->baseVfsDir->url();
+		\file_put_contents("$base/content1.txt", "my tailor is rich");
+
+		$stream = $this->fsaccess->getStream('/content1.txt');
+		$fileContents = \stream_get_contents($stream);
+		$this->assertEquals('my tailor is rich', $fileContents);
+	}
+
+	public function testGetStreamMissingFile() {
+		$this->assertFalse($this->fsaccess->getStream('/missingFile000.egg'));
+	}
+
 	public function testCopyContentToPath() {
 		$base = $this->baseVfsDir->url();
 		$content = 'This might not be random enough';
 
 		$this->assertEquals(\strlen($content), $this->fsaccess->copyContentToPath($content, '/copiedContent.txt'));
 		$this->assertEquals($content, \file_get_contents("$base/copiedContent.txt"));
+	}
+
+	public function testCopyContentToPathRecursive() {
+		$base = $this->baseVfsDir->url();
+		$content = 'This might not be random enough';
+
+		$this->assertEquals(\strlen($content), $this->fsaccess->copyContentToPath($content, '/foo/bar/copiedContent.txt'));
+		$this->assertEquals($content, \file_get_contents("$base/foo/bar/copiedContent.txt"));
+	}
+
+	public function testCopyContentToPathRecursiveWrongPermissions() {
+		$this->baseVfsDir->chmod(0444);
+		$base = $this->baseVfsDir->url();
+		$content = 'This might not be random enough';
+
+		$this->assertFalse($this->fsaccess->copyContentToPath($content, '/foo/bar/copiedContent.txt'));
+	}
+
+	public function testCopyContentToPathRecursiveWrongPermissionsNotRecursive() {
+		$this->baseVfsDir->chmod(0444);
+		$base = $this->baseVfsDir->url();
+		$content = 'This might not be random enough';
+
+		$this->assertFalse($this->fsaccess->copyContentToPath($content, '/copiedContent.txt'));
+	}
+
+	public function testGetContentFromPath() {
+		$base = $this->baseVfsDir->url();
+		$content = 'This might not be random enough';
+		\file_put_contents("$base/tmpfile.txt", $content);
+
+		$this->assertEquals($content, $this->fsaccess->GetContentFromPath('/tmpfile.txt'));
+	}
+
+	public function testGetContentFromPathMissingFile() {
+		$this->assertFalse($this->fsaccess->GetContentFromPath('/missing_tmpfile.txt'));
+	}
+
+	public function testGetContentFromPathWrongPermissions() {
+		$base = $this->baseVfsDir->url();
+		$content = 'This might not be random enough';
+		\file_put_contents("$base/tmpfile.txt", $content);
+		\chmod("$base/tmpfile.txt", 0333);
+
+		$this->assertFalse($this->fsaccess->GetContentFromPath('/tmpfile.txt'));
 	}
 
 	public function copyStreamToPathDataProvider() {
