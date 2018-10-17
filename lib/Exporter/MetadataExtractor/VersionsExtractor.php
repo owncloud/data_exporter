@@ -24,10 +24,10 @@ namespace OCA\DataExporter\Exporter\MetadataExtractor;
 
 use OCA\DataExporter\Model\UserMetadata\User\File\Version;
 use OCA\DataExporter\Utilities\FSAccess\FSAccess;
-use OCP\Files\Node;
 use OCP\Files\File;
 use OCP\Files\IRootFolder;
 use OCP\Files\Storage\IVersionedStorage;
+use OCP\Files\Storage\IStorage;
 
 class VersionsExtractor {
 	/** @var IRootFolder  */
@@ -44,12 +44,11 @@ class VersionsExtractor {
 			return [];
 		}
 
-		// assume the $storage is IVersionedStorage; we don't do anything otherwise
-		$storage = $fileNode->getStorage();
+		$storage = $this->getStorage($fileNode);
 		$internalPath = $fileNode->getInternalPath();
 		$versionModels = [];
 
-		if ($storage->instanceOfStorage(IVersionedStorage::class)) {
+		if ($storage !== null) {
 			$versions = $storage->getVersions($internalPath);
 			// traverse the version list backwards so older versions are first
 			for (\end($versions); \key($versions) !== null; \prev($versions)) {
@@ -71,5 +70,19 @@ class VersionsExtractor {
 			}
 		}
 		return $versionModels;
+	}
+
+	/**
+	 * @param File $fileNode the target file node to fetch the storage from
+	 * @return IStorage|IVersionedStorage|null the versioned storage or null if the storage is of
+	 * a different type
+	 */
+	private function getStorage(File $fileNode) {
+		/** @var IStorage|IVersionedStorage $storage */
+		$storage = $fileNode->getStorage();
+		if (!$storage->instanceOfStorage(IVersionedStorage::class)) {
+			return null;
+		}
+		return $storage;
 	}
 }

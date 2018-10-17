@@ -40,12 +40,16 @@ class VersionImporter {
 	public function import(Version $versionModel, FSAccess $fsAccess) {
 		$fileLocation = "/files{$versionModel->getPath()}";
 
-		/** @var File $parentFileModel */
 		$parentFileModel = $versionModel->getParent();
+		if (!$parentFileModel instanceof File) {
+			throw new ImportException('current version model isn\'t associated with a file model as parent');
+		}
 		$filePath = $parentFileModel->getPath();
 
-		/** @var User $parentUserModel */
 		$parentUserModel = $parentFileModel->getParent();
+		if (!$parentUserModel instanceof User) {
+			throw new ImportException('file model associated to the model doesn\'t have a user model as parent');
+		}
 		$userId = $parentUserModel->getUserId();
 
 		$ocTargetNodePath = "{$userId}{$filePath}";
@@ -58,9 +62,12 @@ class VersionImporter {
 
 		// write the version content in the node
 		$stream = $fsAccess->getStream($fileLocation);
-		$node->putContent($stream);
-		if (\is_resource($stream)) {
-			\fclose($stream);
+		if ($stream !== false) {
+			// @phan-suppress-next-line PhanTypeMismatchArgument
+			$node->putContent($stream);
+			if (\is_resource($stream)) {
+				\fclose($stream);
+			}
 		}
 	}
 }

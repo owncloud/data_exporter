@@ -41,6 +41,7 @@ class FSAccess {
 
 	/**
 	 * Get the root of this FSAccess instance
+	 * @return string
 	 */
 	public function getRoot(): string {
 		return $this->root;
@@ -132,7 +133,7 @@ class FSAccess {
 	 * This function won't append the string
 	 * @param string $content the content to be written
 	 * @param string $path the path inside the FSAccess instance where the content will be written
-	 * @return int|bool the number of bytes written or false in case of error
+	 * @return int|false the number of bytes written or false in case of error
 	 */
 	public function copyContentToPath(string $content, string $path) {
 		$checkedPath = $this->checkPath($path);
@@ -149,7 +150,7 @@ class FSAccess {
 	/**
 	 * Get the contents of the file in $path. The whole content will be fetched as string
 	 * @param string $path the path to get the contents from
-	 * @return string|bool the contents of the file or false in case of error
+	 * @return string|false the contents of the file or false in case of error
 	 */
 	public function getContentFromPath(string $path) {
 		$checkedPath = $this->checkPath($path);
@@ -168,7 +169,7 @@ class FSAccess {
 	 * The file corresponding to $path will be handled completely by this function.
 	 * @param resource $stream the stream (typically fetched with "fopen") that will be copied
 	 * @param string $path the path inside this FSAccess instance where the contents will be written
-	 * @return int|bool the number of bytes copied from the stream, or false if something went wrong
+	 * @return int|false the number of bytes copied from the stream, or false if something went wrong
 	 */
 	public function copyStreamToPath($stream, string $path) {
 		$checkedPath = $this->checkPath($path);
@@ -199,7 +200,7 @@ class FSAccess {
 	 * @param string $path the path inside this FSAccess instance to read the contents from
 	 * @param resource $stream the opened stream (typically fetched with "fopen") where the contents will
 	 * be written
-	 * @return int|bool the number of bytes copied to the stream, or false if something went wrong
+	 * @return int|false the number of bytes copied to the stream, or false if something went wrong
 	 */
 	public function copyPathToStream(string $path, $stream) {
 		$checkedPath = $this->checkPath($path);

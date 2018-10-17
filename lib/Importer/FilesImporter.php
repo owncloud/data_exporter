@@ -84,15 +84,18 @@ class FilesImporter {
 				// import the file over the versions
 				$stream = $fsAccess->getStream($fileLocation);
 				// assume $file will be always a file node
-				$file->putContent($stream);
-				if (\is_resource($stream)) {
-					\fclose($stream);
-				}
+				if ($stream !== false) {
+					// @phan-suppress-next-line PhanTypeMismatchArgument
+					$file->putContent($stream);
+					if (\is_resource($stream)) {
+						\fclose($stream);
+					}
 
-				$file->getStorage()->getCache()->update($file->getId(), [
-					'etag' => $fileMetadata->getETag(),
-					'permissions' => $fileMetadata->getPermissions()
-				]);
+					$file->getStorage()->getCache()->update($file->getId(), [
+						'etag' => $fileMetadata->getETag(),
+						'permissions' => $fileMetadata->getPermissions()
+					]);
+				}
 
 				continue;
 			}
