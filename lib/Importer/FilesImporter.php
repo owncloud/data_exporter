@@ -43,7 +43,7 @@ class FilesImporter {
 	/**
 	 * @param string $userId
 	 * @param array $filesMetadata
-	 * @param string $exportRootFilesPath
+	 * @param FSAccess $fsAccess
 	 * @throws \OCP\Files\InvalidPathException
 	 * @throws \OCP\Files\NotFoundException
 	 * @throws \OCP\Files\NotPermittedException
@@ -69,16 +69,21 @@ class FilesImporter {
 				$fileVersions = $fileMetadata->getVersions();
 				// versions must have been sorted older to newer
 				foreach ($fileVersions as $fileVersion) {
+					// import the versions first
 					$this->versionImporter->import($fileVersion, $fsAccess);
 				}
 
 				try {
+					/** @var \OCP\Files\File $file */
 					$file = $userFolder->get($fileCachePath);
 				} catch (NotFoundException $e) {
+					/** @var \OCP\Files\File $file */
 					$file = $userFolder->newFile($fileCachePath);
 				}
 
+				// import the file over the versions
 				$stream = $fsAccess->getStream($fileLocation);
+				// assume $file will be always a file node
 				$file->putContent($stream);
 				if (\is_resource($stream)) {
 					\fclose($stream);

@@ -22,6 +22,7 @@
  */
 namespace OCA\DataExporter\Importer\MetadataImporter;
 
+use OCA\DataExporter\Model\UserMetadata\User;
 use OCA\DataExporter\Model\UserMetadata\User\File;
 use OCA\DataExporter\Model\UserMetadata\User\File\Version;
 use OCA\DataExporter\Utilities\FSAccess\FSAccess;
@@ -43,6 +44,7 @@ class VersionImporter {
 		$parentFileModel = $versionModel->getParent();
 		$filePath = $parentFileModel->getPath();
 
+		/** @var User $parentUserModel */
 		$parentUserModel = $parentFileModel->getParent();
 		$userId = $parentUserModel->getUserId();
 
@@ -54,6 +56,7 @@ class VersionImporter {
 			$node = $this->rootFolder->newFile($ocTargetNodePath);
 		}
 
+		// write the version content in the node
 		$stream = $fsAccess->getStream($fileLocation);
 		$node->putContent($stream);
 		if (\is_resource($stream)) {

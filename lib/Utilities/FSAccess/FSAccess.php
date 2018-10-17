@@ -35,7 +35,6 @@ class FSAccess {
 	/** @var string */
 	private $root;
 
-
 	public function __construct(string $root) {
 		$this->root = \rtrim($root, '/');
 	}
@@ -47,6 +46,9 @@ class FSAccess {
 		return $this->root;
 	}
 
+	/**
+	 * Return a path making sure that the beginning '/' is set
+	 */
 	private function checkPath(string $path): string {
 		if ($path === '') {
 			return '/';
@@ -57,6 +59,15 @@ class FSAccess {
 		return $path;
 	}
 
+	/**
+	 * Create the directory and all the parents. The function assumes that the $checkedPath
+	 * is a path returned by the`"checkPath" function.
+	 * Note that the directories will be created inside this FSAccess instance's root folder
+	 * @param string $checkedPath the path returned by the "checkPath" function
+	 * @return bool true if the directory is created properly, false otherwise. Note that this
+	 * function won't return where the failure is located in case one of the parent folder
+	 * can't be created
+	 */
 	private function recursiveDirCreation(string $checkedPath) {
 		$splittedPath = \explode('/', \ltrim($checkedPath, '/'));
 		$realPath = $this->root;
@@ -105,6 +116,11 @@ class FSAccess {
 		return \file_exists($realPath);
 	}
 
+	/**
+	 * Get a **read** stream to read from the file in that path
+	 * @param string $path the path inside this FSAccess instance to read from
+	 * @return resource|false a "fopen" resource or false (according to the "fopen" function)
+	 */
 	public function getStream(string $path) {
 		$checkedPath = $this->checkPath($path);
 		$realPath = $this->root . $checkedPath;

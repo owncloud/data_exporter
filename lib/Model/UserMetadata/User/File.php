@@ -104,10 +104,17 @@ class File extends AbstractModel {
 		return $this;
 	}
 
+	/**
+	 * @return Version[]
+	 */
 	public function getVersions(): array {
 		return $this->versions;
 	}
 
+	/**
+	 * @param Version[] $versions
+	 * @return File
+	 */
 	public function setVersions(array $versions): File {
 		foreach ($versions as $version) {
 			$version->setParent($this);

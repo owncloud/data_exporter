@@ -54,7 +54,7 @@ class Importer {
 	}
 
 	/**
-	 * @param string $pathToExportDir
+	 * @param FSAccess $fsAccess
 	 * @param string|null $alias
 	 * @throws \OCP\Files\InvalidPathException
 	 * @throws \OCP\Files\NotFoundException

@@ -38,7 +38,7 @@ class FilesExporter {
 
 	/**
 	 * @param string $userId
-	 * @param string $exportPath
+	 * @param FSAccess $fsAccess
 	 * @throws \OCP\Files\NotFoundException
 	 * @throws \OCP\Files\NotPermittedException
 	 */

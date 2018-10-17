@@ -51,11 +51,15 @@ class ExportUser extends Command {
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output) {
+		/** @var string $userId */
 		$userId = $input->getArgument('userId');
+		/** @var string $targetDir */
 		$targetDir = $input->getArgument('exportDirectory');
 
 		$fsAccessExportingDir = $this->fsAccessFactory->getFSAccess($targetDir);
-		$fsAccessExportingDir->mkdir($userId);
+		if (!$fsAccessExportingDir->fileExists($userId)) {
+			$fsAccessExportingDir->mkdir($userId);
+		}
 
 		$fsAccess = $this->fsAccessFactory->getFSAccess("$targetDir/$userId");
 		try {

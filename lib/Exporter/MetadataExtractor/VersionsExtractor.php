@@ -44,11 +44,13 @@ class VersionsExtractor {
 			return [];
 		}
 
+		// assume the $storage is IVersionedStorage; we don't do anything otherwise
 		$storage = $fileNode->getStorage();
 		$internalPath = $fileNode->getInternalPath();
-		$versions = $storage->getVersions($internalPath);
 		$versionModels = [];
+
 		if ($storage->instanceOfStorage(IVersionedStorage::class)) {
+			$versions = $storage->getVersions($internalPath);
 			// traverse the version list backwards so older versions are first
 			for (\end($versions); \key($versions) !== null; \prev($versions)) {
 				$fileVersion = \current($versions);
@@ -64,7 +66,7 @@ class VersionsExtractor {
 				$versionContentStream = $storage->getContentOfVersion($internalPath, $fileVersion['version']);
 				$fsAccess->copyStreamToPath($versionContentStream, "/files${versionPath}");
 				\fclose($versionContentStream);
-				
+
 				$versionModels[] = $versionModel;
 			}
 		}

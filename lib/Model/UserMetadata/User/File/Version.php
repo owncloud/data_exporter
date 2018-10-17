@@ -37,7 +37,7 @@ class Version extends AbstractModel {
 
 	/**
 	 * @param string $path
-	 * @return File
+	 * @return Version
 	 */
 	public function setPath(string $path): Version {
 		$this->path = $path;
