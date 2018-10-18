@@ -91,23 +91,25 @@ class DataExporterContext implements Context {
 	public function theLastExportContainsFile($path) {
 		$filesPath = $this->lastExportPath . '/files/'. $path;
 		// File physically exists
-		if (!\file_exists($filesPath)) {
-			throw new \Exception("File $filesPath does not exist");
-		}
+		\PHPUnit_Framework_Assert::assertFileExists(
+			$filesPath,
+			"File $filesPath does not exist"
+		);
 
 		// File exists in metadata
 		$metadataPath = $this->lastExportPath . '/metadata.json';
 
-		if (!\file_exists($metadataPath)) {
-			throw new \Exception("Export not found (metadata.json missing)");
-		}
+		\PHPUnit_Framework_Assert::assertFileExists(
+			$metadataPath,
+			"Export not found (metadata.json missing)"
+		);
 
 		$metadata = \json_decode(
 			\file_get_contents($metadataPath), true
 		);
 
 		if (!isset($metadata['user']) || !isset($metadata['user']['files']) || empty($metadata['user']['files'])) {
-			throw new \Exception('File not found in metadata');
+			\PHPUnit_Framework_Assert::fail('File not found in metadata');
 		}
 
 		$isFileFoundInExport = false;
@@ -117,9 +119,10 @@ class DataExporterContext implements Context {
 			}
 		}
 
-		if (!$isFileFoundInExport) {
-			throw new \Exception("File $path not found in metadata");
-		}
+		\PHPUnit_Framework_Assert::assertTrue(
+			$isFileFoundInExport,
+			"File $path not found in metadata"
+		);
 	}
 
 	/**
