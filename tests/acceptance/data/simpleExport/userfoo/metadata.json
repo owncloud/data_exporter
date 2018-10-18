@@ -1,0 +1,54 @@
+{
+  "date": "2018-10-18T13:12:05+00:00",
+  "originServer": "http:\/\/localhost:8000\/",
+  "user": {
+    "userId": "userfoo",
+    "displayName": "User Foo",
+    "email": "foo@example.com",
+    "quota": "default",
+    "backend": "Database",
+    "enabled": true,
+    "groups": [
+      "admin"
+    ],
+    "preferences": [
+      {
+        "appId": "core",
+        "configKey": "lang",
+        "configValue": "en"
+      },
+      {
+        "appId": "core",
+        "configKey": "timezone",
+        "configValue": "Europe\/Berlin"
+      }
+    ],
+    "files": [
+      {
+        "type": "folder",
+        "path": "\/files",
+        "eTag": "5bc8867cc2375",
+        "permissions": 31
+      },
+      {
+        "type": "folder",
+        "path": "\/files\/AFolder",
+        "eTag": "5bc8867cc2375",
+        "permissions": 31
+      },
+      {
+        "type": "file",
+        "path": "\/files\/AFolder\/afile.txt",
+        "eTag": "533c8d4b4c45b62e68cc09e810db7a23",
+        "permissions": 27
+      },
+      {
+        "type": "file",
+        "path": "\/files\/welcome.txt",
+        "eTag": "84131779d95429f06405840e136babc2",
+        "permissions": 27
+      }
+    ],
+    "shares": []
+  }
+}
