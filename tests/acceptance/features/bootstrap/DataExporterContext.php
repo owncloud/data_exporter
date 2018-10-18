@@ -35,20 +35,13 @@ class DataExporterContext implements Context {
 	private $featureContext;
 
 	/**
-	 * An array of rules that were already set when the scenario started
-	 *
-	 * @var string[]
-	 */
-	private $savedRules = [];
-
-	/**
 	 * The relative path from the core tests/acceptance folder to the test data
 	 * folder.
-	 *
+	 * old: '../../apps/data_exporter/tests/acceptance/data/'
 	 * @var string
 	 */
 	private $relativePathToTestDataFolder
-		= '../../apps/data_exporter/tests/acceptance/data/';
+		= __DIR__ . '/../../data/';
 
 	private $lastExportPath;
 
@@ -131,7 +124,7 @@ class DataExporterContext implements Context {
 
 	/**
 	 * @When a user is imported from path :path using the occ command
-	 * @Given user has been imported from path :path using the occ command
+	 * @Given a user has been imported from path :path using the occ command
 	 *
 	 * @param string $path
 	 *
@@ -139,7 +132,9 @@ class DataExporterContext implements Context {
 	 * @throws Exception
 	 */
 	public function importUserUsingTheCli($path) {
-		$this->featureContext->runOcc(['import:user', $path]);
+		$importPath = $this->relativePathToTestDataFolder . "/$path";
+		$importPath = \str_replace('//', '/', $importPath);
+		$this->featureContext->runOcc(['import:user', $importPath]);
 	}
 
 	/**

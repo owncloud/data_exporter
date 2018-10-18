@@ -72,7 +72,7 @@ test-php-lint: vendor-bin/php-parallel-lint/vendor
 
 .PHONY: test-php-style
 test-php-style: vendor-bin/owncloud-codestyle/vendor
-	$(PHP_CS_FIXER) fix -v --diff --diff-format udiff --dry-run --allow-risky yes
+	$(PHP_CS_FIXER) fix -v --diff --diff-format udiff --allow-risky yes
 
 .PHONY: test-php-phpstan
 test-php-phpstan: vendor-bin/phpstan/vendor
@@ -97,8 +97,3 @@ test-php-integration:
 .PHONY: test-php-integration-dbg
 test-php-integration-dbg:
 	$(PHPDBG) --configuration ./phpunit.xml --testsuite integration
-
-.PHONY: test-acceptance-cli
-test-acceptance-api:       ## Run API acceptance tests
-test-acceptance-api: vendor/bin/phpunit
-	../../tests/acceptance/run.sh --config tests/acceptance/config/behat.yml --type cli
