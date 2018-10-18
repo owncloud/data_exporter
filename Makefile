@@ -72,7 +72,7 @@ test-php-lint: vendor-bin/php-parallel-lint/vendor
 
 .PHONY: test-php-style
 test-php-style: vendor-bin/owncloud-codestyle/vendor
-	$(PHP_CS_FIXER) fix -v --diff --diff-format udiff --allow-risky yes
+	$(PHP_CS_FIXER) fix -v --diff --diff-format udiff --dry-run --allow-risky yes
 
 .PHONY: test-php-phpstan
 test-php-phpstan: vendor-bin/phpstan/vendor
