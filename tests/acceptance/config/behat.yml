@@ -3,8 +3,11 @@ default:
     '': %paths.base%/../features/bootstrap
 
   suites:
+    cliDataExporter:
+      paths:
+      - %paths.base%/../features/cliDataExporter
       contexts:
-        - FilesClassifierContext:
+        - DataExporterContext:
         - FeatureContext:
             baseUrl:  http://localhost:8080
             adminUsername: admin

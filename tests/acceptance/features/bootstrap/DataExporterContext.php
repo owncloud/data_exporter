@@ -28,14 +28,11 @@ require_once 'bootstrap.php';
  * Context for files classifier specific steps
  */
 class DataExporterContext implements Context {
-	use CommandLine;
-
 	/**
 	 *
 	 * @var FeatureContext
 	 */
 	private $featureContext;
-
 
 	/**
 	 * An array of rules that were already set when the scenario started
@@ -52,6 +49,8 @@ class DataExporterContext implements Context {
 	 */
 	private $relativePathToTestDataFolder
 		= '../../apps/data_exporter/tests/acceptance/data/';
+
+	private $lastExportPath;
 
 	/**
 	 * @BeforeScenario
@@ -85,7 +84,49 @@ class DataExporterContext implements Context {
 	 * @throws Exception
 	 */
 	public function exportUserUsingTheCli($user, $path) {
-		$this->runOcc(['export:user', $user, $path]);
+		$this->featureContext->runOcc(['export:user', $user, $path]);
+		$this->lastExportPath = "$path/$user";
+	}
+
+	/**
+	 * @When the last export contains file :path
+	 *
+	 * Checks whether a given file is present physically
+	 * and inside metadata
+	 *
+	 */
+	public function theLastExportContainsFile($path) {
+		$filesPath = $this->lastExportPath . '/files/'. $path;
+		// File physically exists
+		if (!\file_exists($filesPath)) {
+			throw new \Exception("File $filesPath does not exist");
+		}
+
+		// File exists in metadata
+		$metadataPath = $this->lastExportPath . '/metadata.json';
+
+		if (!\file_exists($metadataPath)) {
+			throw new \Exception("Export not found (metadata.json missing)");
+		}
+
+		$metadata = \json_decode(
+			\file_get_contents($metadataPath), true
+		);
+
+		if (!isset($metadata['user']) || !isset($metadata['user']['files']) || empty($metadata['user']['files'])) {
+			throw new \Exception('File not found in metadata');
+		}
+
+		$isFileFoundInExport = false;
+		foreach ($metadata['user']['files'] as $file) {
+			if (isset($file['path']) && $file['path'] === "/$path") {
+				$isFileFoundInExport = true;
+			}
+		}
+
+		if (!$isFileFoundInExport) {
+			throw new \Exception("File $path not found in metadata");
+		}
 	}
 
 	/**
@@ -98,14 +139,14 @@ class DataExporterContext implements Context {
 	 * @throws Exception
 	 */
 	public function importUserUsingTheCli($path) {
-		$this->runOcc(['import:user', $path]);
+		$this->featureContext->runOcc(['import:user', $path]);
 	}
+
 	/**
 	 * @AfterScenario
 	 *
 	 * @return void
 	 */
-	public function afterScenario() {
-
+	public function removeExport() {
 	}
 }
