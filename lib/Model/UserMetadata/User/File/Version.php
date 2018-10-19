@@ -1,6 +1,6 @@
 <?php
 /**
- * @author Ilja Neumann <ineumann@owncloud.com>
+ * @author Juan Pablo Villafáñez <jvillafanez@solidgeargroup.com>
  *
  * @copyright Copyright (c) 2018, ownCloud GmbH
  * @license GPL-2.0
@@ -20,33 +20,27 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-namespace OCA\DataExporter\Importer\MetadataImporter;
+namespace OCA\DataExporter\Model\UserMetadata\User\File;
 
-use OCA\DataExporter\Model\UserMetadata\User\Preference;
-use OCP\IConfig;
+use OCA\DataExporter\Model\AbstractModel;
 
-class PreferencesImporter {
+class Version extends AbstractModel {
+	/** @var string */
+	private $path;
 
-	/** @var IConfig  */
-	private $config;
-
-	public function __construct(IConfig $config) {
-		$this->config = $config;
+	/**
+	 * @return string
+	 */
+	public function getPath(): string {
+		return $this->path;
 	}
 
 	/**
-	 * @param string $userId
-	 * @param Preference[] $preferences
-	 * @throws \OCP\PreConditionNotMetException
+	 * @param string $path
+	 * @return Version
 	 */
-	public function import(string $userId, array $preferences) {
-		foreach ($preferences as $preference) {
-			$this->config->setUserValue(
-				$userId,
-				$preference->getAppId(),
-				$preference->getConfigKey(),
-				$preference->getConfigValue()
-			);
-		}
+	public function setPath(string $path): Version {
+		$this->path = $path;
+		return $this;
 	}
 }

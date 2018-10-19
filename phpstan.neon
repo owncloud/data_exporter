@@ -5,3 +5,5 @@ parameters:
     # lib/Exporter/MetadataExtractor/SharesExtractor.php:159 (require changes in core)
     - '#Strict comparison using === between string and null will always evaluate to false#'
     # lib/Utilities/Iterators/Nodes/SkipNodeConditionIgnorePath.php:47 (require changes in core, mismatch between interface and implementation)
+    -'#Parameter \#1 \$data of method OCP\\Files\\File::putContent\(\) expects string, resource given.#'
+    # lib/Importer/FilesImporter.php:87 (known, implementation uses view->file_put_contents which accepts a stream resource. Trying to avoid loading the whole file)

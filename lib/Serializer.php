@@ -35,10 +35,13 @@ class Serializer {
 
 	public function __construct() {
 		$encoders = [new JsonEncoder()];
+		$objectNormalizer = new ObjectNormalizer(null, null, null, new PhpDocExtractor());
+		$objectNormalizer->setIgnoredAttributes(['parent']);
+
 		$normalizers = [
 			new DateTimeNormalizer(),
 			new ArrayDenormalizer(),
-			new ObjectNormalizer(null, null, null, new PhpDocExtractor())
+			$objectNormalizer
 		];
 
 		$this->serializer = new \Symfony\Component\Serializer\Serializer($normalizers, $encoders);

@@ -22,32 +22,34 @@
  */
 namespace OCA\DataExporter\Importer;
 
-use OCA\DataExporter\Model\User\File;
+use OCA\DataExporter\Model\UserMetadata\User\File;
+use OCA\DataExporter\Importer\MetadataImporter\VersionImporter;
+use OCA\DataExporter\FSAccess\FSAccess;
 use OCP\Files\IRootFolder;
-use Symfony\Component\Filesystem\Filesystem;
+use OCP\Files\NotFoundException;
 
 class FilesImporter {
 
-	/** @var Filesystem  */
-	private $filesystem;
 	/** @var IRootFolder  */
 	private $rootFolder;
+	/** @var VersionImporter */
+	private $versionImporter;
 
-	public function __construct(Filesystem $filesystem, IRootFolder $rootFolder) {
-		$this->filesystem = $filesystem;
+	public function __construct(IRootFolder $rootFolder, VersionImporter $versionImporter) {
 		$this->rootFolder = $rootFolder;
+		$this->versionImporter = $versionImporter;
 	}
 
 	/**
 	 * @param string $userId
 	 * @param array $filesMetadata
-	 * @param string $exportRootFilesPath
+	 * @param FSAccess $fsAccess
 	 * @throws \OCP\Files\InvalidPathException
 	 * @throws \OCP\Files\NotFoundException
 	 * @throws \OCP\Files\NotPermittedException
 	 * @throws \OCP\Files\StorageNotAvailableException
 	 */
-	public function import(string $userId, array $filesMetadata, string $exportRootFilesPath) {
+	public function import(string $userId, array $filesMetadata, FSAccess $fsAccess) {
 		// Trigger creation of user-folder
 		$this->rootFolder->getUserFolder($userId);
 		/** @var \OCP\Files\Folder $userFolder */
@@ -56,19 +58,44 @@ class FilesImporter {
 		/** @var File $fileMetadata */
 		foreach ($filesMetadata as $fileMetadata) {
 			$fileCachePath = $fileMetadata->getPath();
-			$pathToFileInExport = "$exportRootFilesPath/$fileCachePath";
+			$fileLocation = "/files{$fileCachePath}";
 
-			if (!$this->filesystem->exists($pathToFileInExport)) {
-				throw new ImportException("File '$pathToFileInExport' not found in export but exists in metadata.json");
+			if (!$fsAccess->fileExists($fileLocation)) {
+				$fullFilePath = $fsAccess->getRoot() . "/files{$fileCachePath}";
+				throw new ImportException("File '$fullFilePath' not found in export but exists in metadata.json");
 			}
 
 			if ($fileMetadata->getType() === File::TYPE_FILE) {
-				$file = $userFolder->newFile($fileCachePath);
-				$file->putContent(\file_get_contents($pathToFileInExport));
-				$file->getStorage()->getCache()->update($file->getId(), [
-					'etag' => $fileMetadata->getETag(),
-					'permissions' => $fileMetadata->getPermissions()
-				]);
+				$fileVersions = $fileMetadata->getVersions();
+				// versions must have been sorted older to newer
+				foreach ($fileVersions as $fileVersion) {
+					// import the versions first
+					$this->versionImporter->import($fileVersion, $fsAccess);
+				}
+
+				try {
+					/** @var \OCP\Files\File $file */
+					$file = $userFolder->get($fileCachePath);
+				} catch (NotFoundException $e) {
+					/** @var \OCP\Files\File $file */
+					$file = $userFolder->newFile($fileCachePath);
+				}
+
+				// import the file over the versions
+				$stream = $fsAccess->getStream($fileLocation);
+				// assume $file will be always a file node
+				if ($stream !== false) {
+					// @phan-suppress-next-line PhanTypeMismatchArgument
+					$file->putContent($stream);
+					if (\is_resource($stream)) {
+						\fclose($stream);
+					}
+
+					$file->getStorage()->getCache()->update($file->getId(), [
+						'etag' => $fileMetadata->getETag(),
+						'permissions' => $fileMetadata->getPermissions()
+					]);
+				}
 
 				continue;
 			}

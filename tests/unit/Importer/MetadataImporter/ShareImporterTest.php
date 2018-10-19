@@ -24,7 +24,7 @@ namespace OCA\DataExporter\Tests\Unit\Exporter\MetadataExtractor;
 
 use OC\Share20\Share as PrivateShare;
 use OCA\DataExporter\Importer\MetadataImporter\ShareImporter;
-use OCA\DataExporter\Model\User\Share;
+use OCA\DataExporter\Model\UserMetadata\User\Share;
 use OCP\Share\IManager;
 use OCP\Share\IShare;
 use OCP\Files\IRootFolder;

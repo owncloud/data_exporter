@@ -100,7 +100,10 @@ class RecursiveNodeIteratorFactory {
 		$parentFolder = $userFolder->getParent();
 		$nodeIterator = new RecursiveNodeIterator($parentFolder);
 		$conditionDifferentStorage = new SkipNodeConditionDifferentStorage($parentFolder->getStorage()->getId());
-		$conditionIgnorePaths = new SkipNodeConditionIgnorePath($parentFolder, ['/cache', '/thumbnails', '/uploads']);
+		$conditionIgnorePaths = new SkipNodeConditionIgnorePath(
+			$parentFolder,
+			['/files_versions', '/files_zsync', '/cache', '/thumbnails', '/uploads']
+		);
 		$nodeIterator->addSkipCondition($conditionDifferentStorage);
 		$nodeIterator->addSkipCondition($conditionIgnorePaths);
 		return [new \RecursiveIteratorIterator($nodeIterator, $mode), $parentFolder];

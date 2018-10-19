@@ -1,6 +1,6 @@
 <?php
 /**
- * @author Ilja Neumann <ineumann@owncloud.com>
+ * @author Juan Pablo Villafáñez <jvillafanez@solidgeargroup.com>
  *
  * @copyright Copyright (c) 2018, ownCloud GmbH
  * @license GPL-2.0
@@ -20,33 +20,24 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-namespace OCA\DataExporter\Importer\MetadataImporter;
+namespace OCA\DataExporter\Tests\Unit\Utilities\FSAccess;
 
-use OCA\DataExporter\Model\UserMetadata\User\Preference;
-use OCP\IConfig;
+use org\bovigo\vfs\vfsStream;
+use OCA\DataExporter\FSAccess\FSAccessFactory;
+use OCA\DataExporter\FSAccess\FSAccess;
+use Test\TestCase;
 
-class PreferencesImporter {
+class FSAccessFactoryTest extends TestCase {
+	private $fsAccessFactory;
 
-	/** @var IConfig  */
-	private $config;
-
-	public function __construct(IConfig $config) {
-		$this->config = $config;
+	public function setUp() {
+		$this->fsAccessFactory = new FSAccessFactory();
 	}
 
-	/**
-	 * @param string $userId
-	 * @param Preference[] $preferences
-	 * @throws \OCP\PreConditionNotMetException
-	 */
-	public function import(string $userId, array $preferences) {
-		foreach ($preferences as $preference) {
-			$this->config->setUserValue(
-				$userId,
-				$preference->getAppId(),
-				$preference->getConfigKey(),
-				$preference->getConfigValue()
-			);
-		}
+	public function testGetFSAccess() {
+		vfsStream::setup('root');
+		$fsAccess = $this->fsAccessFactory->getFSAccess('vfs://root');
+		$this->assertInstanceOf(FSAccess::class, $fsAccess);
+		$this->assertEquals('vfs://root', $fsAccess->getRoot());
 	}
 }

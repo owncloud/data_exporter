@@ -23,7 +23,10 @@
  */
 namespace OCA\DataExporter\Model;
 
-class Metadata {
+use OCA\DataExporter\Model\AbstractModel;
+use OCA\DataExporter\Model\UserMetadata\User;
+
+class UserMetadata extends AbstractModel {
 
 	/** @var \DateTimeImmutable */
 	private $date;
@@ -41,9 +44,9 @@ class Metadata {
 
 	/**
 	 * @param \DateTimeImmutable $date
-	 * @return Metadata
+	 * @return UserMetadata
 	 */
-	public function setDate(\DateTimeImmutable $date): Metadata {
+	public function setDate(\DateTimeImmutable $date): UserMetadata {
 		$this->date = $date;
 		return $this;
 	}
@@ -58,9 +61,9 @@ class Metadata {
 	/**
 	 * @param string $originServer the address of the exporting server,
 	 * including port, like "10.10.10.10:8080" or "my.server:443"
-	 * @return Metadata
+	 * @return UserMetadata
 	 */
-	public function setOriginServer(string $originServer): Metadata {
+	public function setOriginServer(string $originServer): UserMetadata {
 		$this->originServer = $originServer;
 		return $this;
 	}
@@ -74,9 +77,10 @@ class Metadata {
 
 	/**
 	 * @param User $user
-	 * @return Metadata
+	 * @return UserMetadata
 	 */
-	public function setUser(User $user): Metadata {
+	public function setUser(User $user): UserMetadata {
+		$user->setParent($this);
 		$this->user = $user;
 		return $this;
 	}

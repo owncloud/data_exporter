@@ -1,6 +1,6 @@
 <?php
 /**
- * @author Ilja Neumann <ineumann@owncloud.com>
+ * @author Juan Pablo Villafáñez <jvillafanez@solidgeargroup.com>
  *
  * @copyright Copyright (c) 2018, ownCloud GmbH
  * @license GPL-2.0
@@ -20,33 +20,17 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-namespace OCA\DataExporter\Importer\MetadataImporter;
+namespace OCA\DataExporter\FSAccess;
 
-use OCA\DataExporter\Model\UserMetadata\User\Preference;
-use OCP\IConfig;
-
-class PreferencesImporter {
-
-	/** @var IConfig  */
-	private $config;
-
-	public function __construct(IConfig $config) {
-		$this->config = $config;
-	}
-
+class FSAccessFactory {
 	/**
-	 * @param string $userId
-	 * @param Preference[] $preferences
-	 * @throws \OCP\PreConditionNotMetException
+	 * Get a new FSAccess instance with a fixed root folder. This usually is something
+	 * like '/tmp', but could also be 'file:///tmp', 'vfs://virtual/folder' or others
+	 * according to the specific support of the FSAccess class
+	 * @param string $fsPrefix the base root folder for the FSAccess class
+	 * @return FSAccess the created FSAccess with the specified root folder
 	 */
-	public function import(string $userId, array $preferences) {
-		foreach ($preferences as $preference) {
-			$this->config->setUserValue(
-				$userId,
-				$preference->getAppId(),
-				$preference->getConfigKey(),
-				$preference->getConfigValue()
-			);
-		}
+	public function getFSAccess(string $fsPrefix): FSAccess {
+		return new FSAccess($fsPrefix);
 	}
 }

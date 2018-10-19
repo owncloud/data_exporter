@@ -22,7 +22,7 @@
  */
 namespace OCA\DataExporter\Exporter\MetadataExtractor;
 
-use OCA\DataExporter\Model\User\Share;
+use OCA\DataExporter\Model\UserMetadata\User\Share;
 use OCP\Share\IManager;
 use OCP\Share as ShareConstants;
 use OCP\Files\IRootFolder;

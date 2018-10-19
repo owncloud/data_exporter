@@ -20,9 +20,11 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-namespace OCA\DataExporter\Model\User;
+namespace OCA\DataExporter\Model\UserMetadata\User;
 
-class Share {
+use OCA\DataExporter\Model\AbstractModel;
+
+class Share extends AbstractModel {
 	const SHARETYPE_USER = 'user';
 	const SHARETYPE_GROUP = 'group';
 	const SHARETYPE_LINK = 'link';

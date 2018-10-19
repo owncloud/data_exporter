@@ -21,9 +21,12 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-namespace OCA\DataExporter\Model\User;
+namespace OCA\DataExporter\Model\UserMetadata\User;
 
-class File {
+use OCA\DataExporter\Model\AbstractModel;
+use OCA\DataExporter\Model\UserMetadata\User\File\Version;
+
+class File extends AbstractModel {
 	const TYPE_FOLDER = 'folder';
 	const TYPE_FILE = 'file';
 
@@ -34,6 +37,8 @@ class File {
 	private $eTag;
 	/** @var int */
 	private $permissions;
+	/** @var Version[] */
+	private $versions;
 
 	/**
 	 * @return string
@@ -96,6 +101,25 @@ class File {
 	 */
 	public function setPermissions(int $permissions): File {
 		$this->permissions = $permissions;
+		return $this;
+	}
+
+	/**
+	 * @return Version[]
+	 */
+	public function getVersions(): array {
+		return $this->versions;
+	}
+
+	/**
+	 * @param Version[] $versions
+	 * @return File
+	 */
+	public function setVersions(array $versions): File {
+		foreach ($versions as $version) {
+			$version->setParent($this);
+		}
+		$this->versions = $versions;
 		return $this;
 	}
 }

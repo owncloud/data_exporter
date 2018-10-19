@@ -20,9 +20,11 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-namespace OCA\DataExporter\Model\User;
+namespace OCA\DataExporter\Model\UserMetadata\User;
 
-class Preference {
+use OCA\DataExporter\Model\AbstractModel;
+
+class Preference extends AbstractModel {
 	/** @var string */
 	private $appId;
 	/** @var string */
