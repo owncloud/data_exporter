@@ -4,9 +4,9 @@ in to another. The export contains all user-settings, files and shares.
 
 ##Use cases
 - Manual zero-downtime migration of users and their shares from one instance in to another.
-- Migrate from instances with different storages (POSIX to S3)
+- Migrate from instances with different storages (POSIX to S3).
 - Service GDPR-Requests by providing all files and metadata of a user in a single package.
-- Merge users from different instances
+- Merge users from different instances.
 
 ##Usage Example
 We want to export "user1" from a "old" to a "new" instance while preserving all shares with
@@ -50,6 +50,7 @@ Finally we delete the user on the old instance:
 - If a user is stored in the ownCloud database (not-ldap etc.) the password
   must be manually reset by the admin as passwords can not be migrated.
 - Versions import in to S3 does not preserve the version timestamp.
+- Import alias (import using another username) currently does not work and breaks share-import.
 - Shares import requires federation to be correctly setup between both servers and share-api to be enabled.
 - Shares from other federated-servers are lost.
 - Password protected link-shares are not imported correctly, user needs to reset the password.
