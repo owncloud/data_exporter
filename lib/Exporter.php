@@ -24,7 +24,7 @@ namespace OCA\DataExporter;
 
 use OCA\DataExporter\Exporter\FilesExporter;
 use OCA\DataExporter\Exporter\MetadataExtractor;
-use OCA\DataExporter\Utilities\FSAccess\FSAccess;
+use OCA\DataExporter\FSAccess\FSAccess;
 
 class Exporter {
 

@@ -28,7 +28,7 @@ use OCA\DataExporter\Exporter\MetadataExtractor\PreferencesExtractor;
 use OCA\DataExporter\Exporter\MetadataExtractor\UserExtractor;
 use OCA\DataExporter\Exporter\MetadataExtractor\SharesExtractor;
 use OCA\DataExporter\Model\UserMetadata;
-use OCA\DataExporter\Utilities\FSAccess\FSAccess;
+use OCA\DataExporter\FSAccess\FSAccess;
 use OCP\IURLGenerator;
 
 /**

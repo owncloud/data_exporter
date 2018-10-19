@@ -24,7 +24,7 @@ namespace OCA\DataExporter\Tests\Unit\Exporter;
 
 use OCA\DataExporter\Exporter\FilesExporter;
 use OCA\DataExporter\Utilities\Iterators\Nodes\RecursiveNodeIteratorFactory;
-use OCA\DataExporter\Utilities\FSAccess\FSAccess;
+use OCA\DataExporter\FSAccess\FSAccess;
 use OCP\Files\File;
 use OCP\Files\Folder;
 use Test\TestCase;

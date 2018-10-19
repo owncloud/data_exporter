@@ -25,7 +25,7 @@ namespace OCA\DataExporter\Importer\MetadataImporter;
 use OCA\DataExporter\Model\UserMetadata\User;
 use OCA\DataExporter\Model\UserMetadata\User\File;
 use OCA\DataExporter\Model\UserMetadata\User\File\Version;
-use OCA\DataExporter\Utilities\FSAccess\FSAccess;
+use OCA\DataExporter\FSAccess\FSAccess;
 use OCA\DataExporter\Importer\ImportException;
 use OCP\Files\IRootFolder;
 use OCP\Files\NotFoundException;

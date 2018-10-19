@@ -26,7 +26,7 @@ namespace OCA\DataExporter;
 use OCA\DataExporter\Importer\ImportException;
 use OCA\DataExporter\Importer\MetadataImporter;
 use OCA\DataExporter\Model\UserMetadata;
-use OCA\DataExporter\Utilities\FSAccess\FSAccess;
+use OCA\DataExporter\FSAccess\FSAccess;
 use OCA\DataExporter\Importer\FilesImporter;
 use OCA\DataExporter\Importer\MetadataImporter\ShareImporter;
 

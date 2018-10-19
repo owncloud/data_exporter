@@ -26,7 +26,7 @@ namespace OCA\DataExporter\Exporter\MetadataExtractor;
 use OCA\DataExporter\Utilities\Iterators\Nodes\RecursiveNodeIteratorFactory;
 use OCA\DataExporter\Model\UserMetadata\User\File;
 use OCA\DataExporter\Exporter\MetadataExtractor\VersionsExtractor;
-use OCA\DataExporter\Utilities\FSAccess\FSAccess;
+use OCA\DataExporter\FSAccess\FSAccess;
 use OCP\Files\Node;
 
 class FilesExtractor {

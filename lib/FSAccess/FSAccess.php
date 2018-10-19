@@ -20,7 +20,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-namespace OCA\DataExporter\Utilities\FSAccess;
+namespace OCA\DataExporter\FSAccess;
 
 /**
  * Jail FS operations inside the $root folder

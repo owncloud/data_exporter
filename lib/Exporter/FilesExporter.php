@@ -24,7 +24,7 @@
 namespace OCA\DataExporter\Exporter;
 
 use OCA\DataExporter\Utilities\Iterators\Nodes\RecursiveNodeIteratorFactory;
-use OCA\DataExporter\Utilities\FSAccess\FSAccess;
+use OCA\DataExporter\FSAccess\FSAccess;
 use OCP\Files\File;
 use OCP\Files\Folder;
 

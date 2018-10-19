@@ -23,7 +23,7 @@
 namespace OCA\DataExporter\Exporter\MetadataExtractor;
 
 use OCA\DataExporter\Model\UserMetadata\User\File\Version;
-use OCA\DataExporter\Utilities\FSAccess\FSAccess;
+use OCA\DataExporter\FSAccess\FSAccess;
 use OCP\Files\File;
 use OCP\Files\IRootFolder;
 use OCP\Files\Storage\IVersionedStorage;

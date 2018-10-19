@@ -26,7 +26,7 @@ use org\bovigo\vfs\vfsStream;
 use OCA\DataExporter\Exporter\MetadataExtractor;
 use OCA\DataExporter\Importer\MetadataImporter;
 use OCA\DataExporter\Importer\MetadataImporter\UserImporter;
-use OCA\DataExporter\Utilities\FSAccess\FSAccessFactory;
+use OCA\DataExporter\FSAccess\FSAccessFactory;
 use OCA\DataExporter\Serializer;
 use OCP\IUser;
 use OCP\IUserManager;

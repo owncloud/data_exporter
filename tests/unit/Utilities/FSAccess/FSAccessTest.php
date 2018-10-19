@@ -23,7 +23,7 @@
 namespace OCA\DataExporter\Tests\Unit\Utilities\FSAccess;
 
 use org\bovigo\vfs\vfsStream;
-use OCA\DataExporter\Utilities\FSAccess\FSAccess;
+use OCA\DataExporter\FSAccess\FSAccess;
 use Test\TestCase;
 
 class FSAccessTest extends TestCase {

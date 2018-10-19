@@ -23,7 +23,7 @@
 namespace OCA\DataExporter\Command;
 
 use OCA\DataExporter\Importer;
-use OCA\DataExporter\Utilities\FSAccess\FSAccessFactory;
+use OCA\DataExporter\FSAccess\FSAccessFactory;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
