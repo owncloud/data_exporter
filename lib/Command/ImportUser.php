@@ -40,16 +40,16 @@ class ImportUser extends Command {
 	}
 
 	protected function configure() {
-		$this->setName('import:user')
+		$this->setName('instance:import:user')
 			->setDescription('Imports a single user')
-			->addArgument('exportDirectory', InputArgument::REQUIRED, 'Path to export directory')
+			->addArgument('importDirectory', InputArgument::REQUIRED, 'Path to the directory to import data from')
 			->addOption('as', 'a', InputOption::VALUE_REQUIRED, 'Import the user under a different user id');
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		try {
 			$this->importer->import(
-				$input->getArgument('exportDirectory'),
+				$input->getArgument('importDirectory'),
 				$input->getOption('as')
 			);
 		} catch (\Exception $e) {

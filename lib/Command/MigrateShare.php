@@ -50,7 +50,7 @@ class MigrateShare extends Command {
 	}
 
 	protected function configure() {
-		$this->setName('export:migrate:share')
+		$this->setName('instance:export:migrate:share')
 			->setDescription('Converts the local shares pointing to the given user to federated shares pointing at the remote instance. An important prerequisite is that the user and his shares have already been imported on that remote instance')
 			->addArgument('userId', InputArgument::REQUIRED, 'The exported userId whose shares we want to migrate')
 			->addArgument('remoteServer', InputArgument::REQUIRED, 'The remote ownCloud server where the exported user is now, for example "https://myown.server:8080/owncloud"');
