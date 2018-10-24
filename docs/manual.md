@@ -9,7 +9,7 @@ in to another. The export contains all user-settings, files and shares.
 - Merge users from different instances.
 
 ##Usage Example
-We want to export "user1" from a "old" to a "new" instance while preserving all shares with
+We want to export "user1" from an "old" to a "new" instance while preserving all shares with
 users on the old instance. For this example both instance must be able to reach each
 other via federation.
 
@@ -36,23 +36,27 @@ they point to the new instance. To do so run this command on the old instance
 
 ``$ ./occ export:migrate:share user1 https://newinstance.com``
 
-Finally we delete the user on the old instance:
+Finally delete the user on the old instance (This can not be undone!):
 
 ``$ ./occ user:delete user1``
 
+
 ##What is exported?
-- Files (excluding external-storages, comments, tags)
+- Files
 - Meta-data (username,email, personal settings)
 - Shares
 - Versions
 
 ##Known Limitations
+- External-storages, comments and tags are not exported
 - If a user is stored in the ownCloud database (not-ldap etc.) the password
   must be manually reset by the admin as passwords can not be migrated.
 - Versions import in to S3 does not preserve the version timestamp.
 - Import alias (import using another username) currently does not work and breaks share-import.
 - Shares import requires federation to be correctly setup between both servers and share-api to be enabled.
-- Shares from other federated-servers are lost.
+- Share's state will be always "accepted" regardless of the state in the old server.
+- Remote shares from both directions need to be manually accepted.
+- Federated shares from other servers are not migrated.
 - Password protected link-shares are not imported correctly, user needs to reset the password.
 - Group shares require the group to be present on the target-system or else the share will be ignored silently.
 
