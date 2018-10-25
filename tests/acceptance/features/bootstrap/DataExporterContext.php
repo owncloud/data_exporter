@@ -40,8 +40,7 @@ class DataExporterContext implements Context {
 	 * old: '../../apps/data_exporter/tests/acceptance/data/'
 	 * @var string
 	 */
-	private $relativePathToTestDataFolder
-		= __DIR__ . '/../../data/';
+	private $relativePathToTestDataFolder = __DIR__ . '/../../data/';
 
 	private $lastExportPath;
 
@@ -82,7 +81,7 @@ class DataExporterContext implements Context {
 	}
 
 	/**
-	 * @When the last export contains file :path
+	 * @Then the last export should contain file :path
 	 *
 	 * Checks whether a given file is present physically
 	 * and inside metadata
