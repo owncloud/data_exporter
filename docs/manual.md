@@ -43,8 +43,8 @@ Finally delete the user on the old instance (This can not be undone!):
 Note: If the user is stored in the database you need to manually reset his password (see Limitations)
 
 ##What is exported?
-- Files (local)
-- Meta-data (username, email, personal settings)
+- Files (Local)
+- Meta-data (Username, Email, Personal Settings)
 - Shares (Local, Link-shares, Group-Shares)
 - Versions
 
