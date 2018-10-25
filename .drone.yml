@@ -40,6 +40,19 @@ pipeline:
       - php occ a:e data_exporter
       - php occ a:e testing
       - php occ a:l
+      - php occ config:system:set trusted_domains 1 --value=owncloud
+      - php occ log:manage --level 0
+
+  fix-permissions:
+    image: owncloudci/php:${PHP_VERSION}
+    pull: true
+    commands:
+    - chown www-data /var/www/owncloud -R
+    - chmod 777 /var/www/owncloud/tests/acceptance/filesForUpload -R
+    - chmod +x /var/www/owncloud/tests/acceptance/run.sh
+    when:
+      matrix:
+        NEED_SERVER: true
 
   owncloud-coding-standard:
     image: owncloudci/php
@@ -48,6 +61,9 @@ pipeline:
       - COMPOSER_HOME=/var/www/owncloud/apps/data_exporter/.cache/composer
     commands:
       - make test-php-style
+    when:
+      matrix:
+        TEST_SUITE: phpunit
 
   lint-test:
     image: owncloudci/php:${PHP_VERSION}
@@ -56,6 +72,9 @@ pipeline:
       - COMPOSER_HOME=/var/www/owncloud/apps/data_exporter/.cache/composer
     commands:
       - make test-php-lint
+    when:
+      matrix:
+        TEST_SUITE: phpunit
 
   phpstan:
     # phpstan requires php7.1
@@ -65,6 +84,9 @@ pipeline:
       - COMPOSER_HOME=/var/www/owncloud/apps/data_exporter/.cache/composer
     commands:
       - make test-php-phpstan
+    when:
+      matrix:
+        TEST_SUITE: phpunit
 
   phan:
     # phan requires a recent php-ast extension
@@ -74,18 +96,28 @@ pipeline:
       - COMPOSER_HOME=/var/www/owncloud/apps/data_exporter/.cache/composer
     commands:
       - make test-php-phan
+    when:
+      matrix:
+        TEST_SUITE: phpunit
 
   phpunit-unit-tests:
     image: owncloudci/php:${PHP_VERSION}
     pull: true
     commands:
       - make test-php-unit-dbg
+    when:
+      matrix:
+        TEST_SUITE: phpunit
+
 
   phpunit-integration-tests:
     image: owncloudci/php:${PHP_VERSION}
     pull: true
     commands:
       - make test-php-integration-dbg
+    when:
+      matrix:
+        TEST_SUITE: phpunit
 
   cli-acceptance-tests:
     image: owncloudci/php:${PHP_VERSION}
@@ -191,6 +223,16 @@ services:
       matrix:
         DB_TYPE: pgsql
 
+  owncloud:
+    image: owncloudci/php:${PHP_VERSION}
+    pull: true
+    environment:
+    - APACHE_WEBROOT=/var/www/owncloud/
+    command: [ "/usr/local/bin/apachectl", "-e", "debug", "-D", "FOREGROUND" ]
+    when:
+      matrix:
+        NEED_SERVER: true
+
 matrix:
   include:
     # unit tests
@@ -199,15 +241,18 @@ matrix:
        DB_TYPE: sqlite
        REBUILT_CACHE: true
        FLUSH_CACHE: true
+       TEST_SUITE: phpunit
 
      - PHP_VERSION: 7.1
        OC_VERSION: daily-stable10-qa
        DB_TYPE: sqlite
        COVERAGE: true
+       TEST_SUITE: phpunit
 
      - PHP_VERSION: 7.2
        OC_VERSION: daily-stable10-qa
        DB_TYPE: sqlite
+       TEST_SUITE: phpunit
 
      - PHP_VERSION: 7.1
        OC_VERSION: daily-stable10-qa
@@ -216,6 +261,7 @@ matrix:
        DB_NAME: oc_db
        DB_USERNAME: admin
        DB_PASSWORD: secret
+       TEST_SUITE: phpunit
 
      - PHP_VERSION: 7.1
        OC_VERSION: daily-stable10-qa
@@ -223,6 +269,7 @@ matrix:
        DB_HOST: oci
        DB_NAME: XE
        DB_USERNAME: autotest
+       TEST_SUITE: phpunit
 
      - PHP_VERSION: 7.1
        OC_VERSION: daily-stable10-qa
@@ -231,6 +278,7 @@ matrix:
        DB_NAME: oc_db
        DB_USERNAME: admin
        DB_PASSWORD: secret
+       TEST_SUITE: phpunit
 
      - PHP_VERSION: 7.1
        OC_VERSION: daily-stable10-qa
@@ -239,3 +287,111 @@ matrix:
        DB_NAME: oc_db
        DB_USERNAME: admin
        DB_PASSWORD: secret
+       TEST_SUITE: phpunit
+
+     # acceptance tests
+
+     - PHP_VERSION: 7.0
+       OC_VERSION: daily-stable10-qa
+       TEST_SUITE: cli-acceptance
+       BEHAT_SUITE: cliDataExporter
+       DB_TYPE: mysql
+       DB_HOST: mysql
+       DB_NAME: oc_db
+       DB_USERNAME: admin
+       DB_PASSWORD: secret
+       NEED_SERVER: true
+       NEED_INSTALL_APP: true
+
+     - PHP_VERSION: 7.1
+       OC_VERSION: daily-stable10-qa
+       TEST_SUITE: cli-acceptance
+       BEHAT_SUITE: cliDataExporter
+       DB_TYPE: mysql
+       DB_HOST: mysql
+       DB_NAME: oc_db
+       DB_USERNAME: admin
+       DB_PASSWORD: secret
+       NEED_SERVER: true
+       NEED_INSTALL_APP: true
+
+     - PHP_VERSION: 7.1
+       OC_VERSION: daily-stable10-qa
+       TEST_SUITE: cli-acceptance
+       BEHAT_SUITE: cliDataExporter
+       DB_HOST: oci
+       DB_TYPE: oci
+       DB_NAME: XE
+       NEED_SERVER: true
+       NEED_INSTALL_APP: true
+
+     - PHP_VERSION: 7.1
+       OC_VERSION: daily-stable10-qa
+       TEST_SUITE: cli-acceptance
+       BEHAT_SUITE: cliDataExporter
+       DB_TYPE: pgsql
+       DB_HOST: pgsql
+       DB_NAME: oc_db
+       DB_USERNAME: admin
+       DB_PASSWORD: secret
+       NEED_SERVER: true
+       NEED_INSTALL_APP: true
+
+     - PHP_VERSION: 7.2
+       OC_VERSION: daily-stable10-qa
+       TEST_SUITE: cli-acceptance
+       BEHAT_SUITE: cliDataExporter
+       DB_TYPE: mysql
+       DB_HOST: mysql
+       DB_NAME: oc_db
+       DB_USERNAME: admin
+       DB_PASSWORD: secret
+       NEED_SERVER: true
+       NEED_INSTALL_APP: true
+
+     - PHP_VERSION: 7.1
+       OC_VERSION: daily-master-qa
+       TEST_SUITE: cli-acceptance
+       BEHAT_SUITE: cliDataExporter
+       DB_TYPE: mysql
+       DB_HOST: mysql
+       DB_NAME: oc_db
+       NEED_SERVER: true
+       NEED_INSTALL_APP: true
+
+     - PHP_VERSION: 7.1
+       OC_VERSION: daily-master-qa
+       TEST_SUITE: cli-acceptance
+       BEHAT_SUITE: cliDataExporter
+       DB_TYPE: oci
+       DB_HOST: oci
+       DB_NAME: XE
+       DB_USERNAME: admin
+       DB_PASSWORD: secret
+       NEED_SERVER: true
+       NEED_INSTALL_APP: true
+
+     - PHP_VERSION: 7.1
+       OC_VERSION: daily-master-qa
+       TEST_SUITE: cli-acceptance
+       BEHAT_SUITE: cliDataExporter
+       DB_TYPE: pgsql
+       DB_HOST: pgsql
+       DB_NAME: oc_db
+       DB_USERNAME: admin
+       DB_PASSWORD: secret
+       NEED_SERVER: true
+       NEED_INSTALL_APP: true
+
+     - PHP_VERSION: 7.2
+       OC_VERSION: daily-master-qa
+       TEST_SUITE: cli-acceptance
+       BEHAT_SUITE: cliDataExporter
+       DB_TYPE: mysql
+       DB_HOST: mysql
+       DB_NAME: oc_db
+       DB_USERNAME: admin
+       DB_PASSWORD: secret
+       NEED_SERVER: true
+       NEED_INSTALL_APP: true
+       
