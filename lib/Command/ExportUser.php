@@ -39,10 +39,10 @@ class ExportUser extends Command {
 	}
 
 	protected function configure() {
-		$this->setName('export:user')
+		$this->setName('instance:export:user')
 			->setDescription('Exports a single user')
 			->addArgument('userId', InputArgument::REQUIRED, 'User to export')
-			->addArgument('exportDirectory', InputArgument::REQUIRED, 'Path to export to');
+			->addArgument('exportDirectory', InputArgument::REQUIRED, 'Path to the directory to export data to');
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output) {
