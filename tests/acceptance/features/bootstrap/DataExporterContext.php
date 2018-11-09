@@ -76,7 +76,7 @@ class DataExporterContext implements Context {
 	 * @throws Exception
 	 */
 	public function exportUserUsingTheCli($user, $path) {
-		$this->featureContext->runOcc(['export:user', $user, $path]);
+		$this->featureContext->runOcc(['instance:export:user', $user, $path]);
 		$this->lastExportPath = "$path/$user";
 	}
 
@@ -136,7 +136,7 @@ class DataExporterContext implements Context {
 	public function importUserUsingTheCli($path) {
 		$importPath = $this->relativePathToTestDataFolder . "/$path";
 		$importPath = \str_replace('//', '/', $importPath);
-		$this->featureContext->runOcc(['import:user', $importPath]);
+		$this->featureContext->runOcc(['instance:import:user', $importPath]);
 	}
 
 	/**
