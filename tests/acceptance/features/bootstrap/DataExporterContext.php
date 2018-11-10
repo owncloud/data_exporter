@@ -37,12 +37,49 @@ class DataExporterContext implements Context {
 	/**
 	 * The relative path from the core tests/acceptance folder to the test data
 	 * folder.
-	 * old: '../../apps/data_exporter/tests/acceptance/data/'
+	 *
 	 * @var string
 	 */
-	private $relativePathToTestDataFolder = __DIR__ . '/../../data/';
+	private $dataDir = __DIR__ . '/../../data/';
 
+	private $outputDir = __DIR__ . '/../../output/';
+
+	/**
+	 * This directory is created on each scenario run with a random name.
+	 * Every output of the exporter is stored here. All step paths are relative
+	 * to this directory.
+	 *
+	 * @var string
+	 */
+	private $scenarioDir;
+
+	/**
+	 * Base path of last export e.g /home/user/exports/
+	 *
+	 * @var string
+	 */
+	private $lastExportBasePath;
+
+	/**
+	 * Path to last export e.g /home/user/exports/user0
+	 *
+	 * @var string
+	 */
 	private $lastExportPath;
+
+	/**
+	 * Username of the last exported user e.g user0
+	 *
+	 * @var string
+	 */
+	private $lastExportUser;
+
+	/**
+	 * Path to metadata of last export e.g /home/user/exports/user0/metadata.json
+	 *
+	 * @var string
+	 */
+	private $lastExportMetadataPath;
 
 	/**
 	 * @BeforeScenario
@@ -63,6 +100,29 @@ class DataExporterContext implements Context {
 			$this->featureContext->getBaseUrl(),
 			$this->featureContext->getOcPath()
 		);
+
+		$scenarioId = \bin2hex(\random_bytes(6));
+		$this->scenarioDir = self::path("{$this->outputDir}/$scenarioId");
+		if (!\mkdir($this->scenarioDir) && !\is_dir($this->scenarioDir)) {
+			throw new \RuntimeException(\sprintf('Scenario directory could not be created: %s', $this->scenarioDir));
+		}
+	}
+
+	/**
+	 * @AfterScenario
+	 *
+	 * @return void
+	 */
+	public function deleteLastExport() {
+		if ($this->scenarioDir && \file_exists($this->scenarioDir)) {
+			\system('rm -rf ' . \escapeshellarg($this->scenarioDir));
+		}
+
+		$this->scenarioDir = null;
+		$this->lastExportBasePath = null;
+		$this->lastExportPath = null;
+		$this->lastExportUser = null;
+		$this->lastExportMetadataPath = null;
 	}
 
 	/**
@@ -76,52 +136,56 @@ class DataExporterContext implements Context {
 	 * @throws Exception
 	 */
 	public function exportUserUsingTheCli($user, $path) {
-		$this->featureContext->runOcc(['instance:export:user', $user, $path]);
-		$this->lastExportPath = "$path/$user";
+		$internalPath = self::path("{$this->scenarioDir}/$path");
+
+		$this->featureContext->runOcc(['instance:export:user', $user, $internalPath]);
+
+		$this->lastExportBasePath = $internalPath;
+		$this->lastExportPath = self::path("{$this->lastExportBasePath}/$user/");
+		$this->lastExportUser = $user;
+		$this->lastExportMetadataPath = "{$this->lastExportPath}/metadata.json";
+	}
+
+	/**
+	 * @Then the directory :path should contain an export
+	 * @param string $path
+	 *
+	 * Checks whether a given file is present physically
+	 * and inside metadata
+	 */
+	public function thenTheDirectoryShouldContainAnExport($path) {
+		self::assertPathContainsExport(self::path("$this->scenarioDir/$path"));
 	}
 
 	/**
 	 * @Then the last export should contain file :path
+	 *
+	 * @param string $path
 	 *
 	 * Checks whether a given file is present physically
 	 * and inside metadata
 	 *
 	 */
 	public function theLastExportContainsFile($path) {
-		$filesPath = $this->lastExportPath . '/files/'. $path;
-		// File physically exists
-		\PHPUnit_Framework_Assert::assertFileExists(
-			$filesPath,
-			"File $filesPath does not exist"
-		);
+		self::assertPathContainsExport($this->lastExportPath);
+		$this->assertFilePhysicallyExistInLastExport($path, "File $path does not exist");
+		$this->assertFileExistsInLastExportMetadata($path);
+	}
 
-		// File exists in metadata
-		$metadataPath = $this->lastExportPath . '/metadata.json';
-
-		\PHPUnit_Framework_Assert::assertFileExists(
-			$metadataPath,
-			"Export not found (metadata.json missing)"
-		);
-
-		$metadata = \json_decode(
-			\file_get_contents($metadataPath), true
-		);
-
-		if (!isset($metadata['user']) || !isset($metadata['user']['files']) || empty($metadata['user']['files'])) {
-			\PHPUnit_Framework_Assert::fail('File not found in metadata');
-		}
-
-		$isFileFoundInExport = false;
-		foreach ($metadata['user']['files'] as $file) {
-			if (isset($file['path']) && $file['path'] === "/$path") {
-				$isFileFoundInExport = true;
-			}
-		}
-
-		\PHPUnit_Framework_Assert::assertTrue(
-			$isFileFoundInExport,
-			"File $path not found in metadata"
-		);
+	/**
+	 * @Then the last export should contain file :path with content :content
+	 *
+	 * @param string $path
+	 * @param string $content
+	 *
+	 * Checks whether a given file is present physically
+	 * and inside metadata
+	 *
+	 */
+	public function theLastExportContainsFileWithContent($path, $content) {
+		self::assertPathContainsExport($this->lastExportPath);
+		$this->assertFileExistsInLastExportMetadata($path);
+		$this->assertFilePhysicallyExistInLastExportWithContent($path, $content);
 	}
 
 	/**
@@ -134,16 +198,72 @@ class DataExporterContext implements Context {
 	 * @throws Exception
 	 */
 	public function importUserUsingTheCli($path) {
-		$importPath = $this->relativePathToTestDataFolder . "/$path";
-		$importPath = \str_replace('//', '/', $importPath);
+		$importPath = self::path("$this->dataDir/$path");
 		$this->featureContext->runOcc(['instance:import:user', $importPath]);
 	}
 
+	private static function assertPathContainsExport($path) {
+		\PHPUnit_Framework_Assert::assertDirectoryExists(
+			$path,
+			"Export directory $path does not exist"
+		);
+
+		\PHPUnit_Framework_Assert::assertDirectoryExists(
+			self::path("$path/files"),
+			"No files directory found inside export $path"
+		);
+
+		\PHPUnit_Framework_Assert::assertFileExists(
+			self::path("$path/metadata.json"),
+			"No metadata.json found inside export $path"
+		);
+	}
+
+	private function assertFilePhysicallyExistInLastExport($filename, $message = '') {
+		\PHPUnit_Framework_Assert::assertFileExists(
+			self::path("{$this->lastExportPath}/files/$filename"),
+			$message
+		);
+	}
+
+	private function assertFilePhysicallyExistInLastExportWithContent($filename, $content, $message = '') {
+		$exportedFilePath = self::path("{$this->lastExportPath}/files/$filename");
+		\PHPUnit_Framework_Assert::assertEquals(
+			$content,
+			\file_get_contents($exportedFilePath),
+			$message
+		);
+	}
+
+	private function assertFileExistsInLastExportMetadata($filename) {
+		$metadata = \json_decode(
+			\file_get_contents($this->lastExportMetadataPath), true
+		);
+
+		if (!isset($metadata['user']['files']) || empty($metadata['user']['files'])) {
+			\PHPUnit_Framework_Assert::fail('File not found in metadata');
+		}
+
+		$isFileFoundInExport = false;
+		foreach ($metadata['user']['files'] as $file) {
+			if (isset($file['path']) && $file['path'] === self::path("/$filename")) {
+				$isFileFoundInExport = true;
+			}
+		}
+
+		\PHPUnit_Framework_Assert::assertTrue(
+			$isFileFoundInExport,
+			"File $filename not found in metadata"
+		);
+	}
+
 	/**
-	 * @AfterScenario
+	 * Removes duplicate slashes after joining a path
 	 *
-	 * @return void
+	 * @param $path
+	 * @return string
 	 */
-	public function removeExport() {
+	private static function path($path) {
+		return \preg_replace('#/+#', '/', $path);
 	}
 }
