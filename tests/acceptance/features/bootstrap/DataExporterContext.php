@@ -42,7 +42,7 @@ class DataExporterContext implements Context {
 	 */
 	private $dataDir = __DIR__ . '/../../data/';
 
-	private $outputDir = __DIR__ . '/../../output/';
+	private $outputDir = '/dataexp_acc_test/';
 
 	/**
 	 * This directory is created on each scenario run with a random name.
@@ -103,9 +103,7 @@ class DataExporterContext implements Context {
 
 		$scenarioId = \bin2hex(\random_bytes(6));
 		$this->scenarioDir = self::path("{$this->outputDir}/$scenarioId");
-		if (!\mkdir($this->scenarioDir) && !\is_dir($this->scenarioDir)) {
-			throw new \RuntimeException(\sprintf('Scenario directory could not be created: %s', $this->scenarioDir));
-		}
+		$this->featureContext->mkDirOnServer($this->scenarioDir);
 	}
 
 	/**
@@ -114,10 +112,6 @@ class DataExporterContext implements Context {
 	 * @return void
 	 */
 	public function deleteLastExport() {
-		if ($this->scenarioDir && \file_exists($this->scenarioDir)) {
-			\system('rm -rf ' . \escapeshellarg($this->scenarioDir));
-		}
-
 		$this->scenarioDir = null;
 		$this->lastExportBasePath = null;
 		$this->lastExportPath = null;
@@ -137,24 +131,14 @@ class DataExporterContext implements Context {
 	 */
 	public function exportUserUsingTheCli($user, $path) {
 		$internalPath = self::path("{$this->scenarioDir}/$path");
-
-		$this->featureContext->runOcc(['instance:export:user', $user, $internalPath]);
+		$serverRoot = $this->featureContext->getServerRoot();
+		$this->featureContext->mkDirOnServer($internalPath);
+		$this->featureContext->runOcc(['instance:export:user', $user, self::path("$serverRoot/$internalPath")]);
 
 		$this->lastExportBasePath = $internalPath;
 		$this->lastExportPath = self::path("{$this->lastExportBasePath}/$user/");
 		$this->lastExportUser = $user;
-		$this->lastExportMetadataPath = "{$this->lastExportPath}/metadata.json";
-	}
-
-	/**
-	 * @Then the directory :path should contain an export
-	 * @param string $path
-	 *
-	 * Checks whether a given file is present physically
-	 * and inside metadata
-	 */
-	public function thenTheDirectoryShouldContainAnExport($path) {
-		self::assertPathContainsExport(self::path("$this->scenarioDir/$path"));
+		$this->lastExportMetadataPath = "{$this->lastExportPath}metadata.json";
 	}
 
 	/**
@@ -183,7 +167,6 @@ class DataExporterContext implements Context {
 	 *
 	 */
 	public function theLastExportContainsFileWithContent($path, $content) {
-		self::assertPathContainsExport($this->lastExportPath);
 		$this->assertFileExistsInLastExportMetadata($path);
 		$this->assertFilePhysicallyExistInLastExportWithContent($path, $content);
 	}
@@ -226,18 +209,30 @@ class DataExporterContext implements Context {
 		);
 	}
 
-	private function assertFilePhysicallyExistInLastExportWithContent($filename, $content, $message = '') {
-		$exportedFilePath = self::path("{$this->lastExportPath}/files/$filename");
-		\PHPUnit_Framework_Assert::assertEquals(
-			$content,
-			\file_get_contents($exportedFilePath),
-			$message
+	private function assertFilePhysicallyExistInLastExportWithContent($filename, $content) {
+		$this->featureContext->theFileWithContentShouldExistInTheServerRoot(
+			self::path("$this->lastExportPath/files/$filename"),
+			$content
 		);
+	}
+
+	private function readFileFromServerRoot($path) {
+		$this->featureContext->readFileInServerRoot($path);
+		PHPUnit_Framework_Assert::assertSame(
+			200,
+			$this->featureContext->getResponse()->getStatusCode(),
+			"Failed to read the file {$path}"
+		);
+
+		$fileContent = \TestHelpers\HttpRequestHelper::getResponseXml($this->featureContext->getResponse());
+		$fileContent = (string)$fileContent->data->element->contentUrlEncoded;
+		return \urldecode($fileContent);
 	}
 
 	private function assertFileExistsInLastExportMetadata($filename) {
 		$metadata = \json_decode(
-			\file_get_contents($this->lastExportMetadataPath), true
+			$this->readFileFromServerRoot($this->lastExportMetadataPath),
+			true
 		);
 
 		if (!isset($metadata['user']['files']) || empty($metadata['user']['files'])) {
