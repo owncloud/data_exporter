@@ -322,6 +322,7 @@ matrix:
        DB_HOST: oci
        DB_TYPE: oci
        DB_NAME: XE
+       DB_USERNAME: autotest
        NEED_SERVER: true
        NEED_INSTALL_APP: true
 
@@ -356,6 +357,8 @@ matrix:
        DB_TYPE: mysql
        DB_HOST: mysql
        DB_NAME: oc_db
+       DB_USERNAME: admin
+       DB_PASSWORD: secret
        NEED_SERVER: true
        NEED_INSTALL_APP: true
 
@@ -366,8 +369,7 @@ matrix:
        DB_TYPE: oci
        DB_HOST: oci
        DB_NAME: XE
-       DB_USERNAME: admin
-       DB_PASSWORD: secret
+       DB_USERNAME: autotest
        NEED_SERVER: true
        NEED_INSTALL_APP: true
 
