@@ -25,7 +25,7 @@ use TestHelpers\SetupHelper;
 require_once 'bootstrap.php';
 
 /**
- * Context for files classifier specific steps
+ * Context for data exporter specific steps
  */
 class DataExporterContext implements Context {
 	/**
@@ -35,8 +35,7 @@ class DataExporterContext implements Context {
 	private $featureContext;
 
 	/**
-	 * The relative path from the core tests/acceptance folder to the test data
-	 * folder.
+	 * The relative path from the folder containing this Context PHP file to the test data
 	 *
 	 * @var string
 	 */
@@ -147,7 +146,7 @@ class DataExporterContext implements Context {
 	 * @param string $path
 	 *
 	 * Checks whether a given file is present physically
-	 * and inside metadata
+	 * and inside exporter metadata.
 	 *
 	 */
 	public function theLastExportContainsFile($path) {
@@ -162,8 +161,8 @@ class DataExporterContext implements Context {
 	 * @param string $path
 	 * @param string $content
 	 *
-	 * Checks whether a given file is present physically
-	 * and inside metadata
+	 * Checks whether a given file is present physically with a given content
+	 * and also is present inside export metadata.
 	 *
 	 */
 	public function theLastExportContainsFileWithContent($path, $content) {
