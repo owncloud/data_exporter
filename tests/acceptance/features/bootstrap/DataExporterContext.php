@@ -128,7 +128,7 @@ class DataExporterContext implements Context {
 	 * @return void
 	 * @throws Exception
 	 */
-	public function exportUserUsingTheCli($user, $path) {
+	public function exportUserUsingTheOccCommand($user, $path) {
 		$internalPath = self::path("{$this->scenarioDir}/$path");
 		$serverRoot = $this->featureContext->getServerRoot();
 		$this->featureContext->mkDirOnServer($internalPath);
@@ -149,7 +149,7 @@ class DataExporterContext implements Context {
 	 * and inside exporter metadata.
 	 *
 	 */
-	public function theLastExportContainsFile($path) {
+	public function theLastExportShouldContainFile($path) {
 		self::assertPathContainsExport($this->lastExportPath);
 		$this->assertFilePhysicallyExistInLastExport($path, "File $path does not exist");
 		$this->assertFileExistsInLastExportMetadata($path);
@@ -165,7 +165,7 @@ class DataExporterContext implements Context {
 	 * and also is present inside export metadata.
 	 *
 	 */
-	public function theLastExportContainsFileWithContent($path, $content) {
+	public function theLastExportShouldContainFileWithContent($path, $content) {
 		$this->assertFileExistsInLastExportMetadata($path);
 		$this->assertFilePhysicallyExistInLastExportWithContent($path, $content);
 	}
@@ -179,11 +179,16 @@ class DataExporterContext implements Context {
 	 * @return void
 	 * @throws Exception
 	 */
-	public function importUserUsingTheCli($path) {
+	public function importUserUsingTheOccCommand($path) {
 		$importPath = self::path("$this->dataDir/$path");
 		$this->featureContext->runOcc(['instance:import:user', $importPath]);
 	}
 
+	/**
+	 * @param string $path
+	 *
+	 * @return void
+	 */
 	private static function assertPathContainsExport($path) {
 		\PHPUnit_Framework_Assert::assertDirectoryExists(
 			$path,
@@ -201,6 +206,12 @@ class DataExporterContext implements Context {
 		);
 	}
 
+	/**
+	 * @param string $filename
+	 * @param string $message
+	 *
+	 * @return void
+	 */
 	private function assertFilePhysicallyExistInLastExport($filename, $message = '') {
 		\PHPUnit_Framework_Assert::assertFileExists(
 			self::path("{$this->lastExportPath}/files/$filename"),
@@ -208,6 +219,12 @@ class DataExporterContext implements Context {
 		);
 	}
 
+	/**
+	 * @param string $filename
+	 * @param string $content
+	 *
+	 * @return void
+	 */
 	private function assertFilePhysicallyExistInLastExportWithContent($filename, $content) {
 		$this->featureContext->theFileWithContentShouldExistInTheServerRoot(
 			self::path("$this->lastExportPath/files/$filename"),
@@ -215,6 +232,11 @@ class DataExporterContext implements Context {
 		);
 	}
 
+	/**
+	 * @param string $path
+	 *
+	 * @return string
+	 */
 	private function readFileFromServerRoot($path) {
 		$this->featureContext->readFileInServerRoot($path);
 		PHPUnit_Framework_Assert::assertSame(
@@ -228,6 +250,11 @@ class DataExporterContext implements Context {
 		return \urldecode($fileContent);
 	}
 
+	/**
+	 * @param string $filename
+	 *
+	 * @return void
+	 */
 	private function assertFileExistsInLastExportMetadata($filename) {
 		$metadata = \json_decode(
 			$this->readFileFromServerRoot($this->lastExportMetadataPath),
@@ -255,6 +282,7 @@ class DataExporterContext implements Context {
 	 * Removes duplicate slashes after joining a path
 	 *
 	 * @param $path
+	 *
 	 * @return string
 	 */
 	private static function path($path) {
