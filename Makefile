@@ -7,7 +7,7 @@ endif
 
 # bin file definitions
 PHPUNIT=php -d zend.enable_gc=0  "$(PWD)/../../lib/composer/bin/phpunit"
-PHPDBG=phpdbg -qrr -d memory_limit=4096M -d zend.enable_gc=0 "$(PWD)/../../lib/composer/bin/phpunit"
+PHPUNITDBG=phpdbg -qrr -d memory_limit=4096M -d zend.enable_gc=0 "$(PWD)/../../lib/composer/bin/phpunit"
 PHP_CS_FIXER=php -d zend.enable_gc=0 vendor-bin/owncloud-codestyle/vendor/bin/php-cs-fixer
 PHP_PARALLEL_LINT=php -d zend.enable_gc=0 vendor-bin/php-parallel-lint/vendor/bin/parallel-lint
 PHPSTAN=php -d zend.enable_gc=0 vendor-bin/phpstan/vendor/bin/phpstan
@@ -92,7 +92,7 @@ test-php-unit:
 
 .PHONY: test-php-unit-dbg
 test-php-unit-dbg:
-	$(PHPDBG) --configuration ./phpunit.xml --testsuite unit
+	$(PHPUNITDBG) --configuration ./phpunit.xml --testsuite unit
 
 .PHONY: test-php-integration
 test-php-integration:
@@ -100,7 +100,7 @@ test-php-integration:
 
 .PHONY: test-php-integration-dbg
 test-php-integration-dbg:
-	$(PHPDBG) --configuration ./phpunit.xml --testsuite integration
+	$(PHPUNITDBG) --configuration ./phpunit.xml --testsuite integration
 
 .PHONY: test-acceptance-cli
 test-acceptance-cli:
