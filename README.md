@@ -4,6 +4,8 @@
 
 A cli tool which allows exporting and importing user-data like settings, files and shares to migrate data from one instance in to another.
 
+Trigger CI to try phan 1.1.7
+
 **WARNING:** This app is in early development, don't use it in production.
 
 See [docs](https://github.com/owncloud/data_exporter/tree/master/docs) for more details.
