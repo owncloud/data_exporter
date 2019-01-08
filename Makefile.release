@@ -1,0 +1,87 @@
+SHELL := /bin/bash
+
+COMPOSER_BIN := $(shell command -v composer 2> /dev/null)
+ifndef COMPOSER_BIN
+    $(error composer is not available on your system, please install composer)
+endif
+GIT := $(shell command -v git 2> /dev/null)
+ifndef GIT
+    $(error git is not available on your system, please install git)
+endif
+
+app_name=$(notdir $(CURDIR))
+doc_files=LICENSE README.md
+src_dirs=appinfo docs lib vendor
+all_src=$(src_dirs) $(doc_files)
+build_dir=$(CURDIR)/build
+dist_dir=$(build_dir)/dist
+appstore_package_name=$(CURDIR)/build/dist/$(app_name)
+
+# composer
+composer_deps=vendor
+
+occ=$(CURDIR)/../../occ
+private_key=$(HOME)/.owncloud/certificates/$(app_name).key
+certificate=$(HOME)/.owncloud/certificates/$(app_name).crt
+sign=$(occ) integrity:sign-app --privateKey="$(private_key)" --certificate="$(certificate)"
+sign_skip_msg="Skipping signing, either no key and certificate found in $(private_key) and $(certificate) or occ can not be found at $(occ)"
+ifneq (,$(wildcard $(private_key)))
+ifneq (,$(wildcard $(certificate)))
+ifneq (,$(wildcard $(occ)))
+	CAN_SIGN=true
+endif
+endif
+endif
+
+.DEFAULT_GOAL := help
+
+help:
+	@fgrep -h "##" $(MAKEFILE_LIST) | fgrep -v fgrep | sed -e 's/\\$$//' | sed -e 's/##//'
+
+$(composer_deps): composer.json composer.lock
+	$(COMPOSER_BIN) install --no-dev
+
+##
+## Build targets
+##--------------------------------------
+.PHONY: dist
+dist:   ## Build Distribution
+dist: clean distdir sign package
+
+.PHONY: distdir
+distdir: $(composer_deps)
+	rm -Rf $(dist_dir); mkdir -p $(dist_dir)/$(app_name)
+	cp -R $(all_src) $(dist_dir)/$(app_name)
+	find $(dist_dir)/$(app_name)/vendor -type d -iname Test? -print | xargs rm -Rf
+	find $(dist_dir)/$(app_name)/vendor -name travis -print | xargs rm -Rf
+	find $(dist_dir)/$(app_name)/vendor -name doc -print | xargs rm -Rf
+	find $(dist_dir)/$(app_name)/vendor -iname \*.sh -delete
+	find $(dist_dir)/$(app_name)/vendor -iname \*.exe -delete
+
+.PHONY: sign
+sign:
+ifdef CAN_SIGN
+	$(sign) --path="$(appstore_package_name)"
+else
+	@echo $(sign_skip_msg)
+endif
+
+.PHONY: package
+package:
+	tar -czf $(appstore_package_name).tar.gz -C $(appstore_package_name)/../ $(app_name)
+
+.PHONY: clean
+clean:  ## Clean all build Folders
+clean: clean-composer-deps clean-dist clean-build
+
+.PHONY: clean-dist
+clean-dist:
+	rm -Rf $(dist_dir)
+
+.PHONY: clean-build
+clean-build:
+	rm -Rf $(build_dir)
+
+.PHONY: clean-composer-deps
+clean-composer-deps:
+	rm -Rf $(composer_deps)
