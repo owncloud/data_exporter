@@ -97,6 +97,7 @@ class ShareImporterTest extends TestCase {
 			$share->getShareOwner() === $shareData['owner'] &&
 			$share->getName() === $shareData['name'] &&
 			$share->getPassword() === $shareData['password'] &&
+			$share->getToken() === $shareData['token'] &&
 			($share->getExpirationDate() === $shareData['expiration'] || $isSameDate);
 	}
 
@@ -362,6 +363,7 @@ class ShareImporterTest extends TestCase {
 			->setOwner('usertest')
 			->setSharedBy('usertest')
 			->setName('my link name')
+			->setToken('secret')
 			->setPermissions(1);
 
 		$this->setupRootFolderForTests();
@@ -381,6 +383,25 @@ class ShareImporterTest extends TestCase {
 					'owner' => 'usertest',
 					'name' => 'my link name',
 					'password' => null,
+					'token' => null,
+					'expiration' => null,
+				];
+				return $this->isSameLinkShare($share, $shareData);
+			}))
+			->willReturnArgument(0);
+
+		$this->shareManager->expects($this->once())
+			->method('updateShare')
+			->with($this->callback(function ($share) {
+				$shareData = [
+					'path' => '/usertest/files/path/to/file',
+					'type' => ShareConstants::SHARE_TYPE_LINK,
+					'permissions' => 1,
+					'by' => 'usertest',  // sharedBy overwritten for now
+					'owner' => 'usertest',
+					'name' => 'my link name',
+					'password' => null,
+					'token' => 'secret',
 					'expiration' => null,
 				];
 				return $this->isSameLinkShare($share, $shareData);
@@ -397,6 +418,7 @@ class ShareImporterTest extends TestCase {
 			->setSharedBy('usertest')
 			->setName('my link name')
 			->setPassword('aWeSoMe')
+			->setToken('secret')
 			->setPermissions(1);
 
 		$this->setupRootFolderForTests();
@@ -416,6 +438,25 @@ class ShareImporterTest extends TestCase {
 					'owner' => 'usertest',
 					'name' => 'my link name',
 					'password' => 'aWeSoMe',  // password might be hashed inside the createShare method, but not outside
+					'token' => null,
+					'expiration' => null,
+				];
+				return $this->isSameLinkShare($share, $shareData);
+			}))
+			->willReturnArgument(0);
+
+		$this->shareManager->expects($this->once())
+			->method('updateShare')
+			->with($this->callback(function ($share) {
+				$shareData = [
+					'path' => '/usertest/files/path/to/file',
+					'type' => ShareConstants::SHARE_TYPE_LINK,
+					'permissions' => 1,
+					'by' => 'usertest',  // sharedBy overwritten for now
+					'owner' => 'usertest',
+					'name' => 'my link name',
+					'password' => 'aWeSoMe',
+					'token' => 'secret',
 					'expiration' => null,
 				];
 				return $this->isSameLinkShare($share, $shareData);
@@ -434,6 +475,7 @@ class ShareImporterTest extends TestCase {
 			->setSharedBy('usertest')
 			->setName('my link name')
 			->setExpirationDate($expiration->getTimestamp())
+			->setToken('secret')
 			->setPermissions(1);
 
 		$this->setupRootFolderForTests();
@@ -452,7 +494,26 @@ class ShareImporterTest extends TestCase {
 					'by' => 'usertest',  // sharedBy overwritten for now
 					'owner' => 'usertest',
 					'name' => 'my link name',
+					'token' => null,
 					'password' => null,
+					'expiration' => $expiration,
+				];
+				return $this->isSameLinkShare($share, $shareData);
+			}))
+			->willReturnArgument(0);
+
+		$this->shareManager->expects($this->once())
+			->method('updateShare')
+			->with($this->callback(function ($share) use ($expiration) {
+				$shareData = [
+					'path' => '/usertest/files/path/to/file',
+					'type' => ShareConstants::SHARE_TYPE_LINK,
+					'permissions' => 1,
+					'by' => 'usertest',  // sharedBy overwritten for now
+					'owner' => 'usertest',
+					'name' => 'my link name',
+					'password' => null,
+					'token' => 'secret',
 					'expiration' => $expiration,
 				];
 				return $this->isSameLinkShare($share, $shareData);
@@ -471,6 +532,7 @@ class ShareImporterTest extends TestCase {
 			->setSharedBy('usertest')
 			->setName('my link name')
 			->setPassword('aWeSoMe')
+			->setToken('secret')
 			->setExpirationDate($expiration->getTimestamp())
 			->setPermissions(1);
 
@@ -491,6 +553,25 @@ class ShareImporterTest extends TestCase {
 					'owner' => 'usertest',
 					'name' => 'my link name',
 					'password' => 'aWeSoMe',
+					'token' => null,
+					'expiration' => $expiration,
+				];
+				return $this->isSameLinkShare($share, $shareData);
+			}))
+			->willReturnArgument(0);
+
+		$this->shareManager->expects($this->once())
+			->method('updateShare')
+			->with($this->callback(function ($share) use ($expiration) {
+				$shareData = [
+					'path' => '/usertest/files/path/to/file',
+					'type' => ShareConstants::SHARE_TYPE_LINK,
+					'permissions' => 1,
+					'by' => 'usertest',  // sharedBy overwritten for now
+					'owner' => 'usertest',
+					'name' => 'my link name',
+					'password' => 'aWeSoMe',
+					'token' => 'secret',
 					'expiration' => $expiration,
 				];
 				return $this->isSameLinkShare($share, $shareData);

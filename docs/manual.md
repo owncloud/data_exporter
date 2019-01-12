@@ -58,7 +58,7 @@ Note: If the user is stored in the database you need to manually reset his passw
 - Share's state will be always "accepted" regardless of the state in the old server.
 - Remote shares from both directions need to be manually accepted.
 - Federated shares from other servers are not migrated.
-- Password protected link-shares are not imported correctly, user needs to reset the password.
+- Password protected link-shares are only working with the same password on the new server if the `passwordsalt` key from config.php is copied from the old server to the new one.
 - Group shares require the group to be present on the target-system or else the share will be ignored silently.
 - If link-shares require a password on the new server but do so on the old the import process will crash.
 
