@@ -229,6 +229,7 @@ class ShareImporter {
 		$node = $userFolder->get($shareModel->getPath());  // this might throw an OCP\Files\NotFoundException
 
 		$share = $this->shareManager->newShare();
+		$share->setShouldHashPassword(false);
 		$share->setNode($node)
 			->setShareType(ShareConstants::SHARE_TYPE_LINK)
 			->setPermissions($shareModel->getPermissions())
@@ -243,7 +244,10 @@ class ShareImporter {
 			$share->setExpirationDate($datetime);
 		}
 
-		$this->shareManager->createShare($share);
+		$share = $this->shareManager->createShare($share);
+		// CreateShare sets a new token, so update the share after creating.
+		$share->setToken($shareModel->getToken());
+		$this->shareManager->updateShare($share);
 	}
 
 	/**
