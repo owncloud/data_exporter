@@ -36,6 +36,9 @@ pipeline:
     commands:
       - make
       - cd /var/www/owncloud/
+      - ls -l /var/www/owncloud/apps/data_exporter
+      - ls -l /var/www/owncloud/apps/data_exporter/lib
+      - ls -l /var/www/owncloud/apps/data_exporter/lib/composer
       - php occ a:l
       - php occ a:e data_exporter
       - php occ a:e testing
@@ -104,7 +107,13 @@ pipeline:
     image: owncloudci/php:${PHP_VERSION}
     pull: true
     commands:
+      - ls -l /var/www/owncloud/apps/data_exporter
+      - ls -l /var/www/owncloud/apps/data_exporter/lib
+      - ls -l /var/www/owncloud/apps/data_exporter/lib/composer
       - make test-php-unit-dbg
+      - ls -l /var/www/owncloud/apps/data_exporter
+      - ls -l /var/www/owncloud/apps/data_exporter/lib
+      - ls -l /var/www/owncloud/apps/data_exporter/lib/composer
     when:
       matrix:
         TEST_SUITE: phpunit
