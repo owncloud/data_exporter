@@ -9,6 +9,7 @@ endif
 PHPUNIT=php -d zend.enable_gc=0  "$(PWD)/../../lib/composer/bin/phpunit"
 PHPUNITDBG=phpdbg -qrr -d memory_limit=4096M -d zend.enable_gc=0 "$(PWD)/../../lib/composer/bin/phpunit"
 PHP_CS_FIXER=php -d zend.enable_gc=0 vendor-bin/owncloud-codestyle/vendor/bin/php-cs-fixer
+PHP_CODESNIFFER=vendor-bin/php_codesniffer/vendor/bin/phpcs
 PHP_PARALLEL_LINT=php -d zend.enable_gc=0 vendor-bin/php-parallel-lint/vendor/bin/parallel-lint
 PHPSTAN=php -d zend.enable_gc=0 vendor-bin/phpstan/vendor/bin/phpstan
 PHAN=php -d zend.enable_gc=0 vendor-bin/phan/vendor/bin/phan
@@ -45,6 +46,12 @@ vendor-bin/owncloud-codestyle/vendor: vendor-bin/owncloud-codestyle/composer.loc
 vendor-bin/owncloud-codestyle/composer.lock: vendor-bin/owncloud-codestyle/composer.json
 	@echo owncloud-codestyle composer.lock is not up to date.
 
+vendor-bin/php_codesniffer/vendor: vendor/bamarni/composer-bin-plugin vendor-bin/php_codesniffer/composer.lock
+	composer bin php_codesniffer install --no-progress
+
+vendor-bin/php_codesniffer/composer.lock: vendor-bin/php_codesniffer/composer.json
+	@echo php_codesniffer composer.lock is not up to date.
+
 vendor-bin/php-parallel-lint/vendor: vendor-bin/php-parallel-lint/composer.lock
 	composer bin php-parallel-lint install --no-progress
 
@@ -71,8 +78,9 @@ test-php-lint: vendor-bin/php-parallel-lint/vendor
 	$(PHP_PARALLEL_LINT) --exclude vendor --exclude build --exclude vendor-bin .
 
 .PHONY: test-php-style
-test-php-style: vendor-bin/owncloud-codestyle/vendor
+test-php-style: vendor-bin/owncloud-codestyle/vendor vendor-bin/php_codesniffer/vendor
 	$(PHP_CS_FIXER) fix -v --diff --diff-format udiff --dry-run --allow-risky yes
+	$(PHP_CODESNIFFER) --runtime-set ignore_warnings_on_exit --standard=phpcs.xml tests/acceptance
 
 .PHONY: test-php-style-fix
 test-php-style-fix: vendor-bin/owncloud-codestyle/vendor

@@ -1,5 +1,6 @@
 <?php
 /**
+ * @author Ilja Neumann <ineumann@owncloud.com>
  * @copyright Copyright (c) 2018, ownCloud GmbH
  * @license GPL-2.0
  *
@@ -148,6 +149,7 @@ class DataExporterContext implements Context {
 	 * Checks whether a given file is present physically
 	 * and inside exporter metadata.
 	 *
+	 * @return void
 	 */
 	public function theLastExportShouldContainFile($path) {
 		self::assertPathContainsExport($this->lastExportPath);
@@ -164,6 +166,7 @@ class DataExporterContext implements Context {
 	 * Checks whether a given file is present physically with a given content
 	 * and also is present inside export metadata.
 	 *
+	 * @return void
 	 */
 	public function theLastExportShouldContainFileWithContent($path, $content) {
 		$this->assertFileExistsInLastExportMetadata($path);
@@ -281,7 +284,7 @@ class DataExporterContext implements Context {
 	/**
 	 * Removes duplicate slashes after joining a path
 	 *
-	 * @param $path
+	 * @param string $path
 	 *
 	 * @return string
 	 */
