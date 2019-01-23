@@ -1,11 +1,11 @@
 default:
   autoload:
-    '': %paths.base%/../features/bootstrap
+    '': '%paths.base%/../features/bootstrap'
 
   suites:
     cliDataExporter:
       paths:
-      - %paths.base%/../features/cliDataExporter
+      - '%paths.base%/../features/cliDataExporter'
       contexts:
         - DataExporterContext:
         - FeatureContext:
@@ -18,4 +18,4 @@ default:
   extensions:
     jarnaiz\JUnitFormatter\JUnitFormatterExtension:
       filename: report.xml
-      outputDir: %paths.base%/../output/
+      outputDir: '%paths.base%/../output/'

@@ -13,10 +13,12 @@ PHP_CODESNIFFER=vendor-bin/php_codesniffer/vendor/bin/phpcs
 PHP_PARALLEL_LINT=php -d zend.enable_gc=0 vendor-bin/php-parallel-lint/vendor/bin/parallel-lint
 PHPSTAN=php -d zend.enable_gc=0 vendor-bin/phpstan/vendor/bin/phpstan
 PHAN=php -d zend.enable_gc=0 vendor-bin/phan/vendor/bin/phan
+BEHAT_BIN=vendor-bin/behat/vendor/bin/behat
 
 # composer
 composer_deps=vendor
 composer_dev_deps=lib/composer/phpunit
+acceptance_test_deps=vendor-bin/behat/vendor
 
 #
 # Catch-all rules
@@ -39,6 +41,7 @@ $(composer_dev_deps): composer.json composer.lock
 .PHONY: clean-composer-deps
 clean-composer-deps:
 	rm -Rf $(composer_deps)
+	rm -Rf vendor-bin/**/vendor vendor-bin/**/composer.lock
 
 vendor-bin/owncloud-codestyle/vendor: vendor-bin/owncloud-codestyle/composer.lock
 	composer bin owncloud-codestyle install --no-progress
@@ -69,6 +72,13 @@ vendor-bin/phan/vendor: vendor-bin/phan/composer.lock
 
 vendor-bin/phan/composer.lock: vendor-bin/phan/composer.json
 	@echo phan composer.lock is not up to date.
+
+vendor-bin/behat/vendor: vendor/bamarni/composer-bin-plugin vendor-bin/behat/composer.lock
+	composer bin behat install --no-progress
+
+vendor-bin/behat/composer.lock: vendor-bin/behat/composer.json
+	@echo behat composer.lock is not up to date.
+
 #
 # Tests
 #
@@ -112,5 +122,5 @@ test-php-integration-dbg:
 
 .PHONY: test-acceptance-cli
 test-acceptance-cli:
-test-acceptance-cli: all
-	../../tests/acceptance/run.sh --config tests/acceptance/config/behat.yml --type cli
+test-acceptance-cli: $(acceptance_test_deps)
+	BEHAT_BIN=$(BEHAT_BIN) ../../tests/acceptance/run.sh --config tests/acceptance/config/behat.yml --type cli
