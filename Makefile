@@ -27,20 +27,18 @@ acceptance_test_deps=vendor-bin/behat/vendor
 all: $(composer_dev_deps)
 
 .PHONY: clean
-clean: clean-composer-deps
+clean: clean-composer-dev-deps
 
 #
 # base composer steps
 #
-$(composer_deps): composer.json composer.lock
-	$(COMPOSER_BIN) install --no-dev
 
 $(composer_dev_deps): composer.json composer.lock
 	$(COMPOSER_BIN) install --dev
 
-.PHONY: clean-composer-deps
-clean-composer-deps:
-	rm -Rf $(composer_deps)
+.PHONY: clean-composer-dev-deps
+clean-composer-dev-deps:
+	rm -Rf $(composer_dev_deps)
 	rm -Rf vendor-bin/**/vendor vendor-bin/**/composer.lock
 
 vendor-bin/owncloud-codestyle/vendor: vendor-bin/owncloud-codestyle/composer.lock
