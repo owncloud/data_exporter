@@ -153,7 +153,8 @@ class SharesExtractor {
 					->setOwner($share->getShareOwner())
 					->setSharedBy($share->getSharedBy())
 					->setPermissions($share->getPermissions())
-					->setName($share->getName());
+					->setName($share->getName())
+					->setToken($share->getToken());
 
 				$expiration = $share->getExpirationDate();
 				if ($expiration) {

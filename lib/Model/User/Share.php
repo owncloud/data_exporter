@@ -46,6 +46,8 @@ class Share {
 	private $password;
 	/** @var string|null */
 	private $name;
+	/** @var string|null */
+	private $token;
 
 	/**
 	 * @return string
@@ -189,6 +191,23 @@ class Share {
 	 */
 	public function setName($name): Share {
 		$this->name = $name;
+		return $this;
+	}
+
+	/**
+	 * @return string|null the token of the share link or null if the share isn't
+	 * a share link
+	 */
+	public function getToken() {
+		return $this->token;
+	}
+
+	/**
+	 * @param string|null $token the token of the share link
+	 * @return Share
+	 */
+	public function setToken($token): Share {
+		$this->token = $token;
 		return $this;
 	}
 }

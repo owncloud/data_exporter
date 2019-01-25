@@ -108,7 +108,7 @@ test-php-unit:
 
 .PHONY: test-php-unit-dbg
 test-php-unit-dbg:
-	$(PHPUNITDBG) --configuration ./phpunit.xml --testsuite unit
+	$(PHPUNITDBG) --configuration ./phpunit.xml --testsuite unit --coverage-clover ./tests/output/clover-unit.xml
 
 .PHONY: test-php-integration
 test-php-integration:
@@ -116,7 +116,7 @@ test-php-integration:
 
 .PHONY: test-php-integration-dbg
 test-php-integration-dbg:
-	$(PHPUNITDBG) --configuration ./phpunit.xml --testsuite integration
+	$(PHPUNITDBG) --configuration ./phpunit.xml --testsuite integration --coverage-clover ./tests/output/clover-integration.xml
 
 .PHONY: test-acceptance-cli
 test-acceptance-cli:

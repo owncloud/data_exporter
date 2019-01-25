@@ -63,7 +63,7 @@ class SharesExtractorTest extends TestCase {
 		return $share;
 	}
 
-	private function getFakeLinkShare(string $path, string $owner, string $sharedBy, string $permissions, string $name, $expiration, $password) {
+	private function getFakeLinkShare(string $path, string $owner, string $sharedBy, string $permissions, string $name, string $token, $expiration, $password) {
 		$node = $this->createMock(Node::class);
 		$node->method('getPath')->willReturn($path);
 
@@ -73,6 +73,7 @@ class SharesExtractorTest extends TestCase {
 		$share->method('getSharedBy')->willReturn($sharedBy);
 		$share->method('getPermissions')->willReturn($permissions);
 		$share->method('getName')->willReturn($name);
+		$share->method('getToken')->willReturn($token);
 		if ($expiration) {
 			$share->method('getExpirationDate')->willReturn($expiration);
 		}
@@ -87,7 +88,7 @@ class SharesExtractorTest extends TestCase {
 		$userShare1 = $this->getFakeShare('/usertest/files/path/to/file', 'usertest', 'usertest', 'usertest2', 1);
 		$userShare2 = $this->getFakeShare('/usertest/files/path/to/file', 'usertest', 'initiator', 'usertest2', 1);
 		$groupShare1 = $this->getFakeShare('/usertest/files/path/to/file', 'usertest', 'initiator', 'group', 31);
-		$linkShare1 = $this->getFakeLinkShare('/usertest/files/path/to/file', 'usertest', 'initiator', 31, 'my link name', null, null);
+		$linkShare1 = $this->getFakeLinkShare('/usertest/files/path/to/file', 'usertest', 'initiator', 31, 'my link name', '#token', null, null);
 		$remoteShare1 = $this->getFakeShare('/usertest/files/path/to/file', 'usertest', 'initiator', 'user@remote', 1);
 
 		$this->manager->method('getSharesBy')
@@ -142,6 +143,7 @@ class SharesExtractorTest extends TestCase {
 				->setOwner('usertest')
 				->setSharedBy('initiator')
 				->setPermissions(31)
+				->setToken('#token')
 				->setName('my link name'),
 			(new Share())
 				->setPath('/path/to/file')
@@ -161,6 +163,7 @@ class SharesExtractorTest extends TestCase {
 			$this->assertEquals($expectedShareModel->getSharedBy(), $realModels[$key]->getSharedBy());
 			$this->assertEquals($expectedShareModel->getSharedWith(), $realModels[$key]->getSharedWith());
 			$this->assertEquals($expectedShareModel->getPermissions(), $realModels[$key]->getPermissions());
+			$this->assertEquals($expectedShareModel->getToken(), $realModels[$key]->getToken());
 			$this->assertEquals($expectedShareModel->getExpirationDate(), $realModels[$key]->getExpirationDate());
 			$this->assertEquals($expectedShareModel->getPassword(), $realModels[$key]->getPassword());
 			$this->assertEquals($expectedShareModel->getName(), $realModels[$key]->getName());
@@ -188,10 +191,10 @@ class SharesExtractorTest extends TestCase {
 		$testDateTime = new \DateTime();
 		$testDateTime->setTimestamp(12345678);
 
-		$linkShare1 = $this->getFakeLinkShare('/usertest/files/path/to/file', 'usertest', 'initiator', 31, 'my link name', null, null);
-		$linkShare2 = $this->getFakeLinkShare('/usertest/files/path/to/file', 'usertest', 'initiator', 31, 'my link name', $testDateTime, null);
-		$linkShare3 = $this->getFakeLinkShare('/usertest/files/path/to/file', 'usertest', 'initiator', 31, 'my link name', null, 'hashed#Password');
-		$linkShare4 = $this->getFakeLinkShare('/usertest/files/path/to/file', 'usertest', 'initiator', 31, 'my link name', $testDateTime, 'hashed#Password');
+		$linkShare1 = $this->getFakeLinkShare('/usertest/files/path/to/file', 'usertest', 'initiator', 31, 'my link name', '#token-1', null, null);
+		$linkShare2 = $this->getFakeLinkShare('/usertest/files/path/to/file', 'usertest', 'initiator', 31, 'my link name', '#token-2', $testDateTime, null);
+		$linkShare3 = $this->getFakeLinkShare('/usertest/files/path/to/file', 'usertest', 'initiator', 31, 'my link name', '#token-3', null, 'hashed#Password');
+		$linkShare4 = $this->getFakeLinkShare('/usertest/files/path/to/file', 'usertest', 'initiator', 31, 'my link name', '#token-4', $testDateTime, 'hashed#Password');
 
 		$this->manager->method('getSharesBy')
 			->will($this->returnValueMap([
@@ -224,6 +227,7 @@ class SharesExtractorTest extends TestCase {
 				->setOwner('usertest')
 				->setSharedBy('initiator')
 				->setPermissions(31)
+				->setToken('#token-1')
 				->setName('my link name'),
 			(new Share())
 				->setPath('/path/to/file')
@@ -231,6 +235,7 @@ class SharesExtractorTest extends TestCase {
 				->setOwner('usertest')
 				->setSharedBy('initiator')
 				->setPermissions(31)
+				->setToken('#token-2')
 				->setName('my link name')
 				->setExpirationDate(12345678),
 			(new Share())
@@ -239,6 +244,7 @@ class SharesExtractorTest extends TestCase {
 				->setOwner('usertest')
 				->setSharedBy('initiator')
 				->setPermissions(31)
+				->setToken('#token-3')
 				->setName('my link name')
 				->setPassword('hashed#Password'),
 			(new Share())
@@ -247,6 +253,7 @@ class SharesExtractorTest extends TestCase {
 				->setOwner('usertest')
 				->setSharedBy('initiator')
 				->setPermissions(31)
+				->setToken('#token-4')
 				->setName('my link name')
 				->setExpirationDate(12345678)
 				->setPassword('hashed#Password'),
@@ -261,6 +268,7 @@ class SharesExtractorTest extends TestCase {
 			$this->assertEquals($expectedShareModel->getSharedBy(), $realModels[$key]->getSharedBy());
 			$this->assertEquals($expectedShareModel->getSharedWith(), $realModels[$key]->getSharedWith());
 			$this->assertEquals($expectedShareModel->getPermissions(), $realModels[$key]->getPermissions());
+			$this->assertEquals($expectedShareModel->getToken(), $realModels[$key]->getToken());
 			$this->assertEquals($expectedShareModel->getExpirationDate(), $realModels[$key]->getExpirationDate());
 			$this->assertEquals($expectedShareModel->getPassword(), $realModels[$key]->getPassword());
 			$this->assertEquals($expectedShareModel->getName(), $realModels[$key]->getName());
