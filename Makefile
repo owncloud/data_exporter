@@ -39,6 +39,7 @@ $(composer_dev_deps): composer.json composer.lock
 .PHONY: clean-composer-dev-deps
 clean-composer-dev-deps:
 	rm -Rf $(composer_dev_deps)
+	rm -Rf vendor
 	rm -Rf vendor-bin/**/vendor vendor-bin/**/composer.lock
 
 vendor-bin/owncloud-codestyle/vendor: vendor-bin/owncloud-codestyle/composer.lock
