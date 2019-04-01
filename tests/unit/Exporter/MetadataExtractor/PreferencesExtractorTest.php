@@ -33,7 +33,7 @@ class PreferencesExtractorTest extends TestCase {
 	/** @var PreferencesExtractor */
 	private $preferencesExtractor;
 
-	/** @var IConfig | \PHPUnit_Framework_MockObject_MockObject */
+	/** @var IConfig | \PHPUnit\Framework\MockObject\MockObject */
 	private $config;
 	/** @var IAppConfig */
 	private $appConfig;

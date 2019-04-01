@@ -33,7 +33,7 @@ class UserExtractorTest extends TestCase {
 	/** @var UserExtractor*/
 	private $userExtractor;
 
-	/** @var IUserManager | \PHPUnit_Framework_MockObject_MockObject */
+	/** @var IUserManager | \PHPUnit\Framework\MockObject\MockObject */
 	private $userManager;
 
 	private $groupManager;

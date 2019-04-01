@@ -36,9 +36,9 @@ class SharesExtractorTest extends TestCase {
 	/** @var SharesExtractor */
 	private $sharesExtractor;
 
-	/** @var IManager | \PHPUnit_Framework_MockObject_MockObject */
+	/** @var IManager | \PHPUnit\Framework\MockObject\MockObject */
 	private $manager;
-	/** @var IRootFolder | \PHPUnit_Framework_MockObject_MockObject */
+	/** @var IRootFolder | \PHPUnit\Framework\MockObject\MockObject */
 	private $rootFolder;
 
 	protected function setUp() {
