@@ -39,21 +39,21 @@ use OCA\DataExporter\Utilities\ShareConverter;
 use Test\TestCase;
 
 class ShareImporterTest extends TestCase {
-	/** @var IManager | \PHPUnit_Framework_MockObject_MockObject */
+	/** @var IManager | \PHPUnit\Framework\MockObject\MockObject */
 	private $shareManager;
-	/** @var IRootFolder | \PHPUnit_Framework_MockObject_MockObject */
+	/** @var IRootFolder | \PHPUnit\Framework\MockObject\MockObject */
 	private $rootFolder;
-	/** @var IUserManager | \PHPUnit_Framework_MockObject_MockObject */
+	/** @var IUserManager | \PHPUnit\Framework\MockObject\MockObject */
 	private $userManager;
-	/** @var IGroupManager | \PHPUnit_Framework_MockObject_MockObject */
+	/** @var IGroupManager | \PHPUnit\Framework\MockObject\MockObject */
 	private $groupManager;
-	/** @var ShareConverter | \PHPUnit_Framework_MockObject_MockObject */
+	/** @var ShareConverter | \PHPUnit\Framework\MockObject\MockObject */
 	private $shareConverter;
-	/** @var IURLGenerator | \PHPUnit_Framework_MockObject_MockObject */
+	/** @var IURLGenerator | \PHPUnit\Framework\MockObject\MockObject */
 	private $urlGenerator;
-	/** @var ShareImporter | \PHPUnit_Framework_MockObject_MockObject */
+	/** @var ShareImporter | \PHPUnit\Framework\MockObject\MockObject */
 	private $shareImporter;
-	/** @var ILogger | \PHPUnit_Framework_MockObject_MockObject */
+	/** @var ILogger | \PHPUnit\Framework\MockObject\MockObject */
 	private $logger;
 
 	protected function setUp() {

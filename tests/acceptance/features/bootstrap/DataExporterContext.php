@@ -193,17 +193,17 @@ class DataExporterContext implements Context {
 	 * @return void
 	 */
 	private static function assertPathContainsExport($path) {
-		\PHPUnit_Framework_Assert::assertDirectoryExists(
+		\PHPUnit\Framework\Assert::assertDirectoryExists(
 			$path,
 			"Export directory $path does not exist"
 		);
 
-		\PHPUnit_Framework_Assert::assertDirectoryExists(
+		\PHPUnit\Framework\Assert::assertDirectoryExists(
 			self::path("$path/files"),
 			"No files directory found inside export $path"
 		);
 
-		\PHPUnit_Framework_Assert::assertFileExists(
+		\PHPUnit\Framework\Assert::assertFileExists(
 			self::path("$path/metadata.json"),
 			"No metadata.json found inside export $path"
 		);
@@ -216,7 +216,7 @@ class DataExporterContext implements Context {
 	 * @return void
 	 */
 	private function assertFilePhysicallyExistInLastExport($filename, $message = '') {
-		\PHPUnit_Framework_Assert::assertFileExists(
+		\PHPUnit\Framework\Assert::assertFileExists(
 			self::path("{$this->lastExportPath}/files/$filename"),
 			$message
 		);
@@ -242,7 +242,7 @@ class DataExporterContext implements Context {
 	 */
 	private function readFileFromServerRoot($path) {
 		$this->featureContext->readFileInServerRoot($path);
-		PHPUnit_Framework_Assert::assertSame(
+		PHPUnit\Framework\Assert::assertSame(
 			200,
 			$this->featureContext->getResponse()->getStatusCode(),
 			"Failed to read the file {$path}"
@@ -265,7 +265,7 @@ class DataExporterContext implements Context {
 		);
 
 		if (!isset($metadata['user']['files']) || empty($metadata['user']['files'])) {
-			\PHPUnit_Framework_Assert::fail('File not found in metadata');
+			\PHPUnit\Framework\Assert::fail('File not found in metadata');
 		}
 
 		$isFileFoundInExport = false;
@@ -275,7 +275,7 @@ class DataExporterContext implements Context {
 			}
 		}
 
-		\PHPUnit_Framework_Assert::assertTrue(
+		\PHPUnit\Framework\Assert::assertTrue(
 			$isFileFoundInExport,
 			"File $filename not found in metadata"
 		);
