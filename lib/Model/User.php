@@ -53,7 +53,7 @@ class User {
 	/**
 	 * @return string
 	 */
-	public function getUserId(): string {
+	public function getUserId() {
 		return $this->userId;
 	}
 
@@ -61,7 +61,7 @@ class User {
 	 * @param string $userId
 	 * @return User
 	 */
-	public function setUserId(string $userId): User {
+	public function setUserId(string $userId) {
 		$this->userId = $userId;
 		return $this;
 	}
@@ -69,7 +69,7 @@ class User {
 	/**
 	 * @return string
 	 */
-	public function getDisplayName(): string {
+	public function getDisplayName() {
 		return $this->displayName;
 	}
 
@@ -77,7 +77,7 @@ class User {
 	 * @param string|null $displayName
 	 * @return User
 	 */
-	public function setDisplayName($displayName): User {
+	public function setDisplayName($displayName) {
 		$this->displayName = $displayName;
 		return $this;
 	}
@@ -93,7 +93,7 @@ class User {
 	 * @param string $email
 	 * @return User
 	 */
-	public function setEmail($email): User {
+	public function setEmail($email) {
 		$this->email = $email;
 		return $this;
 	}
@@ -101,7 +101,7 @@ class User {
 	/**
 	 * @return string
 	 */
-	public function getQuota(): string {
+	public function getQuota() {
 		return $this->quota;
 	}
 
@@ -109,7 +109,7 @@ class User {
 	 * @param string|null $quota
 	 * @return User
 	 */
-	public function setQuota($quota): User {
+	public function setQuota($quota) {
 		$this->quota = $quota;
 		return $this;
 	}
@@ -117,7 +117,7 @@ class User {
 	/**
 	 * @return string
 	 */
-	public function getBackend(): string {
+	public function getBackend() {
 		return $this->backend;
 	}
 
@@ -125,7 +125,7 @@ class User {
 	 * @param string $backend
 	 * @return User
 	 */
-	public function setBackend(string $backend): User {
+	public function setBackend($backend) {
 		$this->backend = $backend;
 		return $this;
 	}
@@ -133,7 +133,7 @@ class User {
 	/**
 	 * @return bool
 	 */
-	public function isEnabled() : bool {
+	public function isEnabled() {
 		return $this->enabled;
 	}
 
@@ -141,7 +141,7 @@ class User {
 	 * @param bool $enabled
 	 * @return User
 	 */
-	public function setEnabled(bool $enabled): User {
+	public function setEnabled($enabled) {
 		$this->enabled = $enabled;
 		return $this;
 	}
@@ -149,7 +149,7 @@ class User {
 	/**
 	 * @return string[]
 	 */
-	public function getGroups(): array {
+	public function getGroups() {
 		return $this->groups;
 	}
 
@@ -157,7 +157,7 @@ class User {
 	 * @param string[] $groups
 	 * @return User
 	 */
-	public function setGroups(array $groups): User {
+	public function setGroups(array $groups) {
 		$this->groups = $groups;
 		return $this;
 	}
@@ -165,7 +165,7 @@ class User {
 	/**
 	 * @return Preference[]
 	 */
-	public function getPreferences(): array {
+	public function getPreferences() {
 		return $this->preferences;
 	}
 
@@ -173,7 +173,7 @@ class User {
 	 * @param Preference[] $preferences
 	 * @return User
 	 */
-	public function setPreferences(array $preferences): User {
+	public function setPreferences(array $preferences) {
 		$this->preferences = $preferences;
 		return $this;
 	}
@@ -181,7 +181,7 @@ class User {
 	/**
 	 * @return File[]
 	 */
-	public function getFiles(): array {
+	public function getFiles() {
 		return $this->files;
 	}
 
@@ -189,7 +189,7 @@ class User {
 	 * @param File[] $files
 	 * @return User
 	 */
-	public function setFiles(array $files): User {
+	public function setFiles(array $files) {
 		$this->files = $files;
 		return $this;
 	}
@@ -197,7 +197,7 @@ class User {
 	/**
 	 * @return Share[]
 	 */
-	public function getShares(): array {
+	public function getShares() {
 		return $this->shares;
 	}
 
@@ -205,7 +205,7 @@ class User {
 	 * @param Share[] $shares
 	 * @return User
 	 */
-	public function setShares(array $shares): User {
+	public function setShares(array $shares) {
 		$this->shares = $shares;
 		return $this;
 	}

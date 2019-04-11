@@ -42,7 +42,7 @@ class SkipNodeConditionIgnorePath implements ISkipNodeCondition {
 		$this->ignoredPaths = $ignoredPaths;
 	}
 
-	public function shouldSkipNode(Node $node): bool {
+	public function shouldSkipNode(Node $node) {
 		$nodeRelativePath = $this->baseFolder->getRelativePath($node->getPath());
 		if ($nodeRelativePath === null) {
 			return false;  // the node isn't inside the folder whose paths we want to ignore

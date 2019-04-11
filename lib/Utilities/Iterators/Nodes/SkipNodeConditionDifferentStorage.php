@@ -34,11 +34,11 @@ class SkipNodeConditionDifferentStorage implements ISkipNodeCondition {
 	/** @var string */
 	private $storageId;
 
-	public function __construct(string $storageId) {
+	public function __construct($storageId) {
 		$this->storageId = $storageId;
 	}
 
-	public function shouldSkipNode(Node $node): bool {
+	public function shouldSkipNode(Node $node) {
 		if ($node instanceof Folder) {
 			$nodeStorageId = $node->getStorage()->getId();
 			if ($this->storageId !== $nodeStorageId) {

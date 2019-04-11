@@ -35,7 +35,7 @@ class Metadata {
 	/**
 	 * @return \DateTimeImmutable
 	 */
-	public function getDate(): \DateTimeImmutable {
+	public function getDate() {
 		return $this->date;
 	}
 
@@ -43,7 +43,7 @@ class Metadata {
 	 * @param \DateTimeImmutable $date
 	 * @return Metadata
 	 */
-	public function setDate(\DateTimeImmutable $date): Metadata {
+	public function setDate(\DateTimeImmutable $date) {
 		$this->date = $date;
 		return $this;
 	}
@@ -51,7 +51,7 @@ class Metadata {
 	/**
 	 * @return string the exporting server address with port
 	 */
-	public function getOriginServer(): string {
+	public function getOriginServer() {
 		return $this->originServer;
 	}
 
@@ -60,7 +60,7 @@ class Metadata {
 	 * including port, like "10.10.10.10:8080" or "my.server:443"
 	 * @return Metadata
 	 */
-	public function setOriginServer(string $originServer): Metadata {
+	public function setOriginServer($originServer) {
 		$this->originServer = $originServer;
 		return $this;
 	}
@@ -68,7 +68,7 @@ class Metadata {
 	/**
 	 * @return User
 	 */
-	public function getUser(): User {
+	public function getUser() {
 		return $this->user;
 	}
 
@@ -76,7 +76,7 @@ class Metadata {
 	 * @param User $user
 	 * @return Metadata
 	 */
-	public function setUser(User $user): Metadata {
+	public function setUser(User $user) {
 		$this->user = $user;
 		return $this;
 	}

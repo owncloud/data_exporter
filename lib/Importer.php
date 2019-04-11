@@ -66,7 +66,7 @@ class Importer {
 	 * @throws \OCP\Files\StorageNotAvailableException
 	 * @throws \OCP\PreConditionNotMetException
 	 */
-	public function import(string $pathToExportDir, $alias = null) {
+	public function import($pathToExportDir, $alias = null) {
 		$metaDataPath = "$pathToExportDir/metadata.json";
 
 		if (!$this->filesystem->exists($metaDataPath)) {

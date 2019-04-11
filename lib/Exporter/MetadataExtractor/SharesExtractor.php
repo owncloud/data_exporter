@@ -23,6 +23,7 @@
 namespace OCA\DataExporter\Exporter\MetadataExtractor;
 
 use OCA\DataExporter\Model\User\Share;
+use OCP\IConfig;
 use OCP\Share\IManager;
 use OCP\Share as ShareConstants;
 use OCP\Files\IRootFolder;
@@ -32,17 +33,31 @@ class SharesExtractor {
 	private $manager;
 	/** @var IRootFolder */
 	private $rootFolder;
+	/**
+	 * @var IConfig
+	 */
+	private $config;
 
-	public function __construct(IManager $manager, IRootFolder $rootFolder) {
+	public function __construct(IManager $manager, IRootFolder $rootFolder, IConfig $config) {
 		$this->manager = $manager;
 		$this->rootFolder = $rootFolder;
+		$this->config = $config;
 	}
 
 	/**
 	 * @param string $userId the id of the user to extract the info from
 	 * @return Share[]
 	 */
-	public function extract(string $userId): array {
+	public function extract($userId) {
+		$ocVersion = $this->config->getSystemValue('version', '');
+		if (\version_compare($ocVersion, '10', '<')) {
+			return \array_merge(
+				$this->getUserShares($userId),
+				$this->getGroupShares($userId),
+				$this->getLinkShares9($userId),
+				$this->getRemoteShares($userId)
+			);
+		}
 		return \array_merge(
 			$this->getUserShares($userId),
 			$this->getGroupShares($userId),
@@ -55,7 +70,7 @@ class SharesExtractor {
 	 * @param string $userId the user id to get the shares from
 	 * @return Share[] the list of matching share models
 	 */
-	private function getUserShares(string $userId): array {
+	private function getUserShares($userId) {
 		$shareModels = [];
 		$limit = 50;
 		$offset = 0;
@@ -92,7 +107,7 @@ class SharesExtractor {
 	 * @param string $userId the user id to get the shares from
 	 * @return Share[] the list of matching share models
 	 */
-	private function getGroupShares(string $userId): array {
+	private function getGroupShares($userId) {
 		$shareModels = [];
 		$limit = 50;
 		$offset = 0;
@@ -129,7 +144,7 @@ class SharesExtractor {
 	 * @param string $userId the user id to get the shares from
 	 * @return Share[] the list of matching share models
 	 */
-	private function getLinkShares(string $userId): array {
+	private function getLinkShares($userId) {
 		$shareModels = [];
 		$limit = 50;
 		$offset = 0;
@@ -177,7 +192,55 @@ class SharesExtractor {
 	 * @param string $userId the user id to get the shares from
 	 * @return Share[] the list of matching share models
 	 */
-	private function getRemoteShares(string $userId): array {
+	private function getLinkShares9($userId) {
+		$shareModels = [];
+		$limit = 50;
+		$offset = 0;
+		$userFolder = $this->rootFolder->getUserFolder($userId);
+
+		do {
+			$shares = $this->manager->getSharesBy(
+				$userId,
+				ShareConstants::SHARE_TYPE_LINK,
+				null,
+				true,
+				$limit,
+				$offset
+			);
+			$offset += $limit;
+
+			foreach ($shares as $share) {
+				$shareModel = new Share();
+				$shareModel->setPath($userFolder->getRelativePath($share->getNode()->getPath()))
+					->setShareType(Share::SHARETYPE_LINK)
+					->setOwner($share->getShareOwner())
+					->setSharedBy($share->getSharedBy())
+					->setPermissions($share->getPermissions())
+					->setName('')
+					->setToken($share->getToken());
+
+				$expiration = $share->getExpirationDate();
+				if ($expiration) {
+					$shareModel->setExpirationDate($expiration->getTimestamp());
+				}
+
+				$password = $share->getPassword();  // the retrieved password is expected to be hashed
+				if (\is_string($password)) {
+					$shareModel->setPassword($password);
+				}
+				// the rest of the model attributes doesn't make sense with link shares
+				$shareModels[] = $shareModel;
+			}
+		} while (\count($shares) >= $limit);
+
+		return $shareModels;
+	}
+
+	/**
+	 * @param string $userId the user id to get the shares from
+	 * @return Share[] the list of matching share models
+	 */
+	private function getRemoteShares($userId) {
 		$shareModels = [];
 		$limit = 50;
 		$offset = 0;

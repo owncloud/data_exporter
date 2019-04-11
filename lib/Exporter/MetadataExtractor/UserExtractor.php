@@ -45,7 +45,7 @@ class UserExtractor {
 	 *
 	 * @throws \RuntimeException
 	 */
-	public function extract(string $userId) : User {
+	public function extract($userId) {
 		$userData = $this->userManager->get($userId);
 
 		if (!$userData) {

@@ -4,14 +4,14 @@
   "homepage": "https://github.com/owncloud/data_exporter",
   "config": {
     "platform": {
-      "php": "7.0.8"
+      "php": "5.6"
     }
   },
   "require-dev": {
     "bamarni/composer-bin-plugin": "^1.2"
   },
   "require": {
-    "php": ">=7.0.8",
+    "php": ">=5.6",
     "phpdocumentor/reflection-docblock": "^4.3",
     "symfony/serializer": "^3.4",
     "symfony/property-access": "^3.4",
@@ -21,6 +21,11 @@
   "extra": {
     "bamarni-bin": {
       "bin-links": false
+    }
+  },
+  "autoload": {
+    "psr-4": {
+      "OCA\\DataExporter\\" : "lib/"
     }
   }
 }

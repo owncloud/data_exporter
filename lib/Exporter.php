@@ -44,7 +44,7 @@ class Exporter {
 		$this->filesystem = $filesystem;
 	}
 
-	public function export(string $uid, string $exportDirectoryPath) {
+	public function export($uid, $exportDirectoryPath) {
 		$exportPath = "$exportDirectoryPath/$uid";
 		$metaData = $this->metadataExtractor->extract($uid);
 		$this->filesystem->dumpFile(
