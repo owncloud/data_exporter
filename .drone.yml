@@ -43,6 +43,24 @@ pipeline:
       - php occ config:system:set trusted_domains 1 --value=owncloud
       - php occ log:manage --level 0
 
+  prepare-objectstore:
+    image: owncloudci/php:${PHP_VERSION}
+    pull: true
+    commands:
+      - cd /var/www/owncloud/apps
+      - git clone https://github.com/owncloud/files_primary_s3.git
+      - cd files_primary_s3
+      - composer install
+      - cp tests/drone/scality.config.php /var/www/owncloud/config
+      - cd /var/www/owncloud
+      - php occ a:l
+      - php occ a:e files_primary_s3
+      - php occ a:l
+      - php occ s3:create-bucket owncloud --accept-warning
+    when:
+      matrix:
+        TEST_OBJECTSTORAGE: true
+
   fix-permissions:
     image: owncloudci/php:${PHP_VERSION}
     pull: true
@@ -233,6 +251,15 @@ services:
       matrix:
         NEED_SERVER: true
 
+  scality:
+    image: owncloudci/scality-s3server
+    pull: true
+    environment:
+      - HOST_NAME=scality
+    when:
+      matrix:
+        TEST_OBJECTSTORAGE: true
+
 matrix:
   include:
     # unit tests
@@ -288,6 +315,16 @@ matrix:
        DB_USERNAME: admin
        DB_PASSWORD: secret
        TEST_SUITE: phpunit
+
+     - PHP_VERSION: 7.1
+       OC_VERSION: daily-stable10-qa
+       DB_TYPE: mysql
+       DB_HOST: mysql
+       DB_NAME: oc_db
+       DB_USERNAME: admin
+       DB_PASSWORD: secret
+       TEST_SUITE: phpunit
+       TEST_OBJECTSTORAGE: true
 
      # acceptance tests
 
