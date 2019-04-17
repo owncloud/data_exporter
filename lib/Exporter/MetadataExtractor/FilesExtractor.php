@@ -41,7 +41,7 @@ class FilesExtractor {
 	 * @throws \OCP\Files\InvalidPathException
 	 * @throws \OCP\Files\NotFoundException
 	 */
-	public function extract(string $userId) : array {
+	public function extract($userId) {
 		list($iterator, $baseFolder) = $this->iteratorFactory->getUserFolderParentRecursiveIterator($userId);
 		$files = [];
 

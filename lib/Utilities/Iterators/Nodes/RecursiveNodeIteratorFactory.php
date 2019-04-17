@@ -57,7 +57,7 @@ class RecursiveNodeIteratorFactory {
 	 * @return array a RecursiveIteratorIterator wrapping a RecursiveNodeIterator and the base Folder node
 	 * @throws \OC\User\NoUserException (unhandled exception)
 	 */
-	public function getUserFolderRecursiveIterator(string $userId, $mode = \RecursiveIteratorIterator::SELF_FIRST) {
+	public function getUserFolderRecursiveIterator($userId, $mode = \RecursiveIteratorIterator::SELF_FIRST) {
 		$userFolder = $this->rootFolder->getUserFolder($userId);
 		$nodeIterator = new RecursiveNodeIterator($userFolder);
 		$conditionDifferentStorage = new SkipNodeConditionDifferentStorage($userFolder->getStorage()->getId());
@@ -95,7 +95,7 @@ class RecursiveNodeIteratorFactory {
 	 * @return array a RecursiveIteratorIterator wrapping a RecursiveNodeIterator and the base Folder node
 	 * @throws \OC\User\NoUserException (unhandled exception)
 	 */
-	public function getUserFolderParentRecursiveIterator(string $userId, $mode = \RecursiveIteratorIterator::SELF_FIRST) {
+	public function getUserFolderParentRecursiveIterator($userId, $mode = \RecursiveIteratorIterator::SELF_FIRST) {
 		$userFolder = $this->rootFolder->getUserFolder($userId);
 		$parentFolder = $userFolder->getParent();
 		$nodeIterator = new RecursiveNodeIterator($parentFolder);

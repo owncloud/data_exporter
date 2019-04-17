@@ -53,7 +53,7 @@ class RecursiveNodeIterator implements \RecursiveIterator {
 		$this->findNextValid();
 	}
 
-	public function valid(): bool {
+	public function valid() {
 		return $this->currentIndex < $this->nodeCount;
 	}
 
@@ -66,15 +66,15 @@ class RecursiveNodeIterator implements \RecursiveIterator {
 		return $this->folderNodes[$this->currentIndex]->getPath();
 	}
 
-	public function current(): Node {
+	public function current() {
 		return $this->folderNodes[$this->currentIndex];
 	}
 
-	public function hasChildren(): bool {
+	public function hasChildren() {
 		return $this->folderNodes[$this->currentIndex] instanceof Folder;
 	}
 
-	public function getChildren(): RecursiveNodeIterator {
+	public function getChildren() {
 		/** @var Folder $childFolder */
 		$childFolder = $this->folderNodes[$this->currentIndex];
 		/**
@@ -107,7 +107,7 @@ class RecursiveNodeIterator implements \RecursiveIterator {
 	 * @param Node $currentNode the node to be checked
 	 * @return bool true if it should be skipped, false otherwise
 	 */
-	private function shouldSkipNode(Node $currentNode): bool {
+	private function shouldSkipNode(Node $currentNode) {
 		foreach ($this->skipConditions as $skipCondition) {
 			if ($skipCondition->shouldSkipNode($currentNode)) {
 				return true;
@@ -135,7 +135,7 @@ class RecursiveNodeIterator implements \RecursiveIterator {
 	 * array if no condition is set
 	 * @return ISkipNodeCondition[] the list of conditions currently set
 	 */
-	public function getSkipConditions(): array {
+	public function getSkipConditions() {
 		return $this->skipConditions;
 	}
 

@@ -80,7 +80,7 @@ class MetadataExtractor {
 	 * @throws \Exception
 	 * @throws \RuntimeException if user can not be read
 	 */
-	public function extract(string $uid) : Metadata {
+	public function extract($uid) {
 		$user = $this->userExtractor->extract($uid);
 		$user->setPreferences(
 			$this->preferencesExtractor->extract($uid)

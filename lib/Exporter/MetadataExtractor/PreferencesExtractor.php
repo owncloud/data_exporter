@@ -42,7 +42,7 @@ class PreferencesExtractor {
 	 * @param string $userId
 	 * @return Preference[]
 	 */
-	public function extract(string $userId) : array {
+	public function extract($userId) {
 		$appList = $this->appConfig->getApps();
 		$preferences = [];
 		foreach ($appList as $app) {

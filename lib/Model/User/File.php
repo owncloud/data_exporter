@@ -46,7 +46,7 @@ class File {
 	 * @param string $type
 	 * @return File
 	 */
-	public function setType(string $type) : File {
+	public function setType($type) {
 		$this->type = $type;
 		return $this;
 	}
@@ -54,7 +54,7 @@ class File {
 	/**
 	 * @return string
 	 */
-	public function getPath(): string {
+	public function getPath() {
 		return $this->path;
 	}
 
@@ -62,7 +62,7 @@ class File {
 	 * @param string $path
 	 * @return File
 	 */
-	public function setPath(string $path): File {
+	public function setPath($path) {
 		$this->path = $path;
 		return $this;
 	}
@@ -78,7 +78,7 @@ class File {
 	 * @param string $eTag
 	 * @return File
 	 */
-	public function setETag($eTag) : File {
+	public function setETag($eTag) {
 		$this->eTag = $eTag;
 		return $this;
 	}
@@ -86,7 +86,7 @@ class File {
 	/**
 	 * @return int
 	 */
-	public function getPermissions(): int {
+	public function getPermissions() {
 		return $this->permissions;
 	}
 
@@ -94,7 +94,7 @@ class File {
 	 * @param int $permissions
 	 * @return File
 	 */
-	public function setPermissions(int $permissions): File {
+	public function setPermissions($permissions) {
 		$this->permissions = $permissions;
 		return $this;
 	}

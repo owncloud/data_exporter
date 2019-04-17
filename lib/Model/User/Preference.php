@@ -33,7 +33,7 @@ class Preference {
 	/**
 	 * @return string
 	 */
-	public function getAppId(): string {
+	public function getAppId() {
 		return $this->appId;
 	}
 
@@ -41,7 +41,7 @@ class Preference {
 	 * @param string $appId
 	 * @return Preference
 	 */
-	public function setAppId(string $appId): Preference {
+	public function setAppId($appId) {
 		$this->appId = $appId;
 		return $this;
 	}
@@ -49,7 +49,7 @@ class Preference {
 	/**
 	 * @return string
 	 */
-	public function getConfigKey(): string {
+	public function getConfigKey() {
 		return $this->configKey;
 	}
 
@@ -57,7 +57,7 @@ class Preference {
 	 * @param string $configKey
 	 * @return Preference
 	 */
-	public function setConfigKey(string $configKey): Preference {
+	public function setConfigKey($configKey) {
 		$this->configKey = $configKey;
 		return $this;
 	}
@@ -65,7 +65,7 @@ class Preference {
 	/**
 	 * @return string
 	 */
-	public function getConfigValue(): string {
+	public function getConfigValue() {
 		return $this->configValue;
 	}
 
@@ -73,7 +73,7 @@ class Preference {
 	 * @param string $configValue
 	 * @return Preference
 	 */
-	public function setConfigValue(string $configValue): Preference {
+	public function setConfigValue($configValue) {
 		$this->configValue = $configValue;
 		return $this;
 	}

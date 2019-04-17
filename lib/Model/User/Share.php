@@ -52,7 +52,7 @@ class Share {
 	/**
 	 * @return string
 	 */
-	public function getPath(): string {
+	public function getPath() {
 		return $this->path;
 	}
 
@@ -60,7 +60,7 @@ class Share {
 	 * @param string $path the path of the shared file
 	 * @return Share
 	 */
-	public function setPath(string $path): Share {
+	public function setPath($path) {
 		$this->path = $path;
 		return $this;
 	}
@@ -68,7 +68,7 @@ class Share {
 	/**
 	 * @return string
 	 */
-	public function getShareType(): string {
+	public function getShareType() {
 		return $this->shareType;
 	}
 
@@ -76,7 +76,7 @@ class Share {
 	 * @param string $shareType SHARETYPE_* constants
 	 * @return Share
 	 */
-	public function setShareType(string $shareType): Share {
+	public function setShareType($shareType) {
 		$this->shareType = $shareType;
 		return $this;
 	}
@@ -84,7 +84,7 @@ class Share {
 	/**
 	 * @return string the owner of the share
 	 */
-	public function getOwner(): string {
+	public function getOwner() {
 		return $this->owner;
 	}
 
@@ -92,14 +92,14 @@ class Share {
 	 * @param string $owner the owner of the share
 	 * @return Share
 	 */
-	public function setOwner(string $owner): Share {
+	public function setOwner($owner) {
 		$this->owner = $owner;
 		return $this;
 	}
 	/**
 	 * @return string the initiator (not the owner) of the share
 	 */
-	public function getSharedBy(): string {
+	public function getSharedBy() {
 		return $this->initiator;
 	}
 
@@ -107,7 +107,7 @@ class Share {
 	 * @param string $initiator the initiator (not the owner) of the share
 	 * @return Share
 	 */
-	public function setSharedBy(string $initiator): Share {
+	public function setSharedBy($initiator) {
 		$this->initiator = $initiator;
 		return $this;
 	}
@@ -123,7 +123,7 @@ class Share {
 	 * @param string|null $sharedWith
 	 * @return Share
 	 */
-	public function setSharedWith($sharedWith): Share {
+	public function setSharedWith($sharedWith) {
 		$this->sharedWith = $sharedWith;
 		return $this;
 	}
@@ -131,7 +131,7 @@ class Share {
 	/**
 	 * @return int the permissions code number
 	 */
-	public function getPermissions(): int {
+	public function getPermissions() {
 		return $this->permissions;
 	}
 
@@ -139,7 +139,7 @@ class Share {
 	 * @param int $permissions the permissions code number
 	 * @return Share
 	 */
-	public function setPermissions(int $permissions): Share {
+	public function setPermissions($permissions) {
 		$this->permissions = $permissions;
 		return $this;
 	}
@@ -156,7 +156,7 @@ class Share {
 	 * @param int|null $expirationDate the expiration time for the share link
 	 * @return Share
 	 */
-	public function setExpirationDate($expirationDate): Share {
+	public function setExpirationDate($expirationDate) {
 		$this->expirationDate = $expirationDate;
 		return $this;
 	}
@@ -172,7 +172,7 @@ class Share {
 	/**
 	 * @param string|null $password the (hashed) password for the link
 	 */
-	public function setPassword($password): Share {
+	public function setPassword($password) {
 		$this->password = $password;
 		return $this;
 	}
@@ -189,7 +189,7 @@ class Share {
 	 * @param string|null $name the name of the share link
 	 * @return Share
 	 */
-	public function setName($name): Share {
+	public function setName($name) {
 		$this->name = $name;
 		return $this;
 	}
@@ -206,7 +206,7 @@ class Share {
 	 * @param string|null $token the token of the share link
 	 * @return Share
 	 */
-	public function setToken($token): Share {
+	public function setToken($token) {
 		$this->token = $token;
 		return $this;
 	}

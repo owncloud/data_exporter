@@ -45,7 +45,7 @@ class ShareConverter {
 	 * @param string $userId the local user id
 	 * @param string $targetRemoteHost the remote ownCloud server (https://my.server:8888/owncloud)
 	 */
-	public function convertRemoteUserShareToLocalUserShare(string $userId, string $targetRemoteHost) {
+	public function convertRemoteUserShareToLocalUserShare($userId, $targetRemoteHost) {
 		$remoteUser = \rtrim("{$userId}@{$targetRemoteHost}", '/');  // the remote user isn't stored with the last slash
 		$limit = 50;
 		$offset = 0;
@@ -89,7 +89,7 @@ class ShareConverter {
 	 * @param string $userId the local user id
 	 * @param string $targetRemoteHost the remote ownCloud server (https://my.server:8888/owncloud)
 	 */
-	public function convertLocalUserShareToRemoteUserShare(string $userId, string $targetRemoteHost) {
+	public function convertLocalUserShareToRemoteUserShare($userId, $targetRemoteHost) {
 		$remoteUser = \rtrim("{$userId}@{$targetRemoteHost}", '/');  // the remote user isn't stored with the last slash
 		$limit = 50;
 		$offset = 0;

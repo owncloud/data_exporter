@@ -30,5 +30,5 @@ interface ISkipNodeCondition {
 	 * @param Node $node the target node to be checked
 	 * @return bool true if the the node should be skipped from the iterator, false otherwise
 	 */
-	public function shouldSkipNode(Node $node): bool;
+	public function shouldSkipNode(Node $node);
 }
