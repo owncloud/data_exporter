@@ -21,14 +21,14 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-namespace OCA\DataExporter\Exporter;
+namespace OCA\DataExporter\Extractor;
 
 use OCA\DataExporter\Utilities\Iterators\Nodes\RecursiveNodeIteratorFactory;
 use OCP\Files\File;
 use OCP\Files\Folder;
 use Symfony\Component\Filesystem\Filesystem;
 
-class FilesExporter {
+class FilesExtractor {
 	/** @var RecursiveNodeIteratorFactory  */
 	private $iteratorFactory;
 

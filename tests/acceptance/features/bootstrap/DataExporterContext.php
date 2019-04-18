@@ -264,12 +264,12 @@ class DataExporterContext implements Context {
 			true
 		);
 
-		if (!isset($metadata['user']['files']) || empty($metadata['user']['files'])) {
+		if (!isset($metadata['files']) || empty($metadata['files'])) {
 			\PHPUnit\Framework\Assert::fail('File not found in metadata');
 		}
 
 		$isFileFoundInExport = false;
-		foreach ($metadata['user']['files'] as $file) {
+		foreach ($metadata['files'] as $file) {
 			if (isset($file['path']) && $file['path'] === self::path("/$filename")) {
 				$isFileFoundInExport = true;
 			}

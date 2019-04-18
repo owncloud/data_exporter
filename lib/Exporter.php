@@ -22,8 +22,8 @@
  */
 namespace OCA\DataExporter;
 
-use OCA\DataExporter\Exporter\FilesExporter;
-use OCA\DataExporter\Exporter\MetadataExtractor;
+use OCA\DataExporter\Extractor\FilesExtractor;
+use OCA\DataExporter\Extractor\MetadataExtractor;
 use Symfony\Component\Filesystem\Filesystem;
 
 class Exporter {
@@ -32,15 +32,15 @@ class Exporter {
 	private $serializer;
 	/** @var MetadataExtractor  */
 	private $metadataExtractor;
-	/** @var FilesExporter  */
-	private $filesExporter;
+	/** @var FilesExtractor  */
+	private $filesExtractor;
 	/** @var Filesystem  */
 	private $filesystem;
 
-	public function __construct(Serializer $serializer, MetadataExtractor $metadataExtractor, FilesExporter $filesExporter, Filesystem $filesystem) {
+	public function __construct(Serializer $serializer, MetadataExtractor $metadataExtractor, FilesExtractor $filesExtractor, Filesystem $filesystem) {
 		$this->serializer = $serializer;
 		$this->metadataExtractor = $metadataExtractor;
-		$this->filesExporter = $filesExporter;
+		$this->filesExtractor = $filesExtractor;
 		$this->filesystem = $filesystem;
 	}
 
@@ -53,6 +53,6 @@ class Exporter {
 		);
 
 		$filesPath = \ltrim("$exportPath/files");
-		$this->filesExporter->export($uid, $filesPath);
+		$this->filesExtractor->export($uid, $filesPath);
 	}
 }

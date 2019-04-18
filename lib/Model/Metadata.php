@@ -31,6 +31,8 @@ class Metadata {
 	private $originServer;
 	/** @var User */
 	private $user;
+	/** @var File[] */
+	private $files = [];
 
 	/**
 	 * @return \DateTimeImmutable
@@ -78,6 +80,23 @@ class Metadata {
 	 */
 	public function setUser(User $user) {
 		$this->user = $user;
+		return $this;
+	}
+
+	/**
+	 * @return File[]
+	 */
+	public function getFiles() {
+		return $this->files;
+	}
+
+	/**
+	 * @param File[] $files
+	 *
+	 * @return Metadata
+	 */
+	public function setFiles(array $files) {
+		$this->files = $files;
 		return $this;
 	}
 }

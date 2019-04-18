@@ -21,7 +21,8 @@
  *
  */
 namespace OCA\DataExporter\Tests\Integration;
-use OCA\DataExporter\Exporter\MetadataExtractor;
+
+use OCA\DataExporter\Extractor\MetadataExtractor;
 use OCA\DataExporter\Importer\MetadataImporter;
 use OCA\DataExporter\Importer\MetadataImporter\UserImporter;
 use OCA\DataExporter\Serializer;
@@ -64,7 +65,7 @@ class MetadataImportExportTest extends \Test\TestCase {
 
 		$export = $extractor->extract($this->testUser->getUID());
 		// Don't test files for now
-		$export->getUser()->setFiles([]);
+		$export->setFiles([]);
 
 		$this->testUser->delete();
 
@@ -72,7 +73,7 @@ class MetadataImportExportTest extends \Test\TestCase {
 
 		$reExport = $extractor->extract($this->testUser->getUID());
 		// Don't test files for now
-		$reExport->getUser()->setFiles([]);
+		$reExport->setFiles([]);
 
 		$date = new \DateTimeImmutable('now');
 

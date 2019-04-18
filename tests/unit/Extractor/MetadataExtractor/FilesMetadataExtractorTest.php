@@ -20,26 +20,26 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-namespace OCA\DataExporter\Tests\Unit\Exporter\MetadataExtractor;
+namespace OCA\DataExporter\Tests\Unit\Extractor\MetadataExtractor;
 
-use OCA\DataExporter\Exporter\MetadataExtractor\FilesExtractor;
+use OCA\DataExporter\Extractor\MetadataExtractor\FilesMetadataExtractor;
 use OCA\DataExporter\Utilities\Iterators\Nodes\RecursiveNodeIteratorFactory;
-use OCA\DataExporter\Model\User\File;
+use OCA\DataExporter\Model\File;
 use OCP\Files\Node;
 use OCP\Files\Folder;
 use Test\TestCase;
 
-class FilesExtractorTest extends TestCase {
+class FilesMetadataExtractorTest extends TestCase {
 	/** @var RecursiveNodeIteratorFactory  */
 	private $iteratorFactory;
 
-	/** @var FilesExtractor */
-	private $filesExtractor;
+	/** @var FilesMetadataExtractor */
+	private $filesMetadataExtractor;
 
 	protected function setUp() {
 		$this->iteratorFactory = $this->createMock(RecursiveNodeIteratorFactory::class);
 
-		$this->filesExtractor = new FilesExtractor($this->iteratorFactory);
+		$this->filesMetadataExtractor = new FilesMetadataExtractor($this->iteratorFactory);
 	}
 
 	public function testExtract() {
@@ -106,7 +106,7 @@ class FilesExtractorTest extends TestCase {
 			->setType(File::TYPE_FILE);
 
 		$expectedFileModels = [$expectedFolder1, $expectedFolder2, $expectedFile1, $expectedFile2];
-		$currentFileModels = $this->filesExtractor->extract('usertest');
+		$currentFileModels = $this->filesMetadataExtractor->extract('usertest');
 		$this->assertEquals($expectedFileModels, $currentFileModels);
 	}
 }

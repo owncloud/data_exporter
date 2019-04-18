@@ -22,7 +22,7 @@
  */
 namespace OCA\DataExporter\Importer;
 
-use OCA\DataExporter\Model\User\File;
+use OCA\DataExporter\Model\File;
 use OCP\Files\IRootFolder;
 use Symfony\Component\Filesystem\Filesystem;
 
