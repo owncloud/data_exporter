@@ -23,7 +23,6 @@
  */
 namespace OCA\DataExporter\Model;
 
-use OCA\DataExporter\Model\User\File;
 use OCA\DataExporter\Model\User\Preference;
 use OCA\DataExporter\Model\User\Share;
 
@@ -45,8 +44,6 @@ class User {
 	private $groups = [];
 	/** @var Preference[] */
 	private $preferences = [];
-	/** @var File[] */
-	private $files = [];
 	/** @var Share[] */
 	private $shares = [];
 
@@ -175,22 +172,6 @@ class User {
 	 */
 	public function setPreferences(array $preferences) {
 		$this->preferences = $preferences;
-		return $this;
-	}
-
-	/**
-	 * @return File[]
-	 */
-	public function getFiles() {
-		return $this->files;
-	}
-
-	/**
-	 * @param File[] $files
-	 * @return User
-	 */
-	public function setFiles(array $files) {
-		$this->files = $files;
 		return $this;
 	}
 

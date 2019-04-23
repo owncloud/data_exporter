@@ -20,7 +20,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-namespace OCA\DataExporter\Tests\Unit\Exporter\MetadataExtractor;
+namespace OCA\DataExporter\Tests\Unit\Importer\MetadataImporter;
 
 use OC\Share20\Share as PrivateShare;
 use OCA\DataExporter\Importer\MetadataImporter\ShareImporter;

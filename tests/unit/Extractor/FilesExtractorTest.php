@@ -20,16 +20,16 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-namespace OCA\DataExporter\Tests\Unit\Exporter;
+namespace OCA\DataExporter\Tests\Unit\Extractor;
 
-use OCA\DataExporter\Exporter\FilesExporter;
+use OCA\DataExporter\Extractor\FilesExtractor;
 use OCA\DataExporter\Utilities\Iterators\Nodes\RecursiveNodeIteratorFactory;
 use Symfony\Component\Filesystem\Filesystem;
 use OCP\Files\File;
 use OCP\Files\Folder;
 use Test\TestCase;
 
-class FilesExporterTest extends TestCase {
+class FilesExtractorTest extends TestCase {
 	/** @var RecursiveNodeIteratorFactory  */
 	private $iteratorFactory;
 
@@ -43,7 +43,7 @@ class FilesExporterTest extends TestCase {
 		$this->iteratorFactory = $this->createMock(RecursiveNodeIteratorFactory::class);
 		$this->filesystem = $this->createMock(Filesystem::class);
 
-		$this->filesExporter = new FilesExporter($this->iteratorFactory, $this->filesystem);
+		$this->filesExporter = new FilesExtractor($this->iteratorFactory, $this->filesystem);
 	}
 
 	public function testExportFile() {

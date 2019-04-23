@@ -21,12 +21,12 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-namespace OCA\DataExporter\Exporter;
+namespace OCA\DataExporter\Extractor;
 
-use OCA\DataExporter\Exporter\MetadataExtractor\FilesExtractor;
-use OCA\DataExporter\Exporter\MetadataExtractor\PreferencesExtractor;
-use OCA\DataExporter\Exporter\MetadataExtractor\UserExtractor;
-use OCA\DataExporter\Exporter\MetadataExtractor\SharesExtractor;
+use OCA\DataExporter\Extractor\MetadataExtractor\FilesMetadataExtractor;
+use OCA\DataExporter\Extractor\MetadataExtractor\PreferencesExtractor;
+use OCA\DataExporter\Extractor\MetadataExtractor\SharesExtractor;
+use OCA\DataExporter\Extractor\MetadataExtractor\UserExtractor;
 use OCA\DataExporter\Model\Metadata;
 use OCP\IURLGenerator;
 
@@ -44,8 +44,8 @@ class MetadataExtractor {
 	private $userExtractor;
 	/** @var PreferencesExtractor  */
 	private $preferencesExtractor;
-	/** @var FilesExtractor $filesExtractor */
-	private $filesExtractor;
+	/** @var FilesMetadataExtractor $filesMetadataExtractor */
+	private $filesMetadataExtractor;
 	/** @var SharesExtractor */
 	private $sharesExtractor;
 	/** @var IURLGenerator */
@@ -54,20 +54,20 @@ class MetadataExtractor {
 	/**
 	 * @param UserExtractor $userExtractor
 	 * @param PreferencesExtractor $preferencesExtractor
-	 * @param FilesExtractor $filesExtractor
+	 * @param FilesMetadataExtractor $filesMetadataExtractor
 	 * @param SharesExtractor $sharesExtractor
 	 * @param IURLGenerator $urlGenerator
 	 */
 	public function __construct(
 		UserExtractor $userExtractor,
 		PreferencesExtractor $preferencesExtractor,
-		FilesExtractor $filesExtractor,
+		FilesMetadataExtractor $filesMetadataExtractor,
 		SharesExtractor $sharesExtractor,
 		IURLGenerator $urlGenerator
 	) {
 		$this->userExtractor = $userExtractor;
 		$this->preferencesExtractor = $preferencesExtractor;
-		$this->filesExtractor = $filesExtractor;
+		$this->filesMetadataExtractor = $filesMetadataExtractor;
 		$this->sharesExtractor = $sharesExtractor;
 		$this->urlGenerator = $urlGenerator;
 	}
@@ -82,17 +82,13 @@ class MetadataExtractor {
 	 */
 	public function extract($uid) {
 		$user = $this->userExtractor->extract($uid);
-		$user->setPreferences(
-			$this->preferencesExtractor->extract($uid)
-		)->setFiles(
-			$this->filesExtractor->extract($uid)
-		)->setShares(
-			$this->sharesExtractor->extract($uid)
-		);
+		$user->setPreferences($this->preferencesExtractor->extract($uid))
+			->setShares($this->sharesExtractor->extract($uid));
 
 		$metadata = new Metadata();
 		$metadata->setDate(new \DateTimeImmutable())
 			->setUser($user)
+			->setFiles($this->filesMetadataExtractor->extract($uid))
 			->setOriginServer($this->urlGenerator->getAbsoluteURL('/'));
 
 		return $metadata;

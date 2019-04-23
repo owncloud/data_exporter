@@ -22,7 +22,7 @@
  */
 namespace OCA\DataExporter\Tests\Unit\Exporter\MetadataExtractor;
 
-use OCA\DataExporter\Exporter\MetadataExtractor\UserExtractor;
+use OCA\DataExporter\Extractor\MetadataExtractor\UserExtractor;
 use OCP\IGroupManager;
 use OCP\IUser;
 use OCP\IUserManager;

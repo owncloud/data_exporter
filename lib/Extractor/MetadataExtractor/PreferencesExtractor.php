@@ -20,7 +20,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-namespace OCA\DataExporter\Exporter\MetadataExtractor;
+namespace OCA\DataExporter\Extractor\MetadataExtractor;
 
 use OCA\DataExporter\Model\User\Preference;
 use OCP\IAppConfig;

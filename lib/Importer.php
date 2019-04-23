@@ -86,7 +86,7 @@ class Importer {
 		$this->metadataImporter->import($metadata);
 		$this->filesImporter->import(
 			$metadata->getUser()->getUserId(),
-			$metadata->getUser()->getFiles(),
+			$metadata->getFiles(),
 			"$pathToExportDir/files"
 		);
 		$this->shareImporter->import(

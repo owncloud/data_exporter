@@ -20,9 +20,9 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-namespace OCA\DataExporter\Tests\Unit\Exporter\MetadataExtractor;
+namespace OCA\DataExporter\Tests\Unit\Extractor\MetadataExtractor;
 
-use OCA\DataExporter\Exporter\MetadataExtractor\SharesExtractor;
+use OCA\DataExporter\Extractor\MetadataExtractor\SharesExtractor;
 use OCA\DataExporter\Model\User\Share;
 use OCP\IConfig;
 use OCP\Share\IShare;
