@@ -52,7 +52,7 @@ class Instance {
 	/**
 	 * @var array
 	 */
-	private $groups;
+	private $groups = [];
 
 	/**
 	 * @return \DateTimeImmutable

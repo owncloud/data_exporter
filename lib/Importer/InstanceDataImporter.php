@@ -60,8 +60,7 @@ class InstanceDataImporter {
 	 * @return void
 	 */
 	public function import($instanceData) {
-		$this->config->setSystemValues(
-			[
+		$this->config->setSystemValues([
 				'instanceid' => $instanceData->getInstanceId(),
 				'passwordsalt' => $instanceData->getPasswordSalt(),
 				'secret' => $instanceData->getSecret()
