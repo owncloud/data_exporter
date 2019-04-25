@@ -10,6 +10,8 @@
 	<category>tools</category>
 	<namespace>DataExporter</namespace>
 	<commands>
+		<command>OCA\DataExporter\Command\ImportInstance</command>
+		<command>OCA\DataExporter\Command\ExportInstance</command>
 		<command>OCA\DataExporter\Command\ExportUser</command>
 		<command>OCA\DataExporter\Command\ImportUser</command>
 		<command>OCA\DataExporter\Command\MigrateShare</command>
