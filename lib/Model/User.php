@@ -40,6 +40,8 @@ class User {
 	private $backend;
 	/** @var boolean */
 	private $enabled;
+	/** @var string */
+	private $passwordHash;
 	/** @var string[] */
 	private $groups = [];
 	/** @var Preference[] */
@@ -84,6 +86,22 @@ class User {
 	 */
 	public function getEmail() {
 		return $this->email;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getPasswordHash() {
+		return $this->passwordHash;
+	}
+
+	/**
+	 * @param string $passwordHash
+	 * @return User
+	 */
+	public function setPasswordHash($passwordHash) {
+		$this->passwordHash = $passwordHash;
+		return $this;
 	}
 
 	/**
