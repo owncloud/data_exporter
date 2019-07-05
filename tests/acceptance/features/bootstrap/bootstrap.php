@@ -19,15 +19,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-require __DIR__ . '/../../../../../../lib/base.php';
-require __DIR__ . '/../../../../../../lib/composer/autoload.php';
+require_once __DIR__ . '/../../../../../../tests/acceptance/features/bootstrap/bootstrap.php';
 
 $classLoader = new \Composer\Autoload\ClassLoader();
 $classLoader->addPsr4(
 	"", __DIR__ . "/../../../../../../tests/acceptance/features/bootstrap", true
 );
-$classLoader->addPsr4(
-	"TestHelpers\\", __DIR__ . "/../../../../../../tests/TestHelpers", true
-);
-
 $classLoader->register();
