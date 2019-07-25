@@ -23,6 +23,12 @@
  */
 namespace OCA\DataExporter\Model;
 
+/**
+ * Represents the Files Metadata export format
+ *
+ * @package OCA\DataExporter\Model
+ * @codeCoverageIgnore
+ */
 class File {
 	const TYPE_FOLDER = 'folder';
 	const TYPE_FILE = 'file';
@@ -34,6 +40,8 @@ class File {
 	private $eTag;
 	/** @var int */
 	private $permissions;
+	/** @var int */
+	private $mtime;
 
 	/**
 	 * @return string
@@ -96,6 +104,22 @@ class File {
 	 */
 	public function setPermissions($permissions) {
 		$this->permissions = $permissions;
+		return $this;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getMtime() {
+		return $this->mtime;
+	}
+
+	/**
+	 * @param int $mtime
+	 * @return File
+	 */
+	public function setMtime($mtime) {
+		$this->mtime = $mtime;
 		return $this;
 	}
 }

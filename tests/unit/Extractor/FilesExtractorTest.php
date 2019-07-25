@@ -50,6 +50,7 @@ class FilesExtractorTest extends TestCase {
 		$mockFile = $this->createMock(File::class);
 		$mockFile->method('getPath')->willReturn('/usertest/files/foo/bar.txt');
 		$mockFile->method('getContent')->willReturn('weeee eee eeeeeeeee!');
+		$mockFile->method('getMTime')->willReturn(1565074220);
 
 		$userFolderParent = $this->createMock(Folder::class);
 		$userFolderParent->method('getRelativePath')
@@ -74,6 +75,7 @@ class FilesExtractorTest extends TestCase {
 	public function testExportFolder() {
 		$mockFolder = $this->createMock(Folder::class);
 		$mockFolder->method('getPath')->willReturn('/usertest/files/foo/courses');
+		$mockFolder->method('getMTime')->willReturn(1565074220);
 
 		$userFolderParent = $this->createMock(Folder::class);
 		$userFolderParent->method('getRelativePath')
@@ -98,17 +100,21 @@ class FilesExtractorTest extends TestCase {
 	public function testExportFileAndFolder() {
 		$mockFolder1 = $this->createMock(Folder::class);
 		$mockFolder1->method('getPath')->willReturn('/usertest/files/foo');
+		$mockFolder1->method('getMTime')->willReturn(1565074232);
 
 		$mockFolder2 = $this->createMock(Folder::class);
 		$mockFolder2->method('getPath')->willReturn('/usertest/files/foo/courses');
+		$mockFolder2->method('getMTime')->willReturn(1565074200);
 
 		$mockFile1 = $this->createMock(File::class);
 		$mockFile1->method('getPath')->willReturn('/usertest/files/foo/courses/awesome qwerty');
 		$mockFile1->method('getContent')->willReturn('qwerty!!');
+		$mockFile1->method('getMTime')->willReturn(1565074520);
 
 		$mockFile2 = $this->createMock(File::class);
 		$mockFile2->method('getPath')->willReturn('/usertest/files/foo/bar.txt');
 		$mockFile2->method('getContent')->willReturn('weeee eee eeeeeeeee!');
+		$mockFile2->method('getMTime')->willReturn(1565074221);
 
 		$userFolderParent = $this->createMock(Folder::class);
 		$userFolderParent->method('getRelativePath')

@@ -80,16 +80,16 @@ class MetadataExtractor {
 	 * @throws \Exception
 	 * @throws \RuntimeException if user can not be read
 	 */
-	public function extract($uid) {
+	public function extract($uid, $exportPath) {
 		$user = $this->userExtractor->extract($uid);
-		$user->setPreferences($this->preferencesExtractor->extract($uid))
-			->setShares($this->sharesExtractor->extract($uid));
-
+		$user->setPreferences($this->preferencesExtractor->extract($uid));
 		$metadata = new Metadata();
 		$metadata->setDate(new \DateTimeImmutable())
 			->setUser($user)
-			->setFiles($this->filesMetadataExtractor->extract($uid))
 			->setOriginServer($this->urlGenerator->getAbsoluteURL('/'));
+
+		$this->filesMetadataExtractor->extract($uid, $exportPath);
+		$this->sharesExtractor->extract($uid, $exportPath);
 
 		return $metadata;
 	}

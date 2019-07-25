@@ -22,6 +22,12 @@
  */
 namespace OCA\DataExporter\Model\User;
 
+/**
+ * Represents the User Preferences Export format
+ *
+ * @package OCA\DataExporter\Model\User
+ * @codeCoverageIgnore
+ */
 class Preference {
 	/** @var string */
 	private $appId;

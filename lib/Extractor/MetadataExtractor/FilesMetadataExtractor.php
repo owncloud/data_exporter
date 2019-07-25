@@ -23,27 +23,43 @@
  */
 namespace OCA\DataExporter\Extractor\MetadataExtractor;
 
+use OC\User\NoUserException;
 use OCA\DataExporter\Utilities\Iterators\Nodes\RecursiveNodeIteratorFactory;
 use OCA\DataExporter\Model\File;
+use OCA\DataExporter\Utilities\StreamHelper;
 use OCP\Files\Node;
 
 class FilesMetadataExtractor {
+	const FILE_NAME = 'files.jsonl';
 	/** @var RecursiveNodeIteratorFactory  */
 	private $iteratorFactory;
+	/**
+	 * @var StreamHelper
+	 */
+	private $streamHelper;
+	/**
+	 * @var resource
+	 */
+	private $streamFile;
 
-	public function __construct(RecursiveNodeIteratorFactory $iteratorFactory) {
+	public function __construct(RecursiveNodeIteratorFactory $iteratorFactory, StreamHelper $streamHelper) {
 		$this->iteratorFactory = $iteratorFactory;
+		$this->streamHelper = $streamHelper;
 	}
 
 	/**
 	 * @param string $userId
-	 * @return File[]
-	 * @throws \OCP\Files\InvalidPathException
-	 * @throws \OCP\Files\NotFoundException
+	 * @param string $exportPath
+	 *
+	 * @return void
+	 *
+	 * @throws NoUserException
 	 */
-	public function extract($userId) {
+	public function extract($userId, $exportPath) {
 		list($iterator, $baseFolder) = $this->iteratorFactory->getUserFolderParentRecursiveIterator($userId);
-		$files = [];
+
+		$filename = $exportPath . '/' . $this::FILE_NAME;
+		$this->streamFile = $this->streamHelper->initStream($filename, 'ab', true);
 
 		foreach ($iterator as $node) {
 			$nodePath = $node->getPath();
@@ -53,6 +69,7 @@ class FilesMetadataExtractor {
 
 			$file->setPath($relativePath);
 			$file->setETag($node->getEtag());
+			$file->setMtime($node->getMTime());
 			$file->setPermissions($node->getPermissions());
 
 			if ($node->getType() === Node::TYPE_FILE) {
@@ -61,9 +78,8 @@ class FilesMetadataExtractor {
 				$file->setType(File::TYPE_FOLDER);
 			}
 
-			$files[] = $file;
+			$this->streamHelper->writelnToStream($this->streamFile, $file);
 		}
-
-		return $files;
+		$this->streamHelper->closeStream($this->streamFile);
 	}
 }
