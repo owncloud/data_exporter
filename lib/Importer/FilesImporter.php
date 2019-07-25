@@ -20,66 +20,108 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
+
 namespace OCA\DataExporter\Importer;
 
 use OCA\DataExporter\Model\File;
+use OCA\DataExporter\Utilities\StreamHelper;
 use OCP\Files\IRootFolder;
 use Symfony\Component\Filesystem\Filesystem;
 
 class FilesImporter {
-
-	/** @var Filesystem  */
+	const FILE_NAME = 'files.jsonl';
+	/** @var Filesystem */
 	private $filesystem;
-	/** @var IRootFolder  */
+	/** @var IRootFolder */
 	private $rootFolder;
+	/**
+	 * @var StreamHelper
+	 */
+	private $streamHelper;
+	/**
+	 * @var resource
+	 */
+	private $streamFile;
 
-	public function __construct(Filesystem $filesystem, IRootFolder $rootFolder) {
+	/**
+	 * @var int
+	 */
+	private $currentLine;
+
+	public function __construct(Filesystem $filesystem, IRootFolder $rootFolder, StreamHelper $streamHelper) {
 		$this->filesystem = $filesystem;
 		$this->rootFolder = $rootFolder;
+		$this->streamHelper = $streamHelper;
 	}
 
 	/**
 	 * @param string $userId
-	 * @param array $filesMetadata
-	 * @param string $exportRootFilesPath
+	 * @param string $exportPath
+	 *
 	 * @throws \OCP\Files\InvalidPathException
 	 * @throws \OCP\Files\NotFoundException
 	 * @throws \OCP\Files\NotPermittedException
 	 * @throws \OCP\Files\StorageNotAvailableException
 	 */
-	public function import(string $userId, array $filesMetadata, string $exportRootFilesPath) {
+	public function import($userId, $exportPath) {
 		// Trigger creation of user-folder
 		$this->rootFolder->getUserFolder($userId);
-		/** @var \OCP\Files\Folder $userFolder */
+		/**
+		 * @var \OCP\Files\Folder $userFolder
+		 */
+		$filename = $exportPath . '/' . $this::FILE_NAME;
+		$exportRootFilesPath = $exportPath . '/files';
+
 		$userFolder = $this->rootFolder->getUserFolder($userId)->getParent();
+		$this->streamFile = $this
+			->streamHelper
+			->initStream($filename, 'rb');
+		$this->currentLine = 1;
 
-		/** @var File $fileMetadata */
-		foreach ($filesMetadata as $fileMetadata) {
-			$fileCachePath = $fileMetadata->getPath();
-			$pathToFileInExport = "$exportRootFilesPath/$fileCachePath";
+		try {
+			while ((
+				/**
+				 * @var File $fileMetadata
+				 */
+				$fileMetadata = $this->streamHelper->readlnFromStream(
+					$this->streamFile,
+					File::class
+				))
+				!== false
+			) {
+				$fileCachePath = $fileMetadata->getPath();
+				$pathToFileInExport = "$exportRootFilesPath/$fileCachePath";
 
-			if (!$this->filesystem->exists($pathToFileInExport)) {
-				throw new ImportException("File '$pathToFileInExport' not found in export but exists in metadata.json");
+				if (!$this->filesystem->exists($pathToFileInExport)) {
+					throw new ImportException("File '$pathToFileInExport' not found in export but exists in metadata.json");
+				}
+
+				if ($fileMetadata->getType() === File::TYPE_FILE) {
+					$file = $userFolder->newFile($fileCachePath);
+					$file->putContent(\file_get_contents($pathToFileInExport));
+					$file->getStorage()->getCache()->update($file->getId(), [
+						'etag' => $fileMetadata->getETag(),
+						'permissions' => $fileMetadata->getPermissions()
+					]);
+
+					continue;
+				}
+
+				if ($fileMetadata->getType() === File::TYPE_FOLDER) {
+					$folder = $userFolder->newFolder($fileCachePath);
+					$folder->getStorage()->getCache()->update($folder->getId(), [
+						'etag' => $fileMetadata->getETag(),
+						'permissions' => $fileMetadata->getPermissions()
+					]);
+				}
+				$this->currentLine++;
 			}
-
-			if ($fileMetadata->getType() === File::TYPE_FILE) {
-				$file = $userFolder->newFile($fileCachePath);
-				$file->putContent(\file_get_contents($pathToFileInExport));
-				$file->getStorage()->getCache()->update($file->getId(), [
-					'etag' => $fileMetadata->getETag(),
-					'permissions' => $fileMetadata->getPermissions()
-				]);
-
-				continue;
-			}
-
-			if ($fileMetadata->getType() === File::TYPE_FOLDER) {
-				$folder = $userFolder->newFolder($fileCachePath);
-				$folder->getStorage()->getCache()->update($folder->getId(), [
-					'etag' => $fileMetadata->getETag(),
-					'permissions' => $fileMetadata->getPermissions()
-				]);
-			}
+		} catch (ImportException $exception) {
+			$message = $exception->getMessage();
+			$line = $this->currentLine + 1;
+			throw new ImportException("Import failed on $filename on line $line: $message", 0, $exception);
 		}
+		$this->streamHelper->checkEndOfStream($this->streamFile);
+		$this->streamHelper->closeStream($this->streamFile);
 	}
 }

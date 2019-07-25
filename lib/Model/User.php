@@ -24,8 +24,13 @@
 namespace OCA\DataExporter\Model;
 
 use OCA\DataExporter\Model\User\Preference;
-use OCA\DataExporter\Model\User\Share;
 
+/**
+ * Represents the User Data export format
+ *
+ * @package OCA\DataExporter\Model
+ * @codeCoverageIgnore
+ */
 class User {
 
 	/** @var string */
@@ -44,8 +49,6 @@ class User {
 	private $groups = [];
 	/** @var Preference[] */
 	private $preferences = [];
-	/** @var Share[] */
-	private $shares = [];
 
 	/**
 	 * @return string
@@ -172,22 +175,6 @@ class User {
 	 */
 	public function setPreferences(array $preferences) {
 		$this->preferences = $preferences;
-		return $this;
-	}
-
-	/**
-	 * @return Share[]
-	 */
-	public function getShares() {
-		return $this->shares;
-	}
-
-	/**
-	 * @param Share[] $shares
-	 * @return User
-	 */
-	public function setShares(array $shares) {
-		$this->shares = $shares;
 		return $this;
 	}
 }

@@ -20,8 +20,14 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-namespace OCA\DataExporter\Model\User;
+namespace OCA\DataExporter\Model;
 
+/**
+ *  Represents the Share Data export format
+ *
+ * @package OCA\DataExporter\Model
+ * @codeCoverageIgnore
+ */
 class Share {
 	const SHARETYPE_USER = 'user';
 	const SHARETYPE_GROUP = 'group';
@@ -32,6 +38,8 @@ class Share {
 	private $path;
 	/** @var string */
 	private $shareType;
+	/** @var string */
+	private $type;
 	/** @var string */
 	private $owner;
 	/** @var string */
@@ -78,6 +86,15 @@ class Share {
 	 */
 	public function setShareType($shareType) {
 		$this->shareType = $shareType;
+		return $this;
+	}
+
+	/**
+	 * @param string $type
+	 * @return Share
+	 */
+	public function setType($type) {
+		$this->type = $type;
 		return $this;
 	}
 
