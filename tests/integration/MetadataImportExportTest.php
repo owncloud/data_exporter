@@ -28,6 +28,7 @@ use OCA\DataExporter\Importer\MetadataImporter\UserImporter;
 use OCA\DataExporter\Serializer;
 use OCP\IUser;
 use OCP\IUserManager;
+use OCP\User;
 use Test\Traits\UserTrait;
 
 /**
@@ -36,7 +37,7 @@ use Test\Traits\UserTrait;
 class MetadataImportExportTest extends \Test\TestCase {
 	use UserTrait;
 
-	/** @var IUser */
+	/** @var IUser|User */
 	private $testUser;
 
 	public function setUp() {
@@ -47,6 +48,10 @@ class MetadataImportExportTest extends \Test\TestCase {
 
 		$this->testUser = $userManager->createUser("importexportintest-$testId", '123');
 		$this->testUser->setEMailAddress("$testId@example.com");
+
+		$groupManager = \OC::$server->getGroupManager();
+		$testGroup = $groupManager->createGroup('testGroup');
+		$testGroup->addUser($this->testUser);
 
 		$config = \OC::$server->getConfig();
 		$config->setUserValue($this->testUser->getUID(), 'core', 'status', 'ok');
