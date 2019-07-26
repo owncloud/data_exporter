@@ -33,9 +33,9 @@ class ExportUser extends Command {
 	/** @var Exporter  */
 	private $exporter;
 
-	public function __construct(Exporter $importer) {
+	public function __construct(Exporter $exporter) {
 		parent::__construct();
-		$this->exporter = $importer;
+		$this->exporter = $exporter;
 	}
 
 	protected function configure() {
