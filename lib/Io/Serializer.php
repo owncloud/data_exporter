@@ -20,7 +20,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-namespace OCA\DataExporter;
+namespace OCA\DataExporter\Io;
 
 use Symfony\Component\PropertyInfo\Extractor\PhpDocExtractor;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
@@ -28,13 +28,16 @@ use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
+/**
+ * Lazy jsonl (de)serialization from streams.
+ */
 class Serializer {
 
 	/** @var \Symfony\Component\Serializer\Serializer  */
 	private $serializer;
 
 	public function __construct() {
-		$encoders = [new JsonEncoder()];
+		$encoders = [new JsonEncoder(), new JsonLinesEncoder()];
 		$normalizers = [
 			new DateTimeNormalizer(),
 			new ArrayDenormalizer(),
@@ -45,25 +48,54 @@ class Serializer {
 	}
 
 	/**
-	 * Serializes data in the appropriate format.
-	 *
-	 * @param mixed $data Any data
-	 *
-	 * @return string
+	 * @param $jsonlStream
+	 * @param $type
+	 * @return \Generator
 	 */
-	public function serialize($data) {
-		return $this->serializer->serialize($data, 'json', []);
+	public function deserializeStream($jsonlStream, $type) {
+		foreach ($this->readLines($jsonlStream) as $jsonLine) {
+			$jsonLine =  $this->serializer->decode($jsonLine, 'json');
+			yield $this->serializer->denormalize($jsonLine, $type);
+		}
 	}
 
 	/**
-	 * Deserializes data into the given type.
-	 *
-	 * @param mixed $data
-	 * @param string $type
-	 *
-	 * @return object
+	 * @param $data
+	 * @param $toStream
 	 */
-	public function deserialize($data, $type) {
-		return $this->serializer->deserialize($data, $type, 'json', []);
+	public function serializeToStream($data, $toStream) {
+		$ctx = [JsonLinesEncoder::class => ['type_hint' => \gettype($data)]];
+		$norm = $this->serializer->normalize($data, 'jsonl');
+		$jsonLine = $this->serializer->encode($norm, 'jsonl', $ctx);
+
+		\fwrite($toStream, $jsonLine);
+	}
+
+	/**
+	 * Lazily-reads a stream of lines in to a buffer, then blocks until
+	 * the buffer is yielded completely.
+	 *
+	 * @param resource $stream
+	 * @param int $lineBufSize Number of lines to buffer
+	 * @return \Generator
+	 */
+	private function readLines($stream, $lineBufSize = 256) {
+		$buf = [];
+		while (($line = \fgets($stream)) !== false) {
+			$buf[] = $line;
+			//Buffer n lines then decode batch
+			if (\sizeof($buf) >= $lineBufSize) {
+				foreach ($buf as $k => $l) {
+					yield $l;
+					unset($buf[$k]);
+				}
+			}
+		}
+
+		// Empty the remaining buffer
+		foreach ($buf as $k => $l) {
+			yield $l;
+			unset($buf[$k]);
+		}
 	}
 }

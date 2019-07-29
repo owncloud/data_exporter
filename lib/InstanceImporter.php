@@ -27,6 +27,7 @@ use OCA\DataExporter\Importer\ImportException;
 use OCA\DataExporter\Importer\InstanceDataImporter;
 use OCA\DataExporter\Model\Instance;
 use Symfony\Component\Filesystem\Filesystem;
+use OCA\DataExporter\Io\Serializer;
 
 class InstanceImporter {
 	/**
@@ -74,12 +75,15 @@ class InstanceImporter {
 		}
 
 		/**
-		 * @var Instance $instanceData
+		 * @var Instance|\Traversable $instanceData
 		 */
-		$instanceData = $this->serializer->deserialize(
-			\file_get_contents($instanceDataPath),
+		$instanceData = $this->serializer->deserializeStream(
+			\fopen($instanceDataPath, 'wb'),
 			Instance::class
 		);
+
+		// Workaround, generator should be passed to importer for lazy io
+		\iterator_to_array($instanceData)[0];
 
 		$this->instanceDataImporter->import($instanceData);
 	}
