@@ -25,6 +25,7 @@ namespace OCA\DataExporter;
 
 use OCA\DataExporter\Importer\ImportException;
 use OCA\DataExporter\Importer\MetadataImporter;
+use OCA\DataExporter\Io\Serializer;
 use OCA\DataExporter\Model\Metadata;
 use Symfony\Component\Filesystem\Filesystem;
 use OCA\DataExporter\Importer\FilesImporter;
@@ -73,9 +74,11 @@ class Importer {
 			throw new ImportException("metadata.json not found in '$metaDataPath'");
 		}
 
+		$stream = \fopen($metaDataPath, 'rb');
+
 		/** @var Metadata $metadata */
-		$metadata = $this->serializer->deserialize(
-			\file_get_contents($metaDataPath),
+		$metadata = $this->serializer->deserializeStream(
+			$stream,
 			Metadata::class
 		);
 

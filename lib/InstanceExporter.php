@@ -25,6 +25,7 @@ namespace OCA\DataExporter;
 
 use OCA\DataExporter\Exporter\InstanceExtractor;
 use Symfony\Component\Filesystem\Filesystem;
+use OCA\DataExporter\Io\Serializer;
 
 /**
  * Class InstanceExporter
@@ -69,9 +70,9 @@ class InstanceExporter {
 	 */
 	public function export($exportDirectoryPath) {
 		$instanceData = $this->instanceExtractor->extract();
-		$this->filesystem->dumpFile(
-			"$exportDirectoryPath/instancedata.json",
-			$this->serializer->serialize($instanceData)
+		$this->serializer->serializeToStream(
+			$instanceData,
+			\fopen("$exportDirectoryPath/instancedata.json", 'wb')
 		);
 	}
 }
