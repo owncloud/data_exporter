@@ -22,6 +22,7 @@
  */
 namespace OCA\DataExporter\Importer\MetadataImporter;
 
+use OCA\DataExporter\Importer\MetadataImporter\UserImporter\UpdatePasswordHashQuery;
 use OCA\DataExporter\Model\User;
 use OCA\DataExporter\Importer\ImportException;
 use OCP\IGroupManager;
@@ -35,15 +36,20 @@ class UserImporter {
 	/** @var IGroupManager  */
 	private $groupManager;
 
+	/** @var UpdatePasswordHashQuery */
+	private $updatePwHashQuery;
+
 	private $allowedBackends = ['Database'];
 
 	/**
 	 * @param IUserManager $userManager
 	 * @param IGroupManager $groupManager
+	 * @param UpdatePasswordHashQuery $q
 	 */
-	public function __construct(IUserManager $userManager, IGroupManager $groupManager) {
+	public function __construct(IUserManager $userManager, IGroupManager $groupManager, UpdatePasswordHashQuery $q) {
 		$this->userManager = $userManager;
 		$this->groupManager = $groupManager;
+		$this->updatePwHashQuery = $q;
 	}
 
 	/**
@@ -105,12 +111,20 @@ class UserImporter {
 	private function createNewUser(User $userModel) {
 		$user = $this->userManager->createUser(
 			$userModel->getUserId(),
-			\bin2hex(\random_bytes(8)) //TODO:  What to do with password?
+			\bin2hex(\random_bytes(8)) //Temporary random password
 		);
 
 		$user->setDisplayName($userModel->getDisplayName());
 		$user->setEMailAddress($userModel->getEmail());
 		$user->setEnabled($userModel->isEnabled());
+		$passwordHash = $userModel->getPasswordHash();
+
+		if ($passwordHash !== null && !empty(\trim($passwordHash))) {
+			$this->updatePwHashQuery->execute(
+				$userModel->getUserId(),
+				$userModel->getPasswordHash()
+			);
+		}
 
 		$userGroups = $userModel->getGroups();
 

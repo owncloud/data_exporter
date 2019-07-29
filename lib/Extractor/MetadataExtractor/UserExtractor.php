@@ -22,6 +22,7 @@
  */
 namespace OCA\DataExporter\Extractor\MetadataExtractor;
 
+use OCA\DataExporter\Extractor\MetadataExtractor\UserExtractor\GetPasswordHashQuery;
 use OCA\DataExporter\Model\User;
 use OCP\IGroupManager;
 use OCP\IUserManager;
@@ -34,9 +35,13 @@ class UserExtractor {
 	/** @var IGroupManager  */
 	private $groupManager;
 
-	public function __construct(IUserManager $userManager, IGroupManager $groupManager) {
+	/** @var GetPasswordHashQuery */
+	private $getPwHashQuery;
+
+	public function __construct(IUserManager $userManager, IGroupManager $groupManager, GetPasswordHashQuery $q) {
 		$this->userManager = $userManager;
 		$this->groupManager = $groupManager;
+		$this->getPwHashQuery = $q;
 	}
 
 	/**
@@ -53,14 +58,16 @@ class UserExtractor {
 		}
 
 		$user = new User();
+		$uid = $userData->getUID();
 
-		$user->setUserId($userData->getUID());
+		$user->setUserId($uid);
 		$user->setEmail($userData->getEMailAddress());
 		$user->setQuota($userData->getQuota());
 		$user->setBackend($userData->getBackendClassName());
 		$user->setDisplayName($userData->getDisplayName());
 		$user->setEnabled($userData->isEnabled());
 		$user->setGroups($this->groupManager->getUserGroupIds($userData));
+		$user->setPasswordHash($this->getPwHashQuery->execute($uid));
 
 		return $user;
 	}

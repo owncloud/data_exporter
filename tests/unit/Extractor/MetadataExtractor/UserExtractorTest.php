@@ -23,6 +23,7 @@
 namespace OCA\DataExporter\Tests\Unit\Exporter\MetadataExtractor;
 
 use OCA\DataExporter\Extractor\MetadataExtractor\UserExtractor;
+use OCA\DataExporter\Extractor\MetadataExtractor\UserExtractor\GetPasswordHashQuery;
 use OCP\IGroupManager;
 use OCP\IUser;
 use OCP\IUserManager;
@@ -38,12 +39,13 @@ class UserExtractorTest extends TestCase {
 
 	private $groupManager;
 
+	/** @var GetPasswordHashQuery | \PHPUnit\Framework\MockObject\MockObject   */
+	private $queryMock;
+
 	public function setUp() {
 		parent::setUp();
 
 		$this->userManager = $this->createMock(IUserManager::class);
-		$this->groupManager = $this->createMock(IGroupManager::class);
-
 		$mockUser = $this->createMock(IUser::class);
 		$mockUser->method('getUid')
 			->willReturn('jcache');
@@ -63,12 +65,18 @@ class UserExtractorTest extends TestCase {
 				['doesnotexist', null]
 		]);
 
+		$this->groupManager = $this->createMock(IGroupManager::class);
 		$this->groupManager->method('getUserGroupIds')
 			->willReturn(['admin', 'accounting']);
 
+		$this->queryMock = $this->createMock(GetPasswordHashQuery::class);
+		$this->queryMock->method('execute')
+			->willReturn('1|SomeHashdeadf8832ff.345353');
+
 		$this->userExtractor = new UserExtractor(
 			$this->userManager,
-			$this->groupManager
+			$this->groupManager,
+			$this->queryMock
 		);
 	}
 
