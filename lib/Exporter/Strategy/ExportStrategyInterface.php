@@ -1,8 +1,9 @@
 <?php
+
 /**
  * @author Ilja Neumann <ineumann@owncloud.com>
  *
- * @copyright Copyright (c) 2018, ownCloud GmbH
+ * @copyright Copyright (c) 2019, ownCloud GmbH
  * @license GPL-2.0
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -20,21 +21,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-namespace OCA\DataExporter;
+namespace OCA\DataExporter\Exporter\Strategy;
 
 use OCA\DataExporter\Exporter\Parameters;
-use OCA\DataExporter\Exporter\Strategy\ExportStrategyInterface;
 
-class Exporter {
-
-	/** @var ExportStrategyInterface  */
-	private $exportStrategy;
-
-	public function __construct(ExportStrategyInterface $strategy) {
-		$this->exportStrategy = $strategy;
-	}
-
-	public function export(Parameters $params) {
-		$this->exportStrategy->export($params);
-	}
+interface ExportStrategyInterface {
+	public function export(Parameters $params);
 }

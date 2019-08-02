@@ -1,6 +1,7 @@
 <?php
 /**
  * @author Michael Barz <mbarz@owncloud.com>
+ * @author Ilja Neumann <ineumann@owncloud.com>
  *
  * @copyright Copyright (c) 2019, ownCloud GmbH
  * @license GPL-2.0
@@ -21,9 +22,11 @@
  *
  */
 
-namespace OCA\DataExporter;
+namespace OCA\DataExporter\Exporter\Strategy;
 
 use OCA\DataExporter\Exporter\InstanceExtractor;
+use OCA\DataExporter\Exporter\Parameters;
+use OCA\DataExporter\Serializer;
 use Symfony\Component\Filesystem\Filesystem;
 
 /**
@@ -31,7 +34,7 @@ use Symfony\Component\Filesystem\Filesystem;
  *
  * @package OCA\DataExporter
  */
-class InstanceExporter {
+class Instance implements ExportStrategyInterface {
 	/**
 	 * @var Serializer
 	 */
@@ -67,10 +70,10 @@ class InstanceExporter {
 	 *
 	 * @return void
 	 */
-	public function export($exportDirectoryPath) {
+	public function export(Parameters $params) {
 		$instanceData = $this->instanceExtractor->extract();
 		$this->filesystem->dumpFile(
-			"$exportDirectoryPath/instancedata.json",
+			"{$params->getExportDirectoryPath()}/instancedata.json",
 			$this->serializer->serialize($instanceData)
 		);
 	}

@@ -25,7 +25,7 @@
 namespace OCA\DataExporter\Tests\Unit;
 
 use OCA\DataExporter\Exporter\InstanceExtractor;
-use OCA\DataExporter\InstanceExporter;
+use OCA\DataExporter\Instance;
 use OCA\DataExporter\Model\Instance;
 use OCA\DataExporter\Serializer;
 use Symfony\Component\Filesystem\Filesystem;
@@ -74,7 +74,7 @@ class InstanceExporterTest extends TestCase {
 			->expects($this->once())
 			->method('extract')
 			->willReturn($instanceData);
-		$instanceExporter = new InstanceExporter(
+		$instanceExporter = new Instance(
 			$this->serializer,
 			$this->instanceExtractor,
 			$this->filesystem

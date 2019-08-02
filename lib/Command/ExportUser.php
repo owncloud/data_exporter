@@ -26,31 +26,33 @@ use OCA\DataExporter\Exporter;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class ExportUser extends Command {
 
 	/** @var Exporter  */
-	private $exporter;
+	private $exporterFactory;
 
-	public function __construct(Exporter $exporter) {
+	public function __construct(Exporter\Factory $exporterFactory) {
 		parent::__construct();
-		$this->exporter = $exporter;
+		$this->exporterFactory = $exporterFactory;
 	}
 
 	protected function configure() {
 		$this->setName('instance:export:user')
-			->setDescription('Exports a single user')
-			->addArgument('userId', InputArgument::REQUIRED, 'User to export')
-			->addArgument('exportDirectory', InputArgument::REQUIRED, 'Path to the directory to export data to');
+			->setDescription('Exports data from a single owncloud user')
+			->addArgument('exportDirectory', InputArgument::REQUIRED, 'Path to the directory to export data to')
+			->addArgument('userId', InputArgument::OPTIONAL, 'Export a specific user only');
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output) {
+		$params = new Exporter\Parameters();
+		$params->setUserId($input->getArgument('userId'));
+		$params->setExportDirectoryPath($input->getArgument('exportDirectory'));
+
 		try {
-			$this->exporter->export(
-				$input->getArgument('userId'),
-				$input->getArgument('exportDirectory')
-			);
+			$this->exporterFactory->get($params)->export($params);
 		} catch (\Exception $e) {
 			$output->writeln("<error>{$e->getMessage()}</error>");
 		}

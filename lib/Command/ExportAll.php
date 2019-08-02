@@ -1,6 +1,7 @@
 <?php
+
 /**
- * @author Michael Barz <mbarz@owncloud.com>
+ * @author Ilja Neumann <ineumann@owncloud.com>
  *
  * @copyright Copyright (c) 2019, ownCloud GmbH
  * @license GPL-2.0
@@ -20,64 +21,38 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-
 namespace OCA\DataExporter\Command;
 
 use OCA\DataExporter\Exporter\Factory;
+use OCA\DataExporter\Exporter\Parameters;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-/**
- * Class ExportInstance
- *
- * @package OCA\DataExporter\Command
- */
-class ExportInstance extends Command {
-	/**
-	 * @var Instance
-	 */
-	private $instanceExporter;
-	/**
-	 * @var Factory
-	 */
+class ExportAll extends Command {
+
+	/** @var Factory  */
 	private $exporterFactory;
 
-	/**
-	 * ExportInstance constructor.
-	 *
-	 * @param Instance $exporter
-	 */
 	public function __construct(Factory $exporterFactory) {
 		parent::__construct();
 		$this->exporterFactory = $exporterFactory;
 	}
 
-	/**
-	 * Command Config
-	 *
-	 * @return void
-	 */
 	protected function configure() {
-		$this->setName('instance:export')
-			->setDescription('Exports global instance data')
+		$this->setName('instance:export:all')
+			->setDescription('Exports all users and data from an owncloud instance')
 			->addArgument('exportDirectory', InputArgument::REQUIRED, 'Path to the directory to export data to');
 	}
 
-	/**
-	 * Executes the current command.
-	 *
-	 * @param InputInterface $input
-	 * @param OutputInterface $output
-	 *
-	 * @return int|null|void
-	 */
 	protected function execute(InputInterface $input, OutputInterface $output) {
+		$params = new Parameters();
+		$params->setExportDirectoryPath($input->getArgument('exportDirectory'));
+		$params->setAll(true);
+
 		try {
-			$this->instanceExporter->export(
-				$input->getArgument('exportDirectory')
-			);
+			$this->exporterFactory->get($params)->export($params);
 		} catch (\Exception $e) {
 			$output->writeln("<error>{$e->getMessage()}</error>");
 		}

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author Ilja Neumann <ineumann@owncloud.com>
  *
@@ -20,21 +21,37 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-namespace OCA\DataExporter;
+namespace OCA\DataExporter\Exporter\Strategy;
 
+use OC\User\Account;
+use OC\User\AccountMapper;
 use OCA\DataExporter\Exporter\Parameters;
-use OCA\DataExporter\Exporter\Strategy\ExportStrategyInterface;
 
-class Exporter {
+class Everything implements ExportStrategyInterface {
 
-	/** @var ExportStrategyInterface  */
-	private $exportStrategy;
+	/** @var Instance  */
+	private $instanceExporter;
+	/** @var SingleUser  */
+	private $singleUserExporter;
+	/** @var AccountMapper  */
+	private $accountMapper;
 
-	public function __construct(ExportStrategyInterface $strategy) {
-		$this->exportStrategy = $strategy;
+	public function __construct(Instance $instanceExporter, SingleUser $singleUserExporter, AccountMapper $am) {
+		$this->instanceExporter = $instanceExporter;
+		$this->singleUserExporter = $singleUserExporter;
+		$this->accountMapper = $am;
 	}
 
 	public function export(Parameters $params) {
-		$this->exportStrategy->export($params);
+		$this->instanceExporter->export($params);
+
+		$this->accountMapper->callForAllUsers(function (Account $acc) use ($params) {
+			$uid = $acc->getUserId();
+			$p = new Parameters();
+			$p->setUserId($uid);
+			$p->setExportDirectoryPath($params->getExportDirectoryPath());
+
+			$this->singleUserExporter->export($p);
+		}, null, false);
 	}
 }

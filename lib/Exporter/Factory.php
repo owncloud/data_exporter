@@ -20,37 +20,30 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-namespace OCA\DataExporter\Tests\Unit\Command;
+namespace OCA\DataExporter\Exporter;
 
-use OCA\DataExporter\Command\ExportInstance;
-use OCA\DataExporter\Instance;
-use PHPUnit\Framework\TestCase;
-use Symfony\Component\Console\Tester\CommandTester;
+use OCA\DataExporter\Exporter;
+use OCA\DataExporter\Exporter\Strategy\SingleUser;
+use OCP\AppFramework\IAppContainer;
 
-class ExportInstanceTest extends TestCase {
+class Factory {
 
-	/** @var \PHPUnit_Framework_MockObject_MockObject|Instance */
-	private $exporter;
+	/** @var IAppContainer  */
+	private $di;
 
-	/** @var CommandTester */
-	private $commandTester;
-
-	public function setUp() {
-		$this->exporter = $this->getMockBuilder(Instance::class)
-			->disableOriginalConstructor()
-			->getMock();
-
-		$command = new ExportInstance($this->exporter);
-		$this->commandTester = new CommandTester($command);
+	public function __construct(IAppContainer $di) {
+		$this->di = $di;
 	}
 
-	public function testInstanceImportReceivesCorrectArguments() {
-		$this->exporter->expects($this->once())
-			->method('export')
-			->with($this->equalTo('/tmp'));
+	public function get(Parameters $params) {
+		if ($params->getUserId() !== null) {
+			return new Exporter($this->di->query(SingleUser::class));
+		}
 
-		$this->commandTester->execute([
-			'exportDirectory' => '/tmp',
-		]);
+		if ($params->getAll() === true) {
+			return new Exporter($this->di->query(Exporter\Strategy\Everything::class));
+		}
+
+		throw new \RuntimeException('Unknown export strategy for given parameters');
 	}
 }
