@@ -20,7 +20,7 @@ pipeline:
   install-server:
     image: owncloudci/core
     pull: true
-    version: daily-master-qa
+    version: ${OC_VERSION}
     db_type: ${DB_TYPE}
     db_name: ${DB_NAME}
     db_host: ${DB_HOST}
