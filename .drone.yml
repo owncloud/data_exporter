@@ -83,7 +83,7 @@ pipeline:
       - make test-php-style
     when:
       matrix:
-        TEST_SUITE: phpunit
+        TEST_SUITE: owncloud-coding-standard
 
   lint-test:
     image: owncloudci/php:${PHP_VERSION}
@@ -94,7 +94,7 @@ pipeline:
       - make test-php-lint
     when:
       matrix:
-        TEST_SUITE: phpunit
+        TEST_SUITE: lint-test
 
   phpstan:
     # phpstan requires php7.1
@@ -106,7 +106,7 @@ pipeline:
       - make test-php-phpstan
     when:
       matrix:
-        TEST_SUITE: phpunit
+        TEST_SUITE: php-stan
 
   phan:
     # phan requires a recent php-ast extension
@@ -118,7 +118,7 @@ pipeline:
       - make test-php-phan
     when:
       matrix:
-        TEST_SUITE: phpunit
+        TEST_SUITE: phan
 
   phpunit-unit-tests:
     image: owncloudci/php:${PHP_VERSION}
@@ -128,7 +128,6 @@ pipeline:
     when:
       matrix:
         TEST_SUITE: phpunit
-
 
   phpunit-integration-tests:
     image: owncloudci/php:${PHP_VERSION}
@@ -254,7 +253,26 @@ services:
 
 matrix:
   include:
-    # unit tests
+     # owncloud-coding-standard
+     - PHP_VERSION: 7.2
+       TEST_SUITE: owncloud-coding-standard
+
+     # owncloud-coding-standard
+     - PHP_VERSION: 7.2
+       TEST_SUITE: lint-test
+
+     # php-stan
+     - PHP_VERSION: 7.1
+       TEST_SUITE: php-stan
+       NEED_SERVER: true
+       NEED_INSTALL_APP: true
+
+     # phan
+     - PHP_VERSION: 7.2
+       TEST_SUITE: phan
+       NEED_SERVER: true
+
+     # unit tests
      - PHP_VERSION: 7.0
        OC_VERSION: daily-master-qa
        DB_TYPE: sqlite
