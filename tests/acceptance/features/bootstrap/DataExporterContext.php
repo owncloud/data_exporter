@@ -138,7 +138,7 @@ class DataExporterContext implements Context {
 		$this->lastExportBasePath = $internalPath;
 		$this->lastExportPath = self::path("{$this->lastExportBasePath}/$user/");
 		$this->lastExportUser = $user;
-		$this->lastExportMetadataPath = "{$this->lastExportPath}metadata.json";
+		$this->lastExportMetadataPath = "{$this->lastExportPath}files.jsonl";
 	}
 
 	/**
@@ -204,8 +204,13 @@ class DataExporterContext implements Context {
 		);
 
 		\PHPUnit\Framework\Assert::assertFileExists(
-			self::path("$path/metadata.json"),
-			"No metadata.json found inside export $path"
+			self::path("$path/user.json"),
+			"No user.json found inside export $path"
+		);
+
+		\PHPUnit\Framework\Assert::assertFileExists(
+			self::path("$path/files.jsonl"),
+			"No files.jsonl found inside export $path"
 		);
 	}
 
@@ -259,19 +264,23 @@ class DataExporterContext implements Context {
 	 * @return void
 	 */
 	private function assertFileExistsInLastExportMetadata($filename) {
-		$metadata = \json_decode(
-			$this->readFileFromServerRoot($this->lastExportMetadataPath),
-			true
-		);
+		$fileContent = $this->readFileFromServerRoot($this->lastExportMetadataPath);
+		$fileContents = \explode(PHP_EOL, $fileContent);
 
-		if (!isset($metadata['files']) || empty($metadata['files'])) {
-			\PHPUnit\Framework\Assert::fail('File not found in metadata');
+		if (!isset($fileContents) || empty($fileContents)) {
+			\PHPUnit\Framework\Assert::fail('Not a valid metadata file');
 		}
 
 		$isFileFoundInExport = false;
-		foreach ($metadata['files'] as $file) {
-			if (isset($file['path']) && $file['path'] === self::path("/$filename")) {
-				$isFileFoundInExport = true;
+		foreach ($fileContents as $file) {
+			if (!empty($file)) {
+				$fileMetadata = \json_decode(
+					$file,
+					true
+				);
+				if (isset($fileMetadata['path']) && $fileMetadata['path'] === self::path("/$filename")) {
+					$isFileFoundInExport = true;
+				}
 			}
 		}
 

@@ -31,7 +31,7 @@ use OCA\DataExporter\Extractor\MetadataExtractor\SharesExtractor;
 use OCA\DataExporter\Extractor\MetadataExtractor\UserExtractor;
 use OCA\DataExporter\Model\User;
 use OCA\DataExporter\Model\User\Preference;
-use OCA\DataExporter\Model\User\Share;
+use OCA\DataExporter\Model\Share;
 use OCP\IURLGenerator;
 use Test\TestCase;
 
@@ -89,32 +89,11 @@ class MetadataExtractorTest extends TestCase {
 			->method('extract')
 			->with('testuser')
 			->willReturn([$preference]);
-		$share = new Share();
-		$share
-			->setShareType(Share::SHARETYPE_LINK)
-			->setPath('path/to/file')
-			->setName('test')
-			->setOwner('testuser')
-			->setSharedBy('initiator')
-			->setPermissions(31)
-			->setToken('token')
-			->setPassword('password')
-			->setExpirationDate(1556150400);
-		$this->sharesExtractor
-			->method('extract')
-			->with('testuser')
-			->willReturn([$share]);
-		$this->filesMetadataExtractor
-			->method('extract')
-			->with('testuser')
-			->willReturn([]);
 
-		$metadata = $this->metadataExtractor->extract('testuser');
+		$metadata = $this->metadataExtractor->extract('testuser', '/testuser');
 		self::assertEquals($user->isEnabled(), $metadata->getUser()->isEnabled());
 		self::assertEquals($user->getUserId(), $metadata->getUser()->getUserId());
 		self::assertEquals($user->getEmail(), $metadata->getUser()->getEmail());
 		self::assertEquals($preference, $metadata->getUser()->getPreferences()[0]);
-		self::assertEquals($share, $metadata->getUser()->getShares()[0]);
-		self::assertEquals([], $metadata->getFiles());
 	}
 }

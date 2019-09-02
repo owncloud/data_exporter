@@ -23,6 +23,12 @@
 
 namespace OCA\DataExporter\Model;
 
+/**
+ * Represents the Instance Data export format
+ *
+ * @package OCA\DataExporter\Model
+ * @codeCoverageIgnore
+ */
 class Instance {
 	/**
 	 * @var \DateTimeImmutable

@@ -79,7 +79,7 @@ class ExporterTest extends TestCase {
 		$this->filesystem
 			->expects($this->once())
 			->method('dumpFile')
-			->with('/tmp/testuser/metadata.json');
+			->with('/tmp/testuser/user.json');
 		$exporter = new Exporter(
 			$this->serializer,
 			$this->metadataExtractor,

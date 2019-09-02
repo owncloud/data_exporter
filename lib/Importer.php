@@ -67,10 +67,10 @@ class Importer {
 	 * @throws \OCP\PreConditionNotMetException
 	 */
 	public function import($pathToExportDir, $alias = null) {
-		$metaDataPath = "$pathToExportDir/metadata.json";
+		$metaDataPath = "$pathToExportDir/user.json";
 
 		if (!$this->filesystem->exists($metaDataPath)) {
-			throw new ImportException("metadata.json not found in '$metaDataPath'");
+			throw new ImportException("user.json not found in '$metaDataPath'");
 		}
 
 		/** @var Metadata $metadata */
@@ -86,12 +86,11 @@ class Importer {
 		$this->metadataImporter->import($metadata);
 		$this->filesImporter->import(
 			$metadata->getUser()->getUserId(),
-			$metadata->getFiles(),
-			"$pathToExportDir/files"
+			$pathToExportDir
 		);
 		$this->shareImporter->import(
 			$metadata->getUser()->getUserId(),
-			$metadata->getUser()->getShares(),
+			$pathToExportDir,
 			$metadata->getOriginServer()
 		);
 	}

@@ -23,26 +23,43 @@
 namespace OCA\DataExporter\Tests\Unit\Extractor\MetadataExtractor;
 
 use OCA\DataExporter\Extractor\MetadataExtractor\SharesExtractor;
-use OCA\DataExporter\Model\User\Share;
-use OCP\IConfig;
-use OCP\Share\IShare;
-use OCP\Share as ShareConstants;
-use OCP\Share\IManager;
+use OCA\DataExporter\Model\Share;
+use OCA\DataExporter\Utilities\StreamHelper;
+use OCP\Files\Folder;
 use OCP\Files\IRootFolder;
 use OCP\Files\Node;
-use OCP\Files\Folder;
+use OCP\IConfig;
+use OCP\Share as ShareConstants;
+use OCP\Share\IManager;
+use OCP\Share\IShare;
+use org\bovigo\vfs\vfsStream;
 use Test\TestCase;
 
 class SharesExtractorTest extends TestCase {
-	/** @var SharesExtractor */
+	/**
+	 * @var SharesExtractor
+	 */
 	private $sharesExtractor;
-
-	/** @var IManager | \PHPUnit\Framework\MockObject\MockObject */
+	/**
+	 * @var IManager | \PHPUnit\Framework\MockObject\MockObject
+	 */
 	private $manager;
-	/** @var IRootFolder | \PHPUnit\Framework\MockObject\MockObject */
+	/**
+	 * @var IRootFolder | \PHPUnit\Framework\MockObject\MockObject
+	 */
 	private $rootFolder;
-	/** @var IConfig | \PHPUnit\Framework\MockObject\MockObject */
+	/**
+	 * @var IConfig | \PHPUnit\Framework\MockObject\MockObject
+	 */
 	private $config;
+	/**
+	 * @var StreamHelper | \PHPUnit\Framework\MockObject\MockObject
+	 */
+	private $streamHelper;
+	/**
+	 * @var resource
+	 */
+	private $resource;
 
 	protected function setUp() {
 		parent::setUp();
@@ -50,12 +67,22 @@ class SharesExtractorTest extends TestCase {
 		$this->manager = $this->createMock(IManager::class);
 		$this->rootFolder = $this->createMock(IRootFolder::class);
 		$this->config = $this->createMock(IConfig::class);
+		$this->streamHelper = $this->createMock(StreamHelper::class);
 		$this->config
 			->method('getSystemValue')
 			->with('version', '')
 			->willReturn('10.1.0');
 
-		$this->sharesExtractor = new SharesExtractor($this->manager, $this->rootFolder, $this->config);
+		$this->sharesExtractor = new SharesExtractor($this->manager, $this->rootFolder, $this->config, $this->streamHelper);
+		$directoryTree = [
+			'testexport' => [
+				'usertest' => [
+					'files.jsonl' => ''
+				]
+			]
+		];
+		$fileSystem = vfsStream::setup('testroot', '644', $directoryTree);
+		$this->resource = \fopen($fileSystem->url() . '/testexport/usertest/shares.jsonl', 'ab');
 	}
 
 	private function getFakeShare(string $path, string $owner, string $sharedBy, string $sharedWith, int $permissions) {
@@ -64,6 +91,7 @@ class SharesExtractorTest extends TestCase {
 
 		$share = $this->createMock(IShare::class);
 		$share->method('getNode')->willReturn($node);
+		$share->method('getNodeType')->willReturn('file');
 		$share->method('getShareOwner')->willReturn($owner);
 		$share->method('getSharedBy')->willReturn($sharedBy);
 		$share->method('getSharedWith')->willReturn($sharedWith);
@@ -77,6 +105,7 @@ class SharesExtractorTest extends TestCase {
 
 		$share = $this->createMock(IShare::class);
 		$share->method('getNode')->willReturn($node);
+		$share->method('getNodeType')->willReturn('file');
 		$share->method('getShareOwner')->willReturn($owner);
 		$share->method('getSharedBy')->willReturn($sharedBy);
 		$share->method('getPermissions')->willReturn($permissions);
@@ -123,79 +152,96 @@ class SharesExtractorTest extends TestCase {
 				return $node;
 			}));
 
-		$realModels = $this->sharesExtractor->extract($user);
+		$userShareModel1 = (new Share())
+			->setPath('/path/to/file')
+			->setShareType(SHARE::SHARETYPE_USER)
+			->setType('file')
+			->setOwner('usertest')
+			->setSharedBy('usertest')
+			->setSharedWith('usertest2')
+			->setPermissions(1);
+		$userShareModel2 = (new Share())
+			->setPath('/path/to/file')
+			->setShareType(SHARE::SHARETYPE_USER)
+			->setType('file')
+			->setOwner('usertest')
+			->setSharedBy('initiator')
+			->setSharedWith('usertest2')
+			->setPermissions(1);
+		$groupShareModel1 = (new Share())
+			->setPath('/path/to/file')
+			->setShareType(SHARE::SHARETYPE_GROUP)
+			->setType('file')
+			->setOwner('usertest')
+			->setSharedBy('initiator')
+			->setSharedWith('group')
+			->setPermissions(31);
+		$linksShareModel1 = (new Share())
+			->setPath('/path/to/file')
+			->setShareType(SHARE::SHARETYPE_LINK)
+			->setType('file')
+			->setOwner('usertest')
+			->setSharedBy('initiator')
+			->setPermissions(31)
+			->setToken('#token')
+			->setName('my link name')
+			->setExpirationDate(1556150400)
+			->setPassword('password');
+		$remoteShareModel1 = (new Share())
+			->setPath('/path/to/file')
+			->setShareType(SHARE::SHARETYPE_REMOTE)
+			->setType('file')
+			->setOwner('usertest')
+			->setSharedBy('initiator')
+			->setSharedWith('user@remote')
+			->setPermissions(1);
+		$this->streamHelper
+			->expects($this->exactly(5))
+			->method('writelnToStream')
+			->withConsecutive(
+				[ $this->resource, $userShareModel1],
+				[ $this->resource, $userShareModel2],
+				[ $this->resource, $groupShareModel1],
+				[ $this->resource, $linksShareModel1],
+				[ $this->resource, $remoteShareModel1]
+			);
+		$this->streamHelper
+			->expects($this->once())
+			->method('initStream')
+			->willReturn($this->resource);
+		$this->streamHelper
+			->expects($this->once())
+			->method('closeStream')
+			->with($this->resource);
 
-		$expectedShareModels = [
-			(new Share())
-				->setPath('/path/to/file')
-				->setShareType(SHARE::SHARETYPE_USER)
-				->setOwner('usertest')
-				->setSharedBy('usertest')
-				->setSharedWith('usertest2')
-				->setPermissions(1),
-			(new Share())
-				->setPath('/path/to/file')
-				->setShareType(SHARE::SHARETYPE_USER)
-				->setOwner('usertest')
-				->setSharedBy('initiator')
-				->setSharedWith('usertest2')
-				->setPermissions(1),
-			(new Share())
-				->setPath('/path/to/file')
-				->setShareType(SHARE::SHARETYPE_GROUP)
-				->setOwner('usertest')
-				->setSharedBy('initiator')
-				->setSharedWith('group')
-				->setPermissions(31),
-			(new Share())
-				->setPath('/path/to/file')
-				->setShareType(SHARE::SHARETYPE_LINK)
-				->setOwner('usertest')
-				->setSharedBy('initiator')
-				->setPermissions(31)
-				->setToken('#token')
-				->setName('my link name')
-				->setExpirationDate(1556150400)
-				->setPassword('password'),
-			(new Share())
-				->setPath('/path/to/file')
-				->setShareType(SHARE::SHARETYPE_REMOTE)
-				->setOwner('usertest')
-				->setSharedBy('initiator')
-				->setSharedWith('user@remote')
-				->setPermissions(1),
-		];
-
-		$this->assertEquals(\count($expectedShareModels), \count($realModels));
-
-		foreach ($expectedShareModels as $key => $expectedShareModel) {
-			$this->assertEquals($expectedShareModel->getPath(), $realModels[$key]->getPath());
-			$this->assertEquals($expectedShareModel->getShareType(), $realModels[$key]->getShareType());
-			$this->assertEquals($expectedShareModel->getOwner(), $realModels[$key]->getOwner());
-			$this->assertEquals($expectedShareModel->getSharedBy(), $realModels[$key]->getSharedBy());
-			$this->assertEquals($expectedShareModel->getSharedWith(), $realModels[$key]->getSharedWith());
-			$this->assertEquals($expectedShareModel->getPermissions(), $realModels[$key]->getPermissions());
-			$this->assertEquals($expectedShareModel->getToken(), $realModels[$key]->getToken());
-			$this->assertEquals($expectedShareModel->getExpirationDate(), $realModels[$key]->getExpirationDate());
-			$this->assertEquals($expectedShareModel->getPassword(), $realModels[$key]->getPassword());
-			$this->assertEquals($expectedShareModel->getName(), $realModels[$key]->getName());
-		}
+		$this->sharesExtractor->extract($user, '/usertest');
 	}
 
 	public function testExtractNoData() {
 		$user = 'usertest';
 
 		$this->manager->method('getSharesBy')
-			->will($this->returnValueMap([
-				[$user, ShareConstants::SHARE_TYPE_USER, null, true, 50, 0, []],
-				[$user, ShareConstants::SHARE_TYPE_GROUP, null, true, 50, 0, []],
-				[$user, ShareConstants::SHARE_TYPE_LINK, null, true, 50, 0, []],
-				[$user, ShareConstants::SHARE_TYPE_REMOTE, null, true, 50, 0, []],
-			]));
+			->will(
+				$this->returnValueMap(
+					[
+						[$user, ShareConstants::SHARE_TYPE_USER, null, true, 50, 0, []],
+						[$user, ShareConstants::SHARE_TYPE_GROUP, null, true, 50, 0, []],
+						[$user, ShareConstants::SHARE_TYPE_LINK, null, true, 50, 0, []],
+						[$user, ShareConstants::SHARE_TYPE_REMOTE, null, true, 50, 0, []],
+					]
+				)
+			);
 
-		$realModels = $this->sharesExtractor->extract($user);
+		$this->streamHelper
+			->expects($this->once())
+			->method('initStream')
+			->willReturn($this->resource);
+		$this->streamHelper
+			->expects($this->once())
+			->method('closeStream')
+			->with($this->resource);
 
-		$this->assertEmpty($realModels);
+		$this->sharesExtractor->extract($user, '/usertest');
 	}
 
 	public function testExtractLinksWithExpirationAndPassword() {
@@ -230,61 +276,65 @@ class SharesExtractorTest extends TestCase {
 				return $node;
 			}));
 
-		$realModels = $this->sharesExtractor->extract($user);
+		$linkShareModel1 = (new Share())
+			->setPath('/path/to/file')
+			->setShareType(SHARE::SHARETYPE_LINK)
+			->setType('file')
+			->setOwner('usertest')
+			->setSharedBy('initiator')
+			->setPermissions(31)
+			->setToken('#token-1')
+			->setName('my link name');
+		$linkShareModel2 = (new Share())
+			->setPath('/path/to/file')
+			->setShareType(SHARE::SHARETYPE_LINK)
+			->setType('file')
+			->setOwner('usertest')
+			->setSharedBy('initiator')
+			->setPermissions(31)
+			->setToken('#token-2')
+			->setName('my link name')
+			->setExpirationDate(12345678);
+		$linkShareModel3 = (new Share())
+			->setPath('/path/to/file')
+			->setShareType(SHARE::SHARETYPE_LINK)
+			->setType('file')
+			->setOwner('usertest')
+			->setSharedBy('initiator')
+			->setPermissions(31)
+			->setToken('#token-3')
+			->setName('my link name')
+			->setPassword('hashed#Password');
+		$linkShareModel4 = (new Share())
+			->setPath('/path/to/file')
+			->setShareType(SHARE::SHARETYPE_LINK)
+			->setType('file')
+			->setOwner('usertest')
+			->setSharedBy('initiator')
+			->setPermissions(31)
+			->setToken('#token-4')
+			->setName('my link name')
+			->setExpirationDate(12345678)
+			->setPassword('hashed#Password');
+		$this->streamHelper
+			->expects($this->exactly(4))
+			->method('writelnToStream')
+			->withConsecutive(
+				[ $this->resource, $linkShareModel1],
+				[ $this->resource, $linkShareModel2],
+				[ $this->resource, $linkShareModel3],
+				[ $this->resource, $linkShareModel4]
+			);
+		$this->streamHelper
+			->expects($this->once())
+			->method('initStream')
+			->willReturn($this->resource);
+		$this->streamHelper
+			->expects($this->once())
+			->method('closeStream')
+			->with($this->resource);
 
-		$expectedShareModels = [
-			(new Share())
-				->setPath('/path/to/file')
-				->setShareType(SHARE::SHARETYPE_LINK)
-				->setOwner('usertest')
-				->setSharedBy('initiator')
-				->setPermissions(31)
-				->setToken('#token-1')
-				->setName('my link name'),
-			(new Share())
-				->setPath('/path/to/file')
-				->setShareType(SHARE::SHARETYPE_LINK)
-				->setOwner('usertest')
-				->setSharedBy('initiator')
-				->setPermissions(31)
-				->setToken('#token-2')
-				->setName('my link name')
-				->setExpirationDate(12345678),
-			(new Share())
-				->setPath('/path/to/file')
-				->setShareType(SHARE::SHARETYPE_LINK)
-				->setOwner('usertest')
-				->setSharedBy('initiator')
-				->setPermissions(31)
-				->setToken('#token-3')
-				->setName('my link name')
-				->setPassword('hashed#Password'),
-			(new Share())
-				->setPath('/path/to/file')
-				->setShareType(SHARE::SHARETYPE_LINK)
-				->setOwner('usertest')
-				->setSharedBy('initiator')
-				->setPermissions(31)
-				->setToken('#token-4')
-				->setName('my link name')
-				->setExpirationDate(12345678)
-				->setPassword('hashed#Password'),
-		];
-
-		$this->assertEquals(\count($expectedShareModels), \count($realModels));
-
-		foreach ($expectedShareModels as $key => $expectedShareModel) {
-			$this->assertEquals($expectedShareModel->getPath(), $realModels[$key]->getPath());
-			$this->assertEquals($expectedShareModel->getShareType(), $realModels[$key]->getShareType());
-			$this->assertEquals($expectedShareModel->getOwner(), $realModels[$key]->getOwner());
-			$this->assertEquals($expectedShareModel->getSharedBy(), $realModels[$key]->getSharedBy());
-			$this->assertEquals($expectedShareModel->getSharedWith(), $realModels[$key]->getSharedWith());
-			$this->assertEquals($expectedShareModel->getPermissions(), $realModels[$key]->getPermissions());
-			$this->assertEquals($expectedShareModel->getToken(), $realModels[$key]->getToken());
-			$this->assertEquals($expectedShareModel->getExpirationDate(), $realModels[$key]->getExpirationDate());
-			$this->assertEquals($expectedShareModel->getPassword(), $realModels[$key]->getPassword());
-			$this->assertEquals($expectedShareModel->getName(), $realModels[$key]->getName());
-		}
+		$this->sharesExtractor->extract($user, '/usertest');
 	}
 
 	public function testExtractOC9() {
@@ -294,7 +344,12 @@ class SharesExtractorTest extends TestCase {
 			->with('version', '')
 			->willReturn('9.0.1');
 
-		$this->sharesExtractor = new SharesExtractor($this->manager, $this->rootFolder, $this->config);
+		$this->sharesExtractor = new SharesExtractor(
+			$this->manager,
+			$this->rootFolder,
+			$this->config,
+			$this->streamHelper
+		);
 
 		$user = 'usertest';
 		$expiration = new \DateTime();
@@ -327,62 +382,68 @@ class SharesExtractorTest extends TestCase {
 				return $node;
 			}));
 
-		$realModels = $this->sharesExtractor->extract($user);
+		$userShareModel1 = (new Share())
+			->setPath('/path/to/file')
+			->setShareType(SHARE::SHARETYPE_USER)
+			->setType('file')
+			->setOwner('usertest')
+			->setSharedBy('usertest')
+			->setSharedWith('usertest2')
+			->setPermissions(1);
+		$userShareModel2 = (new Share())
+			->setPath('/path/to/file')
+			->setShareType(SHARE::SHARETYPE_USER)
+			->setType('file')
+			->setOwner('usertest')
+			->setSharedBy('initiator')
+			->setSharedWith('usertest2')
+			->setPermissions(1);
+		$groupShareModel1 = (new Share())
+			->setPath('/path/to/file')
+			->setShareType(SHARE::SHARETYPE_GROUP)
+			->setType('file')
+			->setOwner('usertest')
+			->setSharedBy('initiator')
+			->setSharedWith('group')
+			->setPermissions(31);
+		$linksShareModel1 = (new Share())
+			->setPath('/path/to/file')
+			->setShareType(SHARE::SHARETYPE_LINK)
+			->setType('file')
+			->setOwner('usertest')
+			->setSharedBy('initiator')
+			->setPermissions(31)
+			->setToken('#token')
+			->setName('')
+			->setExpirationDate(1556150400)
+			->setPassword('password');
+		$remoteShareModel1 = (new Share())
+			->setPath('/path/to/file')
+			->setShareType(SHARE::SHARETYPE_REMOTE)
+			->setType('file')
+			->setOwner('usertest')
+			->setSharedBy('initiator')
+			->setSharedWith('user@remote')
+			->setPermissions(1);
+		$this->streamHelper
+			->expects($this->exactly(5))
+			->method('writelnToStream')
+			->withConsecutive(
+				[ $this->resource, $userShareModel1],
+				[ $this->resource, $userShareModel2],
+				[ $this->resource, $groupShareModel1],
+				[ $this->resource, $linksShareModel1],
+				[ $this->resource, $remoteShareModel1]
+			);
+		$this->streamHelper
+			->expects($this->once())
+			->method('initStream')
+			->willReturn($this->resource);
+		$this->streamHelper
+			->expects($this->once())
+			->method('closeStream')
+			->with($this->resource);
 
-		$expectedShareModels = [
-			(new Share())
-				->setPath('/path/to/file')
-				->setShareType(SHARE::SHARETYPE_USER)
-				->setOwner('usertest')
-				->setSharedBy('usertest')
-				->setSharedWith('usertest2')
-				->setPermissions(1),
-			(new Share())
-				->setPath('/path/to/file')
-				->setShareType(SHARE::SHARETYPE_USER)
-				->setOwner('usertest')
-				->setSharedBy('initiator')
-				->setSharedWith('usertest2')
-				->setPermissions(1),
-			(new Share())
-				->setPath('/path/to/file')
-				->setShareType(SHARE::SHARETYPE_GROUP)
-				->setOwner('usertest')
-				->setSharedBy('initiator')
-				->setSharedWith('group')
-				->setPermissions(31),
-			(new Share())
-				->setPath('/path/to/file')
-				->setShareType(SHARE::SHARETYPE_LINK)
-				->setOwner('usertest')
-				->setSharedBy('initiator')
-				->setPermissions(31)
-				->setToken('#token')
-				->setName('')
-				->setExpirationDate(1556150400)
-				->setPassword('password'),
-			(new Share())
-				->setPath('/path/to/file')
-				->setShareType(SHARE::SHARETYPE_REMOTE)
-				->setOwner('usertest')
-				->setSharedBy('initiator')
-				->setSharedWith('user@remote')
-				->setPermissions(1),
-		];
-
-		$this->assertEquals(\count($expectedShareModels), \count($realModels));
-
-		foreach ($expectedShareModels as $key => $expectedShareModel) {
-			$this->assertEquals($expectedShareModel->getPath(), $realModels[$key]->getPath());
-			$this->assertEquals($expectedShareModel->getShareType(), $realModels[$key]->getShareType());
-			$this->assertEquals($expectedShareModel->getOwner(), $realModels[$key]->getOwner());
-			$this->assertEquals($expectedShareModel->getSharedBy(), $realModels[$key]->getSharedBy());
-			$this->assertEquals($expectedShareModel->getSharedWith(), $realModels[$key]->getSharedWith());
-			$this->assertEquals($expectedShareModel->getPermissions(), $realModels[$key]->getPermissions());
-			$this->assertEquals($expectedShareModel->getToken(), $realModels[$key]->getToken());
-			$this->assertEquals($expectedShareModel->getExpirationDate(), $realModels[$key]->getExpirationDate());
-			$this->assertEquals($expectedShareModel->getPassword(), $realModels[$key]->getPassword());
-			$this->assertEquals($expectedShareModel->getName(), $realModels[$key]->getName());
-		}
+		$this->sharesExtractor->extract($user, '/usertest');
 	}
 }

@@ -44,11 +44,21 @@ class Exporter {
 		$this->filesystem = $filesystem;
 	}
 
+	/**
+	 * @param string $uid
+	 * @param string $exportDirectoryPath
+	 *
+	 * @throws \OCP\Files\NotFoundException
+	 * @throws \OCP\Files\NotPermittedException
+	 * @throws \Exception
+	 *
+	 * @return void
+	 */
 	public function export($uid, $exportDirectoryPath) {
 		$exportPath = "$exportDirectoryPath/$uid";
-		$metaData = $this->metadataExtractor->extract($uid);
+		$metaData = $this->metadataExtractor->extract($uid, $exportPath);
 		$this->filesystem->dumpFile(
-			"$exportPath/metadata.json",
+			"$exportPath/user.json",
 			$this->serializer->serialize($metaData)
 		);
 

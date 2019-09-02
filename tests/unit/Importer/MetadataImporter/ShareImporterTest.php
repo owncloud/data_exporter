@@ -24,7 +24,8 @@ namespace OCA\DataExporter\Tests\Unit\Importer\MetadataImporter;
 
 use OC\Share20\Share as PrivateShare;
 use OCA\DataExporter\Importer\MetadataImporter\ShareImporter;
-use OCA\DataExporter\Model\User\Share;
+use OCA\DataExporter\Model\Share;
+use OCA\DataExporter\Utilities\StreamHelper;
 use OCP\Share\IManager;
 use OCP\Share\IShare;
 use OCP\Files\IRootFolder;
@@ -55,6 +56,8 @@ class ShareImporterTest extends TestCase {
 	private $shareImporter;
 	/** @var ILogger | \PHPUnit\Framework\MockObject\MockObject */
 	private $logger;
+	/** @var StreamHelper | \PHPUnit\Framework\MockObject\MockObject*/
+	private $streamHelper;
 
 	protected function setUp() {
 		$this->shareManager = $this->createMock(IManager::class);
@@ -64,6 +67,7 @@ class ShareImporterTest extends TestCase {
 		$this->shareConverter = $this->createMock(ShareConverter::class);
 		$this->urlGenerator = $this->createMock(IURLGenerator::class);
 		$this->logger = $this->createMock(ILogger::class);
+		$this->streamHelper = $this->createMock(StreamHelper::class);
 
 		$this->shareImporter = new ShareImporter(
 			$this->shareManager,
@@ -72,7 +76,8 @@ class ShareImporterTest extends TestCase {
 			$this->groupManager,
 			$this->shareConverter,
 			$this->urlGenerator,
-			$this->logger
+			$this->logger,
+			$this->streamHelper
 		);
 	}
 
@@ -167,7 +172,11 @@ class ShareImporterTest extends TestCase {
 				return $this->isSameShare($share, $shareData1) || $this->isSameShare($share, $shareData2);
 			}));
 
-		$this->shareImporter->import('usertest', [$shareModel], 'https://random.host/oc');
+		$this->streamHelper
+			->expects($this->exactly(2))
+			->method('readlnFromStream')
+			->willReturnOnConsecutiveCalls($shareModel, false);
+		$this->shareImporter->import('usertest', '/tmp/usertest', 'https://random.host/oc');
 	}
 
 	/**
@@ -205,7 +214,11 @@ class ShareImporterTest extends TestCase {
 				return $this->isSameShare($share, $shareData);
 			}));
 
-		$this->shareImporter->import('usertest', [$shareModel], 'https://random.host/oc');
+		$this->streamHelper
+			->expects($this->exactly(2))
+			->method('readlnFromStream')
+			->willReturnOnConsecutiveCalls($shareModel, false);
+		$this->shareImporter->import('usertest', '/tmp/testuser', 'https://random.host/oc');
 	}
 
 	/**
@@ -234,7 +247,11 @@ class ShareImporterTest extends TestCase {
 		$this->shareManager->expects($this->never())
 			->method('createShare');
 
-		$this->shareImporter->import('usertest', [$shareModel], 'https://random.host/oc');
+		$this->streamHelper
+			->expects($this->exactly(2))
+			->method('readlnFromStream')
+			->willReturnOnConsecutiveCalls($shareModel, false);
+		$this->shareImporter->import('usertest', '/tmp/testuser', 'https://random.host/oc');
 	}
 
 	/**
@@ -261,7 +278,11 @@ class ShareImporterTest extends TestCase {
 		$this->shareManager->expects($this->never())
 			->method('createShare');
 
-		$this->shareImporter->import('usertest', [$shareModel], 'https://random.host/oc');
+		$this->streamHelper
+			->expects($this->exactly(2))
+			->method('readlnFromStream')
+			->willReturnOnConsecutiveCalls($shareModel, false);
+		$this->shareImporter->import('usertest', '/tmp/testuser', 'https://random.host/oc');
 	}
 
 	/**
@@ -298,7 +319,11 @@ class ShareImporterTest extends TestCase {
 				return $this->isSameShare($share, $shareData);
 			}));
 
-		$this->shareImporter->import('usertest', [$shareModel], 'https://random.host/oc');
+		$this->streamHelper
+			->expects($this->exactly(2))
+			->method('readlnFromStream')
+			->willReturnOnConsecutiveCalls($shareModel, false);
+		$this->shareImporter->import('usertest', '/tmp/usertest', 'https://random.host/oc');
 	}
 
 	/**
@@ -324,7 +349,11 @@ class ShareImporterTest extends TestCase {
 		$this->shareManager->expects($this->never())
 			->method('createShare');
 
-		$this->shareImporter->import('usertest', [$shareModel], 'https://random.host/oc');
+		$this->streamHelper
+			->expects($this->exactly(2))
+			->method('readlnFromStream')
+			->willReturnOnConsecutiveCalls($shareModel, false);
+		$this->shareImporter->import('usertest', '/tmp/testuser', 'https://random.host/oc');
 	}
 
 	/**
@@ -350,7 +379,11 @@ class ShareImporterTest extends TestCase {
 		$this->shareManager->expects($this->never())
 			->method('createShare');
 
-		$this->shareImporter->import('usertest', [$shareModel], 'https://random.host/oc');
+		$this->streamHelper
+			->expects($this->exactly(2))
+			->method('readlnFromStream')
+			->willReturnOnConsecutiveCalls($shareModel, false);
+		$this->shareImporter->import('usertest', '/tmp/testuser', 'https://random.host/oc');
 	}
 
 	/**
@@ -407,7 +440,11 @@ class ShareImporterTest extends TestCase {
 				return $this->isSameLinkShare($share, $shareData);
 			}));
 
-		$this->shareImporter->import('usertest', [$shareModel], 'https://random.host/oc');
+		$this->streamHelper
+			->expects($this->exactly(2))
+			->method('readlnFromStream')
+			->willReturnOnConsecutiveCalls($shareModel, false);
+		$this->shareImporter->import('usertest', '/tmp/usertest', 'https://random.host/oc');
 	}
 
 	public function testImportLinkShareWithPassword() {
@@ -462,7 +499,11 @@ class ShareImporterTest extends TestCase {
 				return $this->isSameLinkShare($share, $shareData);
 			}));
 
-		$this->shareImporter->import('usertest', [$shareModel], 'https://random.host/oc');
+		$this->streamHelper
+			->expects($this->exactly(2))
+			->method('readlnFromStream')
+			->willReturnOnConsecutiveCalls($shareModel, false);
+		$this->shareImporter->import('usertest', '/tmp/usertest', 'https://random.host/oc');
 	}
 
 	public function testImportLinkShareWithExpiration() {
@@ -519,7 +560,11 @@ class ShareImporterTest extends TestCase {
 				return $this->isSameLinkShare($share, $shareData);
 			}));
 
-		$this->shareImporter->import('usertest', [$shareModel], 'https://random.host/oc');
+		$this->streamHelper
+			->expects($this->exactly(2))
+			->method('readlnFromStream')
+			->willReturnOnConsecutiveCalls($shareModel, false);
+		$this->shareImporter->import('usertest', '/tmp/usertest', 'https://random.host/oc');
 	}
 
 	public function testImportLinkShareWithPasswordAndExpiration() {
@@ -577,7 +622,11 @@ class ShareImporterTest extends TestCase {
 				return $this->isSameLinkShare($share, $shareData);
 			}));
 
-		$this->shareImporter->import('usertest', [$shareModel], 'https://random.host/oc');
+		$this->streamHelper
+			->expects($this->exactly(2))
+			->method('readlnFromStream')
+			->willReturnOnConsecutiveCalls($shareModel, false);
+		$this->shareImporter->import('usertest', '/tmp/usertest', 'https://random.host/oc');
 	}
 
 	/**
@@ -601,7 +650,11 @@ class ShareImporterTest extends TestCase {
 		$this->shareManager->expects($this->never())
 			->method('createShare');
 
-		$this->shareImporter->import('usertest', [$shareModel], 'https://random.host/oc');
+		$this->streamHelper
+			->expects($this->exactly(2))
+			->method('readlnFromStream')
+			->willReturnOnConsecutiveCalls($shareModel, false);
+		$this->shareImporter->import('usertest', '/tmp/usertest', 'https://random.host/oc');
 	}
 
 	/**
@@ -638,7 +691,11 @@ class ShareImporterTest extends TestCase {
 				return $this->isSameShare($share, $shareData);
 			}));
 
-		$this->shareImporter->import('usertest', [$shareModel], 'https://random.host/oc');
+		$this->streamHelper
+			->expects($this->exactly(2))
+			->method('readlnFromStream')
+			->willReturnOnConsecutiveCalls($shareModel, false);
+		$this->shareImporter->import('usertest', '/tmp/usertest', 'https://random.host/oc');
 	}
 
 	/**
@@ -675,7 +732,11 @@ class ShareImporterTest extends TestCase {
 				return $this->isSameShare($share, $shareData);
 			}));
 
-		$this->shareImporter->import('usertest', [$shareModel], 'https://random.host/oc');
+		$this->streamHelper
+			->expects($this->exactly(2))
+			->method('readlnFromStream')
+			->willReturnOnConsecutiveCalls($shareModel, false);
+		$this->shareImporter->import('usertest', '/tmp/usertest', 'https://random.host/oc');
 	}
 
 	/**
@@ -712,7 +773,11 @@ class ShareImporterTest extends TestCase {
 				return $this->isSameShare($share, $shareData);
 			}));
 
-		$this->shareImporter->import('usertest', [$shareModel], 'https://random.host/oc');
+		$this->streamHelper
+			->expects($this->exactly(2))
+			->method('readlnFromStream')
+			->willReturnOnConsecutiveCalls($shareModel, false);
+		$this->shareImporter->import('usertest', '/tmp/usertest', 'https://random.host/oc');
 	}
 
 	/**
@@ -738,6 +803,10 @@ class ShareImporterTest extends TestCase {
 		$this->shareManager->expects($this->never())
 			->method('createShare');
 
-		$this->shareImporter->import('usertest2', [$shareModel], 'https://random.host/oc');
+		$this->streamHelper
+			->expects($this->exactly(2))
+			->method('readlnFromStream')
+			->willReturnOnConsecutiveCalls($shareModel, false);
+		$this->shareImporter->import('usertest2', '/tmp/usertest', 'https://random.host/oc');
 	}
 }

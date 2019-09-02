@@ -20,58 +20,93 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
+
 namespace OCA\DataExporter\Extractor\MetadataExtractor;
 
-use OCA\DataExporter\Model\User\Share;
-use OCP\IConfig;
-use OCP\Share\IManager;
-use OCP\Share as ShareConstants;
+use OCA\DataExporter\Model\Share;
+use OCA\DataExporter\Utilities\StreamHelper;
 use OCP\Files\IRootFolder;
+use OCP\Files\NotFoundException;
+use OCP\IConfig;
+use OCP\Share as ShareConstants;
+use OCP\Share\IManager;
 
 class SharesExtractor {
-	/** @var IManager */
+	const FILE_NAME = 'shares.jsonl';
+	/**
+	 * @var IManager
+	 */
 	private $manager;
-	/** @var IRootFolder */
+	/**
+	 * @var IRootFolder
+	 */
 	private $rootFolder;
 	/**
 	 * @var IConfig
 	 */
 	private $config;
+	/**
+	 * @var StreamHelper
+	 */
+	private $streamHelper;
+	/**
+	 * @var resource $streamFile
+	 */
+	private $streamFile;
 
-	public function __construct(IManager $manager, IRootFolder $rootFolder, IConfig $config) {
+	/**
+	 * SharesExtractor constructor.
+	 *
+	 * @param IManager $manager
+	 * @param IRootFolder $rootFolder
+	 * @param IConfig $config
+	 * @param StreamHelper $streamHelper
+	 */
+	public function __construct(
+		IManager $manager,
+		IRootFolder $rootFolder,
+		IConfig $config,
+		StreamHelper $streamHelper
+	) {
 		$this->manager = $manager;
 		$this->rootFolder = $rootFolder;
 		$this->config = $config;
+		$this->streamHelper = $streamHelper;
 	}
 
 	/**
 	 * @param string $userId the id of the user to extract the info from
-	 * @return Share[]
+	 * @param string $exportPath
+	 *
+	 * @throws NotFoundException
+	 *
+	 * @return void
 	 */
-	public function extract($userId) {
+	public function extract($userId, $exportPath) {
 		$ocVersion = $this->config->getSystemValue('version', '');
+		$filename = $exportPath . '/' . $this::FILE_NAME;
+		$this->streamFile = $this->streamHelper
+			->initStream($filename, 'ab', true);
+
+		$this->getUserShares($userId);
+		$this->getGroupShares($userId);
 		if (\version_compare($ocVersion, '10', '<')) {
-			return \array_merge(
-				$this->getUserShares($userId),
-				$this->getGroupShares($userId),
-				$this->getLinkShares9($userId),
-				$this->getRemoteShares($userId)
-			);
+			$this->getLinkShares9($userId);
+		} else {
+			$this->getLinkShares($userId);
 		}
-		return \array_merge(
-			$this->getUserShares($userId),
-			$this->getGroupShares($userId),
-			$this->getLinkShares($userId),
-			$this->getRemoteShares($userId)
-		);
+		$this->getRemoteShares($userId);
+		$this->streamHelper->closeStream($this->streamFile);
 	}
 
 	/**
 	 * @param string $userId the user id to get the shares from
-	 * @return Share[] the list of matching share models
+	 *
+	 * @throws NotFoundException
+	 *
+	 * @return void
 	 */
 	private function getUserShares($userId) {
-		$shareModels = [];
 		$limit = 50;
 		$offset = 0;
 		$userFolder = $this->rootFolder->getUserFolder($userId);
@@ -91,24 +126,28 @@ class SharesExtractor {
 				$shareModel = new Share();
 				$shareModel->setPath($userFolder->getRelativePath($share->getNode()->getPath()))
 					->setShareType(Share::SHARETYPE_USER)
+					->setType($share->getNodeType())
 					->setOwner($share->getShareOwner())
 					->setSharedBy($share->getSharedBy())
 					->setSharedWith($share->getSharedWith())
 					->setPermissions($share->getPermissions());
 				// the rest of the model attributes doesn't make sense with local shares
-				$shareModels[] = $shareModel;
+				$this->streamHelper->writelnToStream(
+					$this->streamFile,
+					$shareModel
+				);
 			}
 		} while (\count($shares) >= $limit);
-
-		return $shareModels;
 	}
 
 	/**
 	 * @param string $userId the user id to get the shares from
-	 * @return Share[] the list of matching share models
+	 *
+	 * @throws NotFoundException
+	 *
+	 * @return void
 	 */
 	private function getGroupShares($userId) {
-		$shareModels = [];
 		$limit = 50;
 		$offset = 0;
 		$userFolder = $this->rootFolder->getUserFolder($userId);
@@ -128,72 +167,28 @@ class SharesExtractor {
 				$shareModel = new Share();
 				$shareModel->setPath($userFolder->getRelativePath($share->getNode()->getPath()))
 					->setShareType(Share::SHARETYPE_GROUP)
+					->setType($share->getNodeType())
 					->setOwner($share->getShareOwner())
 					->setSharedBy($share->getSharedBy())
 					->setSharedWith($share->getSharedWith())
 					->setPermissions($share->getPermissions());
 				// the rest of the model attributes doesn't make sense with local shares
-				$shareModels[] = $shareModel;
+				$this->streamHelper->writelnToStream(
+					$this->streamFile,
+					$shareModel
+				);
 			}
 		} while (\count($shares) >= $limit);
-
-		return $shareModels;
 	}
 
 	/**
 	 * @param string $userId the user id to get the shares from
-	 * @return Share[] the list of matching share models
-	 */
-	private function getLinkShares($userId) {
-		$shareModels = [];
-		$limit = 50;
-		$offset = 0;
-		$userFolder = $this->rootFolder->getUserFolder($userId);
-
-		do {
-			$shares = $this->manager->getSharesBy(
-				$userId,
-				ShareConstants::SHARE_TYPE_LINK,
-				null,
-				true,
-				$limit,
-				$offset
-			);
-			$offset += $limit;
-
-			foreach ($shares as $share) {
-				$shareModel = new Share();
-				$shareModel->setPath($userFolder->getRelativePath($share->getNode()->getPath()))
-					->setShareType(Share::SHARETYPE_LINK)
-					->setOwner($share->getShareOwner())
-					->setSharedBy($share->getSharedBy())
-					->setPermissions($share->getPermissions())
-					->setName($share->getName())
-					->setToken($share->getToken());
-
-				$expiration = $share->getExpirationDate();
-				if ($expiration) {
-					$shareModel->setExpirationDate($expiration->getTimestamp());
-				}
-
-				$password = $share->getPassword();  // the retrieved password is expected to be hashed
-				if (\is_string($password)) {
-					$shareModel->setPassword($password);
-				}
-				// the rest of the model attributes doesn't make sense with link shares
-				$shareModels[] = $shareModel;
-			}
-		} while (\count($shares) >= $limit);
-
-		return $shareModels;
-	}
-
-	/**
-	 * @param string $userId the user id to get the shares from
-	 * @return Share[] the list of matching share models
+	 *
+	 * @throws NotFoundException
+	 *
+	 * @return void
 	 */
 	private function getLinkShares9($userId) {
-		$shareModels = [];
 		$limit = 50;
 		$offset = 0;
 		$userFolder = $this->rootFolder->getUserFolder($userId);
@@ -213,6 +208,7 @@ class SharesExtractor {
 				$shareModel = new Share();
 				$shareModel->setPath($userFolder->getRelativePath($share->getNode()->getPath()))
 					->setShareType(Share::SHARETYPE_LINK)
+					->setType($share->getNodeType())
 					->setOwner($share->getShareOwner())
 					->setSharedBy($share->getSharedBy())
 					->setPermissions($share->getPermissions())
@@ -229,19 +225,74 @@ class SharesExtractor {
 					$shareModel->setPassword($password);
 				}
 				// the rest of the model attributes doesn't make sense with link shares
-				$shareModels[] = $shareModel;
+				$this->streamHelper->writelnToStream(
+					$this->streamFile,
+					$shareModel
+				);
 			}
 		} while (\count($shares) >= $limit);
-
-		return $shareModels;
 	}
 
 	/**
 	 * @param string $userId the user id to get the shares from
-	 * @return Share[] the list of matching share models
+	 *
+	 * @throws NotFoundException
+	 *
+	 * @return void
+	 */
+	private function getLinkShares($userId) {
+		$limit = 50;
+		$offset = 0;
+		$userFolder = $this->rootFolder->getUserFolder($userId);
+
+		do {
+			$shares = $this->manager->getSharesBy(
+				$userId,
+				ShareConstants::SHARE_TYPE_LINK,
+				null,
+				true,
+				$limit,
+				$offset
+			);
+			$offset += $limit;
+
+			foreach ($shares as $share) {
+				$shareModel = new Share();
+				$shareModel->setPath($userFolder->getRelativePath($share->getNode()->getPath()))
+					->setShareType(Share::SHARETYPE_LINK)
+					->setType($share->getNodeType())
+					->setOwner($share->getShareOwner())
+					->setSharedBy($share->getSharedBy())
+					->setPermissions($share->getPermissions())
+					->setName($share->getName())
+					->setToken($share->getToken());
+
+				$expiration = $share->getExpirationDate();
+				if ($expiration) {
+					$shareModel->setExpirationDate($expiration->getTimestamp());
+				}
+
+				$password = $share->getPassword();  // the retrieved password is expected to be hashed
+				if (\is_string($password)) {
+					$shareModel->setPassword($password);
+				}
+				// the rest of the model attributes doesn't make sense with link shares
+				$this->streamHelper->writelnToStream(
+					$this->streamFile,
+					$shareModel
+				);
+			}
+		} while (\count($shares) >= $limit);
+	}
+
+	/**
+	 * @param string $userId the user id to get the shares from
+	 *
+	 * @throws NotFoundException
+	 *
+	 * @return void
 	 */
 	private function getRemoteShares($userId) {
-		$shareModels = [];
 		$limit = 50;
 		$offset = 0;
 		$userFolder = $this->rootFolder->getUserFolder($userId);
@@ -255,21 +306,24 @@ class SharesExtractor {
 				$limit,
 				$offset
 			);
+
 			$offset += $limit;
 
 			foreach ($shares as $share) {
 				$shareModel = new Share();
 				$shareModel->setPath($userFolder->getRelativePath($share->getNode()->getPath()))
 					->setShareType(Share::SHARETYPE_REMOTE)
+					->setType($share->getNodeType())
 					->setOwner($share->getShareOwner())
 					->setSharedBy($share->getSharedBy())
 					->setSharedWith($share->getSharedWith())
 					->setPermissions($share->getPermissions());
 				// the rest of the model attributes doesn't make sense with remote shares
-				$shareModels[] = $shareModel;
+				$this->streamHelper->writelnToStream(
+					$this->streamFile,
+					$shareModel
+				);
 			}
 		} while (\count($shares) >= $limit);
-
-		return $shareModels;
 	}
 }
