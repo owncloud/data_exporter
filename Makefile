@@ -10,7 +10,6 @@ PHPUNIT=php -d zend.enable_gc=0  "$(PWD)/../../lib/composer/bin/phpunit"
 PHPUNITDBG=phpdbg -qrr -d memory_limit=4096M -d zend.enable_gc=0 "$(PWD)/../../lib/composer/bin/phpunit"
 PHP_CS_FIXER=php -d zend.enable_gc=0 vendor-bin/owncloud-codestyle/vendor/bin/php-cs-fixer
 PHP_CODESNIFFER=vendor-bin/php_codesniffer/vendor/bin/phpcs
-PHP_PARALLEL_LINT=php -d zend.enable_gc=0 vendor-bin/php-parallel-lint/vendor/bin/parallel-lint
 PHPSTAN=php -d zend.enable_gc=0 vendor-bin/phpstan/vendor/bin/phpstan
 PHAN=php -d zend.enable_gc=0 vendor-bin/phan/vendor/bin/phan
 BEHAT_BIN=vendor-bin/behat/vendor/bin/behat
@@ -42,7 +41,10 @@ clean-composer-dev-deps:
 	rm -Rf vendor
 	rm -Rf vendor-bin/**/vendor vendor-bin/**/composer.lock
 
-vendor-bin/owncloud-codestyle/vendor: vendor-bin/owncloud-codestyle/composer.lock
+vendor/bamarni/composer-bin-plugin: composer.lock
+	composer install
+
+vendor-bin/owncloud-codestyle/vendor: vendor/bamarni/composer-bin-plugin vendor-bin/owncloud-codestyle/composer.lock
 	composer bin owncloud-codestyle install --no-progress
 
 vendor-bin/owncloud-codestyle/composer.lock: vendor-bin/owncloud-codestyle/composer.json
@@ -54,19 +56,13 @@ vendor-bin/php_codesniffer/vendor: vendor/bamarni/composer-bin-plugin vendor-bin
 vendor-bin/php_codesniffer/composer.lock: vendor-bin/php_codesniffer/composer.json
 	@echo php_codesniffer composer.lock is not up to date.
 
-vendor-bin/php-parallel-lint/vendor: vendor-bin/php-parallel-lint/composer.lock
-	composer bin php-parallel-lint install --no-progress
-
-vendor-bin/php-parallel-lint/composer.lock: vendor-bin/php-parallel-lint/composer.json
-	@echo php-parallel-lint composer.lock is not up to date.
-
-vendor-bin/phpstan/vendor: vendor-bin/phpstan/composer.lock
+vendor-bin/phpstan/vendor: vendor/bamarni/composer-bin-plugin vendor-bin/phpstan/composer.lock
 	composer bin phpstan install --no-progress
 
 vendor-bin/phpstan/composer.lock: vendor-bin/phpstan/composer.json
 	@echo phpstan composer.lock is not up to date.
 
-vendor-bin/phan/vendor: vendor-bin/phan/composer.lock
+vendor-bin/phan/vendor: vendor/bamarni/composer-bin-plugin vendor-bin/phan/composer.lock
 	composer bin phan install --no-progress
 
 vendor-bin/phan/composer.lock: vendor-bin/phan/composer.json
@@ -81,10 +77,6 @@ vendor-bin/behat/composer.lock: vendor-bin/behat/composer.json
 #
 # Tests
 #
-
-.PHONY: test-php-lint
-test-php-lint: vendor-bin/php-parallel-lint/vendor
-	$(PHP_PARALLEL_LINT) --exclude vendor --exclude build --exclude vendor-bin .
 
 .PHONY: test-php-style
 test-php-style: vendor-bin/owncloud-codestyle/vendor vendor-bin/php_codesniffer/vendor
