@@ -30,8 +30,26 @@ config = {
 				'7.3',
 			],
 			'databases': [
-				'sqlite',
-				'mariadb:10.2',
+				'mysql:5.5',
+			],
+			'coverage': False
+		},
+	},
+
+	'phpintegration': {
+		'allDatabases' : {
+			'phpVersions': [
+				'7.0',
+			]
+		},
+		'reducedDatabases' : {
+			'phpVersions': [
+				'7.1',
+				'7.2',
+				'7.3',
+			],
+			'databases': [
+				'mysql:5.5',
 			],
 			'coverage': False
 		},
