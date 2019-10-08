@@ -71,6 +71,7 @@ class FilesMetadataExtractor {
 			$file->setETag($node->getEtag());
 			$file->setMtime($node->getMTime());
 			$file->setPermissions($node->getPermissions());
+			$file->setId($node->getId());
 
 			if ($node->getType() === Node::TYPE_FILE) {
 				$file->setType(File::TYPE_FILE);

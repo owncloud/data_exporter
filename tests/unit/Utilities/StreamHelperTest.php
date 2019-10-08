@@ -85,8 +85,8 @@ class StreamHelperTest extends TestCase {
 		$this->streamHelper->closeStream($resource);
 		$writtenData = \file_get_contents($virtualFilesystem->url() . '/testfolder/files.jsonl');
 		$expectedData = <<< JSONL
-{"type":"file","path":"files\/welcome.txt","eTag":"234s34ser234","permissions":31,"mtime":1565267598}
-{"type":"folder","path":"files\/someFolder","eTag":"234s34ser234","permissions":31,"mtime":1565267598}
+{"type":"file","id":null,"path":"files\/welcome.txt","eTag":"234s34ser234","permissions":31,"mtime":1565267598}
+{"type":"folder","id":null,"path":"files\/someFolder","eTag":"234s34ser234","permissions":31,"mtime":1565267598}
 
 JSONL;
 		$this->assertEquals($expectedData, $writtenData);
