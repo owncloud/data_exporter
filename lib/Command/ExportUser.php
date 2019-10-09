@@ -26,6 +26,7 @@ use OCA\DataExporter\Exporter;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class ExportUser extends Command {
@@ -42,14 +43,16 @@ class ExportUser extends Command {
 		$this->setName('instance:export:user')
 			->setDescription('Exports a single user')
 			->addArgument('userId', InputArgument::REQUIRED, 'User to export')
-			->addArgument('exportDirectory', InputArgument::REQUIRED, 'Path to the directory to export data to');
+			->addArgument('exportDirectory', InputArgument::REQUIRED, 'Path to the directory to export data to')
+			->addOption("no-files", "m", InputOption::VALUE_NONE, 'Skip exporting files (export metadata only)');
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		try {
 			$this->exporter->export(
 				$input->getArgument('userId'),
-				$input->getArgument('exportDirectory')
+				$input->getArgument('exportDirectory'),
+				!$input->getOption('no-files')
 			);
 		} catch (\Exception $e) {
 			$output->writeln("<error>{$e->getMessage()}</error>");
