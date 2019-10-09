@@ -47,6 +47,7 @@ class Exporter {
 	/**
 	 * @param string $uid
 	 * @param string $exportDirectoryPath
+	 * @param bool $exportFiles
 	 *
 	 * @throws \OCP\Files\NotFoundException
 	 * @throws \OCP\Files\NotPermittedException
@@ -54,7 +55,7 @@ class Exporter {
 	 *
 	 * @return void
 	 */
-	public function export($uid, $exportDirectoryPath) {
+	public function export($uid, $exportDirectoryPath, $exportFiles = true) {
 		$exportPath = "$exportDirectoryPath/$uid";
 		$metaData = $this->metadataExtractor->extract($uid, $exportPath);
 		$this->filesystem->dumpFile(
@@ -62,7 +63,9 @@ class Exporter {
 			$this->serializer->serialize($metaData)
 		);
 
-		$filesPath = \ltrim("$exportPath/files");
-		$this->filesExtractor->export($uid, $filesPath);
+		if ($exportFiles) {
+			$filesPath = \ltrim("$exportPath/files");
+			$this->filesExtractor->export($uid, $filesPath);
+		}
 	}
 }
