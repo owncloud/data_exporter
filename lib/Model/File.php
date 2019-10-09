@@ -63,7 +63,7 @@ class File {
 	}
 
 	/**
-	 * @return mixed
+	 * @return int
 	 */
 	public function getId() {
 		return $this->id;
