@@ -56,7 +56,24 @@ class FilesExtractor {
 			$path = "${exportPath}${relativeFileCachePath}";
 
 			if ($node instanceof File) {
-				$this->filesystem->dumpFile($path, $node->getContent());
+				@\mkdir(\pathinfo($path, PATHINFO_DIRNAME), 0777, true);
+
+				$src = $node->fopen('rb');
+				if (!\is_resource($src)) {
+					throw new \RuntimeException("Couldn't read $nodePath from owncloud");
+				}
+
+				$dst = \fopen($path, 'wb+');
+				if (!\is_resource($src)) {
+					\fclose($src);
+					throw new \RuntimeException("Couldn't create $path in export");
+				}
+
+				\stream_copy_to_stream($src, $dst);
+
+				\fclose($src);
+				\fclose($dst);
+
 				continue;
 			}
 
