@@ -49,8 +49,11 @@ class FilesExtractorTest extends TestCase {
 	public function testExportFile() {
 		$mockFile = $this->createMock(File::class);
 		$mockFile->method('getPath')->willReturn('/usertest/files/foo/bar.txt');
-		$mockFile->method('getContent')->willReturn('weeee eee eeeeeeeee!');
 		$mockFile->method('getMTime')->willReturn(1565074220);
+		$stream = \fopen('php://memory', 'r+');
+		\fwrite($stream, "Somecontent");
+		\rewind($stream);
+		$mockFile->method('fopen')->willReturn($stream);
 
 		$userFolderParent = $this->createMock(Folder::class);
 		$userFolderParent->method('getRelativePath')
@@ -65,11 +68,9 @@ class FilesExtractorTest extends TestCase {
 		// iterator can return an array because will just need to traverse it
 		$this->iteratorFactory->method('getUserFolderParentRecursiveIterator')->willReturn([[$mockFile], $userFolderParent]);
 
-		$this->filesystem->expects($this->once())
-			->method('dumpFile')
-			->with($this->equalTo('/tmp/randomF/files/foo/bar.txt'), $this->equalTo('weeee eee eeeeeeeee!'));
-
 		$this->filesExporter->export('usertest', '/tmp/randomF');
+		$content = \file_get_contents('/tmp/randomF/files/foo/bar.txt');
+		$this->assertEquals('Somecontent', $content);
 	}
 
 	public function testExportFolder() {
@@ -108,13 +109,19 @@ class FilesExtractorTest extends TestCase {
 
 		$mockFile1 = $this->createMock(File::class);
 		$mockFile1->method('getPath')->willReturn('/usertest/files/foo/courses/awesome qwerty');
-		$mockFile1->method('getContent')->willReturn('qwerty!!');
 		$mockFile1->method('getMTime')->willReturn(1565074520);
+		$stream1 = \fopen('php://memory', 'r+');
+		\fwrite($stream1, "Somecontent");
+		\rewind($stream1);
+		$mockFile1->method('fopen')->willReturn($stream1);
 
 		$mockFile2 = $this->createMock(File::class);
 		$mockFile2->method('getPath')->willReturn('/usertest/files/foo/bar.txt');
-		$mockFile2->method('getContent')->willReturn('weeee eee eeeeeeeee!');
 		$mockFile2->method('getMTime')->willReturn(1565074221);
+		$stream2 = \fopen('php://memory', 'r+');
+		\fwrite($stream2, "Somecontent");
+		\rewind($stream2);
+		$mockFile2->method('fopen')->willReturn($stream2);
 
 		$userFolderParent = $this->createMock(Folder::class);
 		$userFolderParent->method('getRelativePath')
@@ -135,13 +142,6 @@ class FilesExtractorTest extends TestCase {
 			->withConsecutive(
 				[$this->equalTo('/tmp/randomF/files/foo')],
 				[$this->equalTo('/tmp/randomF/files/foo/courses')]
-			);
-
-		$this->filesystem->expects($this->exactly(2))
-			->method('dumpFile')
-			->withConsecutive(
-				[$this->equalTo('/tmp/randomF/files/foo/courses/awesome qwerty'), $this->equalTo('qwerty!!')],
-				[$this->equalTo('/tmp/randomF/files/foo/bar.txt'), $this->equalTo('weeee eee eeeeeeeee!')]
 			);
 
 		$this->filesExporter->export('usertest', '/tmp/randomF');

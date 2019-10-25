@@ -98,6 +98,22 @@ class FilesImporter {
 
 				if ($fileMetadata->getType() === File::TYPE_FILE) {
 					$file = $userFolder->newFile($fileCachePath);
+
+					$src = \fopen($pathToFileInExport, "rb+");
+					if (!\is_resource($src)) {
+						throw new \RuntimeException("Couldn't read file in export $pathToFileInExport");
+					}
+
+					$dst = $file->fopen("wb+");
+					if (!\is_resource($src)) {
+						\fclose($src);
+						throw new \RuntimeException("Couldn't open node for writing for file $fileCachePath");
+					}
+
+					\stream_copy_to_stream($src, $dst);
+					\fclose($src);
+					\fclose($dst);
+
 					$file->putContent(\file_get_contents($pathToFileInExport));
 					$file->getStorage()->getCache()->update($file->getId(), [
 						'etag' => $fileMetadata->getETag(),

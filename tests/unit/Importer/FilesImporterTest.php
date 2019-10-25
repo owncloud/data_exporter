@@ -123,6 +123,7 @@ class FilesImporterTest extends TestCase {
 		$mockFile1->method('getEtag')->willReturn('533c8d4b4c45b62e68cc09e810db7a23');
 		$mockFile1->method('getPermissions')->willReturn(27);
 		$mockFile1->method('getType')->willReturn(Node::TYPE_FILE);
+		$mockFile1->method('fopen')->willReturn(\fopen('php://memory', 'wb+'));
 		$storageFile = $this->createMock(Storage::class);
 		$cacheFile = $this->createMock(Cache::class);
 		// Test that the File Cache is updated for this file
