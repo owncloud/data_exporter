@@ -279,4 +279,98 @@ class FilesImporterTest extends TestCase {
 		);
 		vfsStreamWrapper::unregister();
 	}
+
+	/**
+	 * @expectedException RuntimeException
+	 */
+	public function testFilesImporterError2() {
+		// User Folder
+		$mockFolder1 = $this->createMock(Folder::class);
+		$mockFolder1->method('getPath')->willReturn('/testuser/files');
+		$mockFolder1->method('getEtag')->willReturn('123qweasdzxc');
+		$mockFolder1->method('getPermissions')->willReturn(31);
+		$mockFolder1->method('getType')->willReturn(Node::TYPE_FOLDER);
+
+		// User Folder Parent
+		$mockFolder2 = $this->createMock(Folder::class);
+		$mockFolder2->method('getPath')->willReturn('/testuser');
+		$mockFolder2->method('getEtag')->willReturn('123qweasdzxc');
+		$mockFolder2->method('getPermissions')->willReturn(31);
+		$mockFolder2->method('getType')->willReturn(Node::TYPE_FOLDER);
+
+		// Test Folder
+		$mockFolder3 = $this->createMock(Folder::class);
+		$mockFolder3->method('getPath')->willReturn('files/AFolder');
+		$mockFolder3->method('getId')->willReturn(1);
+		$mockFolder3->method('getEtag')->willReturn('5bc8867cc2375');
+		$mockFolder3->method('getPermissions')->willReturn(31);
+		$mockFolder3->method('getType')->willReturn(Node::TYPE_FOLDER);
+		$storage3 = $this->createMock(Storage::class);
+		$cache = $this->createMock(Cache::class);
+		// Test that the File Cache is updated for this folder
+		$cache->method('update')
+			->with(1, ['etag' => '5bc8867cc2375', 'permissions' => 31]);
+		$storage3->method('getCache')->willReturn($cache);
+		$mockFolder3->method('getStorage')->willReturn($storage3);
+
+		// Test File
+		$mockFile1 = $this->createMock(FileNode::class);
+		$mockFile1->method('fopen')->willReturn(null);
+		$mockFile1->method('getPath')->willReturn('files/AFolder/afile.txt');
+		$mockFile1->method('getId')->willReturn(2);
+		$mockFile1->method('getEtag')->willReturn('533c8d4b4c45b62e68cc09e810db7a23');
+		$mockFile1->method('getPermissions')->willReturn(27);
+		$mockFile1->method('getType')->willReturn(Node::TYPE_FILE);
+		$storageFile = $this->createMock(Storage::class);
+		$cacheFile = $this->createMock(Cache::class);
+		// Test that the File Cache is updated for this file
+		$cacheFile->method('update')
+			->with(2, ['etag' => '533c8d4b4c45b62e68cc09e810db7a23', 'permissions' => 27]);
+		$storageFile->method('getCache')->willReturn($cacheFile);
+		$mockFile1->method('getStorage')->willReturn($storageFile);
+		$mockFile1->method('putContent')->willReturn(true);
+		vfsStreamWrapper::register();
+		$root = vfsStreamWrapper::setRoot(new vfsStreamDirectory('tmp'));
+		$vfile = new vfsStreamFile('testuser/files/files/AFolder/afile.txt');
+		$vfile->setContent('test');
+		$root->addChild($vfile);
+
+		$mockFolder2->method('newFolder')
+			->willReturn($mockFolder3);
+		$mockFolder2->method('newFile')
+			->willReturn($mockFile1);
+
+		$mockFolder1->method('getParent')->willReturn($mockFolder2);
+		$this->rootFolder->method('getUserFolder')->willReturn($mockFolder1);
+
+		$this->filesystem
+			->method('exists')
+			->willReturn(true);
+		$filesImporter = new FilesImporter(
+			$this->filesystem,
+			$this->rootFolder,
+			$this->streamHelper
+		);
+		$fileMetadata = new File();
+		$fileMetadata
+			->setPath('files/AFolder/afile.txt')
+			->setType(File::TYPE_FILE)
+			->setETag('533c8d4b4c45b62e68cc09e810db7a23')
+			->setPermissions(27);
+		$folderMetadata = new File();
+		$folderMetadata
+			->setPath('files/AFolder')
+			->setType(File::TYPE_FOLDER)
+			->setETag('5bc8867cc2375')
+			->setPermissions(31);
+
+		$this->streamHelper->method('readlnFromStream')
+			->willReturnOnConsecutiveCalls($folderMetadata, $fileMetadata, false);
+
+		$filesImporter->import(
+			'testuser',
+			'vfs://tmp/testuser'
+		);
+		vfsStreamWrapper::unregister();
+	}
 }

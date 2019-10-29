@@ -105,7 +105,7 @@ class FilesImporter {
 					}
 
 					$dst = $file->fopen("wb+");
-					if (!\is_resource($src)) {
+					if (!\is_resource($dst)) {
 						\fclose($src);
 						throw new \RuntimeException("Couldn't open node for writing for file $fileCachePath");
 					}
