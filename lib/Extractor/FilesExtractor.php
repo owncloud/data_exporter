@@ -64,7 +64,7 @@ class FilesExtractor {
 				}
 
 				$dst = \fopen($path, 'wb+');
-				if (!\is_resource($src)) {
+				if (!\is_resource($dst)) {
 					\fclose($src);
 					throw new \RuntimeException("Couldn't create $path in export");
 				}
