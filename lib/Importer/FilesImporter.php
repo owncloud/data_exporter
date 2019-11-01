@@ -27,6 +27,7 @@ use OCA\DataExporter\Model\File;
 use OCA\DataExporter\Utilities\StreamHelper;
 use OCP\Files\IRootFolder;
 use Symfony\Component\Filesystem\Filesystem;
+use OCA\DataExporter\Utilities\Path;
 
 class FilesImporter {
 	const FILE_NAME = 'files.jsonl';
@@ -69,10 +70,10 @@ class FilesImporter {
 		/**
 		 * @var \OCP\Files\Folder $userFolder
 		 */
-		$filename = $exportPath . '/' . $this::FILE_NAME;
-		$exportRootFilesPath = $exportPath . '/files';
+		$filename = Path::join($exportPath, $this::FILE_NAME);
+		$exportRootFilesPath = Path::join($exportPath, '/files');
 
-		$userFolder = $this->rootFolder->getUserFolder($userId)->getParent();
+		$userFolder = $this->rootFolder->getUserFolder($userId);
 		$this->streamFile = $this
 			->streamHelper
 			->initStream($filename, 'rb');
@@ -90,7 +91,7 @@ class FilesImporter {
 				!== false
 			) {
 				$fileCachePath = $fileMetadata->getPath();
-				$pathToFileInExport = "$exportRootFilesPath/$fileCachePath";
+				$pathToFileInExport = Path::join($exportRootFilesPath, $fileCachePath);
 
 				if (!$this->filesystem->exists($pathToFileInExport)) {
 					throw new ImportException("File '$pathToFileInExport' not found in export but exists in metadata.json");
@@ -98,7 +99,6 @@ class FilesImporter {
 
 				if ($fileMetadata->getType() === File::TYPE_FILE) {
 					$file = $userFolder->newFile($fileCachePath);
-
 					$src = \fopen($pathToFileInExport, "rb+");
 					if (!\is_resource($src)) {
 						throw new \RuntimeException("Couldn't read file in export $pathToFileInExport");
@@ -114,7 +114,6 @@ class FilesImporter {
 					\fclose($src);
 					\fclose($dst);
 
-					$file->putContent(\file_get_contents($pathToFileInExport));
 					$file->getStorage()->getCache()->update($file->getId(), [
 						'etag' => $fileMetadata->getETag(),
 						'permissions' => $fileMetadata->getPermissions()
@@ -124,7 +123,11 @@ class FilesImporter {
 				}
 
 				if ($fileMetadata->getType() === File::TYPE_FOLDER) {
-					$folder = $userFolder->newFolder($fileCachePath);
+					if ($fileMetadata->getPath() == '/') {
+						$folder = $userFolder;
+					} else {
+						$folder = $userFolder->newFolder($fileCachePath);
+					}
 					$folder->getStorage()->getCache()->update($folder->getId(), [
 						'etag' => $fileMetadata->getETag(),
 						'permissions' => $fileMetadata->getPermissions()

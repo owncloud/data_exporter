@@ -24,6 +24,7 @@ namespace OCA\DataExporter;
 
 use OCA\DataExporter\Extractor\FilesExtractor;
 use OCA\DataExporter\Extractor\MetadataExtractor;
+use OCA\DataExporter\Utilities\Path;
 use Symfony\Component\Filesystem\Filesystem;
 
 class Exporter {
@@ -56,15 +57,15 @@ class Exporter {
 	 * @return void
 	 */
 	public function export($uid, $exportDirectoryPath, $exportFiles = true) {
-		$exportPath = "$exportDirectoryPath/$uid";
+		$exportPath = Path::join($exportDirectoryPath, $uid);
 		$metaData = $this->metadataExtractor->extract($uid, $exportPath);
 		$this->filesystem->dumpFile(
-			"$exportPath/user.json",
+			Path::join($exportPath, '/user.json'),
 			$this->serializer->serialize($metaData)
 		);
 
 		if ($exportFiles) {
-			$filesPath = \ltrim("$exportPath/files");
+			$filesPath = Path::join($exportPath, 'files');
 			$this->filesExtractor->export($uid, $filesPath);
 		}
 	}

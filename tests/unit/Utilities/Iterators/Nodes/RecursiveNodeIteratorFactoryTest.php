@@ -170,28 +170,4 @@ class RecursiveNodeIteratorFactoryTest extends TestCase {
 		$this->assertEquals($expectedList, $currentList);
 		$this->assertSame($this->userFolder, $userFolder);
 	}
-
-	public function testGetUserFolderParentRecursiveIterator() {
-		list($iterator, $parentUserFolder) = $this->factory->getUserFolderParentRecursiveIterator('usertest');
-
-		$fooFolder = "/usertest/files/foo";
-		$expectedList = [
-			"/usertest/files_versions" => "/usertest/files_versions",
-			"/usertest/files_versions/bar1.txt.v001" => "/usertest/files_versions/bar1.txt.v001",
-			"/usertest/files" => "/usertest/files",
-			"$fooFolder/bar1.txt" => "$fooFolder/bar1.txt",
-			"$fooFolder/bar2.txt" => "$fooFolder/bar2.txt",
-			"$fooFolder/bar" => "$fooFolder/bar",
-			"$fooFolder/bar/zzz1.png" => "$fooFolder/bar/zzz1.png",
-			"$fooFolder/bar/zzz2.png" => "$fooFolder/bar/zzz2.png",
-			"$fooFolder/pom" => "$fooFolder/pom",
-			"$fooFolder/pom/hue.txt" => "$fooFolder/pom/hue.txt",
-		];
-		$currentList = [];
-		foreach ($iterator as $key => $item) {
-			$currentList[$key] = $item->getPath();
-		}
-		$this->assertEquals($expectedList, $currentList);
-		$this->assertSame($this->userFolder->getParent(), $parentUserFolder);
-	}
 }

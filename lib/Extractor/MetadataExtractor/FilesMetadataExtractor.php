@@ -24,8 +24,9 @@
 namespace OCA\DataExporter\Extractor\MetadataExtractor;
 
 use OC\User\NoUserException;
-use OCA\DataExporter\Utilities\Iterators\Nodes\RecursiveNodeIteratorFactory;
 use OCA\DataExporter\Model\File;
+use OCA\DataExporter\Utilities\Iterators\Nodes\RecursiveNodeIteratorFactory;
+use OCA\DataExporter\Utilities\Path;
 use OCA\DataExporter\Utilities\StreamHelper;
 use OCP\Files\Node;
 
@@ -56,16 +57,34 @@ class FilesMetadataExtractor {
 	 * @throws NoUserException
 	 */
 	public function extract($userId, $exportPath) {
-		list($iterator, $baseFolder) = $this->iteratorFactory->getUserFolderParentRecursiveIterator($userId);
+		list($iterator, $baseFolder) = $this->iteratorFactory->getUserFolderRecursiveIterator($userId);
 
-		$filename = $exportPath . '/' . $this::FILE_NAME;
+		$filename = Path::join($exportPath, $this::FILE_NAME);
 		$this->streamFile = $this->streamHelper->initStream($filename, 'ab', true);
+
+		// Write root folder entry first to preserve it's metadata
+		$rootFolder = (new File())
+			->setType(File::TYPE_FOLDER)
+			->setPath('/')
+			->setETag($baseFolder->getEtag())
+			->setMtime($baseFolder->getMTime())
+			->setPermissions($baseFolder->getPermissions());
+
+		$this->streamHelper->writelnToStream($this->streamFile, $rootFolder);
 
 		foreach ($iterator as $node) {
 			$nodePath = $node->getPath();
 			$relativePath = $baseFolder->getRelativePath($nodePath);
 
 			$file = new File();
+
+			if ("$relativePath/" === File::ROOT_FOLDER_PATH) {
+				$relativePath = '/';
+			}
+
+			if (\substr($relativePath, 0, \strlen(File::ROOT_FOLDER_PATH)) == File::ROOT_FOLDER_PATH) {
+				$relativePath = '/' . \substr($relativePath, \strlen(File::ROOT_FOLDER_PATH));
+			}
 
 			$file->setPath($relativePath);
 			$file->setETag($node->getEtag());

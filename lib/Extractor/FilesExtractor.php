@@ -47,7 +47,7 @@ class FilesExtractor {
 	 * @throws \OCP\Files\NotPermittedException
 	 */
 	public function export($userId, $exportPath) {
-		list($iterator, $baseFolder) = $this->iteratorFactory->getUserFolderParentRecursiveIterator($userId);
+		list($iterator, $baseFolder) = $this->iteratorFactory->getUserFolderRecursiveIterator($userId);
 		/** @var \OCP\Files\Node $node */
 		foreach ($iterator as $node) {
 			$nodePath = $node->getPath();
