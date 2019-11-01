@@ -26,6 +26,7 @@ namespace OCA\DataExporter;
 use OCA\DataExporter\Importer\ImportException;
 use OCA\DataExporter\Importer\MetadataImporter;
 use OCA\DataExporter\Model\Metadata;
+use OCA\DataExporter\Utilities\Path;
 use Symfony\Component\Filesystem\Filesystem;
 use OCA\DataExporter\Importer\FilesImporter;
 use OCA\DataExporter\Importer\MetadataImporter\ShareImporter;
@@ -67,10 +68,11 @@ class Importer {
 	 * @throws \OCP\PreConditionNotMetException
 	 */
 	public function import($pathToExportDir, $alias = null) {
-		$metaDataPath = "$pathToExportDir/user.json";
+		$pathToExportDir =\rtrim($pathToExportDir, '\/');
+		$metaDataPath = Path::join($pathToExportDir, 'user.json');
 
 		if (!$this->filesystem->exists($metaDataPath)) {
-			throw new ImportException("user.json not found in '$metaDataPath'");
+			throw new ImportException("user.json not found in \'$metaDataPath\'");
 		}
 
 		/** @var Metadata $metadata */

@@ -9,5 +9,5 @@ Feature: An administrator wants to export the files of his user using
   Scenario: An uploaded file should be contained in an export.
     Given user "user0" uploads file with content "hello" to "testfile.txt" using the WebDAV API
     When user "user0" is exported to path "/tmp/fooSomething" using the occ command
-    Then the last export should contain file "files/testfile.txt" with content "hello"
+    Then the last export should contain file "testfile.txt" with content "hello"
 

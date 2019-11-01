@@ -66,7 +66,7 @@ class FilesExtractorTest extends TestCase {
 			}));
 
 		// iterator can return an array because will just need to traverse it
-		$this->iteratorFactory->method('getUserFolderParentRecursiveIterator')->willReturn([[$mockFile], $userFolderParent]);
+		$this->iteratorFactory->method('getUserFolderRecursiveIterator')->willReturn([[$mockFile], $userFolderParent]);
 
 		$this->filesExporter->export('usertest', '/tmp/randomF');
 		$content = \file_get_contents('/tmp/randomF/files/foo/bar.txt');
@@ -89,7 +89,7 @@ class FilesExtractorTest extends TestCase {
 			}));
 
 		// iterator can return an array because will just need to traverse it
-		$this->iteratorFactory->method('getUserFolderParentRecursiveIterator')->willReturn([[$mockFolder], $userFolderParent]);
+		$this->iteratorFactory->method('getUserFolderRecursiveIterator')->willReturn([[$mockFolder], $userFolderParent]);
 
 		$this->filesystem->expects($this->once())
 			->method('mkdir')
@@ -134,7 +134,7 @@ class FilesExtractorTest extends TestCase {
 			}));
 
 		// iterator can return an array because will just need to traverse it
-		$this->iteratorFactory->method('getUserFolderParentRecursiveIterator')
+		$this->iteratorFactory->method('getUserFolderRecursiveIterator')
 			->willReturn([[$mockFolder1, $mockFolder2, $mockFile1, $mockFile2], $userFolderParent]);
 
 		$this->filesystem->expects($this->exactly(2))

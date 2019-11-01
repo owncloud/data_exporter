@@ -32,6 +32,7 @@ namespace OCA\DataExporter\Model;
 class File {
 	const TYPE_FOLDER = 'folder';
 	const TYPE_FILE = 'file';
+	const ROOT_FOLDER_PATH = '/files/';
 
 	private $type;
 	/** @var string */

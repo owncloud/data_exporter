@@ -64,45 +64,4 @@ class RecursiveNodeIteratorFactory {
 		$nodeIterator->addSkipCondition($conditionDifferentStorage);
 		return [new \RecursiveIteratorIterator($nodeIterator, $mode), $userFolder];
 	}
-
-	/**
-	 * Returns an array containing a recursive iterator to iterate over the files of the user as the first
-	 * element of the array, and the base Folder node used in the iterator as the second element. Something like:
-	 * [RecursiveIteratorIterator, Folder]
-	 * If the getUserFolderRecursiveIterator method will return an iterator over the files
-	 * of the user (/<user>/files/), this iterator will iterate over that parent folder
-	 * (/<user>/) so you could get access to trashbin and versions and maybe other directories
-	 * related the to user.
-	 * It will use a RecursiveIteratorIterator class wrapping a RecursiveNodeIterator class.
-	 * This RecursiveNodeIterator will return \OCP\Files\Node elements
-	 *
-	 * Note that a SkipNodeConditionDifferentStorage is already set in the iterator in order to traverse
-	 * only the primary storage, and also a SkipNodeConditionIgnorePath to skip some folders containing
-	 * temporary information
-	 *
-	 * Consider to use something like:
-	 * ```
-	 * list($iterator, $baseFolder) = $factory->getUserFolderParentRecursiveIterator($userId);
-	 * ```
-	 *
-	 * You can traverse the iterator like:
-	 * ```
-	 * foreach ($iterator as $key => $node) { .... }
-	 * ```
-	 * Note that the $key will always be the path of the node, the same as $node->getPath()
-	 * @param string $userId the id of the user
-	 * @param int $mode one of the \RecursiveIteratorIterator constants
-	 * @return array a RecursiveIteratorIterator wrapping a RecursiveNodeIterator and the base Folder node
-	 * @throws \OC\User\NoUserException (unhandled exception)
-	 */
-	public function getUserFolderParentRecursiveIterator($userId, $mode = \RecursiveIteratorIterator::SELF_FIRST) {
-		$userFolder = $this->rootFolder->getUserFolder($userId);
-		$parentFolder = $userFolder->getParent();
-		$nodeIterator = new RecursiveNodeIterator($parentFolder);
-		$conditionDifferentStorage = new SkipNodeConditionDifferentStorage($parentFolder->getStorage()->getId());
-		$conditionIgnorePaths = new SkipNodeConditionIgnorePath($parentFolder, ['/cache', '/thumbnails', '/uploads']);
-		$nodeIterator->addSkipCondition($conditionDifferentStorage);
-		$nodeIterator->addSkipCondition($conditionIgnorePaths);
-		return [new \RecursiveIteratorIterator($nodeIterator, $mode), $parentFolder];
-	}
 }

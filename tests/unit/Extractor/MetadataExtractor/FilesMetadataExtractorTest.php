@@ -91,6 +91,10 @@ class FilesMetadataExtractorTest extends TestCase {
 		$mockFile2->method('getType')->willReturn(Node::TYPE_FILE);
 
 		$userFolderParent = $this->createMock(Folder::class);
+		$userFolderParent->method('getEtag')->willReturn('123qweasdzxc');
+		$userFolderParent->method('getMTime')->willReturn(1565074220);
+		$userFolderParent->method('getPermissions')->willReturn(31);
+		$userFolderParent->method('getType')->willReturn(Node::TYPE_FOLDER);
 		$userFolderParent->method('getRelativePath')
 			->will($this->returnCallback(function ($path) {
 				if (\strpos($path, '/usertest/') === 0) {
@@ -101,41 +105,49 @@ class FilesMetadataExtractorTest extends TestCase {
 			}));
 
 		// iterator can return an array because will just need to traverse it
-		$this->iteratorFactory->method('getUserFolderParentRecursiveIterator')
+		$this->iteratorFactory->method('getUserFolderRecursiveIterator')
 			->willReturn([[$mockFolder1, $mockFolder2, $mockFile1, $mockFile2], $userFolderParent]);
 
+		$expectedFolder0 = new File();
+		$expectedFolder0->setPath('/')
+			->setEtag('123qweasdzxc')
+			->setMtime(1565074220)
+			->setPermissions(31)
+			->setType(File::TYPE_FOLDER);
+
 		$expectedFolder1 = new File();
-		$expectedFolder1->setPath('/files/foo')
+		$expectedFolder1->setPath('/foo')
 			->setEtag('123qweasdzxc')
 			->setMtime(1565074220)
 			->setPermissions(31)
 			->setType(File::TYPE_FOLDER);
 
 		$expectedFolder2 = new File();
-		$expectedFolder2->setPath('/files/foo/courses')
+		$expectedFolder2->setPath('/foo/courses')
 			->setEtag('zaqxswcde')
 			->setMtime(1565074223)
 			->setPermissions(31)
 			->setType(File::TYPE_FOLDER);
 
 		$expectedFile1 = new File();
-		$expectedFile1->setPath('/files/foo/courses/awesome qwerty')
+		$expectedFile1->setPath('/foo/courses/awesome qwerty')
 			->setEtag('poiulkjhmnbv')
 			->setMtime(1565074221)
 			->setPermissions(1)
 			->setType(File::TYPE_FILE);
 
 		$expectedFile2 = new File();
-		$expectedFile2->setPath('/files/foo/bar.txt')
+		$expectedFile2->setPath('/foo/bar.txt')
 			->setEtag('123456789')
 			->setMtime(1565074120)
 			->setPermissions(9)
 			->setType(File::TYPE_FILE);
 
 		$this->streamHelper
-			->expects($this->exactly(4))
+			->expects($this->exactly(5))
 			->method('writelnToStream')
 			->withConsecutive(
+				[$resource, $expectedFolder0],
 				[$resource, $expectedFolder1],
 				[$resource, $expectedFolder2],
 				[$resource, $expectedFile1],
