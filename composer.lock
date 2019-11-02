@@ -203,7 +203,7 @@
         },
         {
             "name": "symfony/filesystem",
-            "version": "v3.4.32",
+            "version": "v3.4.33",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/filesystem.git",
@@ -253,7 +253,7 @@
         },
         {
             "name": "symfony/inflector",
-            "version": "v3.4.32",
+            "version": "v3.4.33",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/inflector.git",
@@ -428,7 +428,7 @@
         },
         {
             "name": "symfony/property-access",
-            "version": "v3.4.32",
+            "version": "v3.4.33",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/property-access.git",
@@ -496,16 +496,16 @@
         },
         {
             "name": "symfony/property-info",
-            "version": "v3.4.32",
+            "version": "v3.4.33",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/property-info.git",
-                "reference": "516a545c79f2f6ccc8d6f073a582de8e3e6576ad"
+                "reference": "5248becda0a0554ca4ae982825f012076f9e66a6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/property-info/zipball/516a545c79f2f6ccc8d6f073a582de8e3e6576ad",
-                "reference": "516a545c79f2f6ccc8d6f073a582de8e3e6576ad",
+                "url": "https://api.github.com/repos/symfony/property-info/zipball/5248becda0a0554ca4ae982825f012076f9e66a6",
+                "reference": "5248becda0a0554ca4ae982825f012076f9e66a6",
                 "shasum": ""
             },
             "require": {
@@ -568,20 +568,20 @@
                 "type",
                 "validator"
             ],
-            "time": "2019-09-18T13:36:31+00:00"
+            "time": "2019-10-11T04:14:16+00:00"
         },
         {
             "name": "symfony/serializer",
-            "version": "v3.4.32",
+            "version": "v3.4.33",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/serializer.git",
-                "reference": "14e29c5977dbae8beb8f56b098b2d1a313f201eb"
+                "reference": "a9b988899604cf3ecb144834ffbd11134c6f7773"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/serializer/zipball/14e29c5977dbae8beb8f56b098b2d1a313f201eb",
-                "reference": "14e29c5977dbae8beb8f56b098b2d1a313f201eb",
+                "url": "https://api.github.com/repos/symfony/serializer/zipball/a9b988899604cf3ecb144834ffbd11134c6f7773",
+                "reference": "a9b988899604cf3ecb144834ffbd11134c6f7773",
                 "shasum": ""
             },
             "require": {
@@ -647,7 +647,7 @@
             ],
             "description": "Symfony Serializer Component",
             "homepage": "https://symfony.com",
-            "time": "2019-09-30T23:11:46+00:00"
+            "time": "2019-10-29T11:09:57+00:00"
         },
         {
             "name": "webmozart/assert",
