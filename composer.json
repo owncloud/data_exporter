@@ -16,7 +16,8 @@
     "symfony/serializer": "^3.4",
     "symfony/property-access": "^3.4",
     "symfony/property-info": "^3.4",
-    "symfony/filesystem": "^3.4"
+    "symfony/filesystem": "^3.4",
+    "symfony/options-resolver": "^3.4"
   },
   "extra": {
     "bamarni-bin": {
