@@ -30,8 +30,6 @@ use OCP\Files\Folder;
 use Test\TestCase;
 
 class FilesExtractorTest extends TestCase {
-	/** @var RecursiveNodeIteratorFactory  */
-	private $iteratorFactory;
 
 	/** @var Filesystem */
 	private $filesystem;
@@ -40,10 +38,8 @@ class FilesExtractorTest extends TestCase {
 	private $filesExporter;
 
 	protected function setUp(): void {
-		$this->iteratorFactory = $this->createMock(RecursiveNodeIteratorFactory::class);
 		$this->filesystem = $this->createMock(Filesystem::class);
-
-		$this->filesExporter = new FilesExtractor($this->iteratorFactory, $this->filesystem);
+		$this->filesExporter = new FilesExtractor($this->filesystem);
 	}
 
 	public function testExportFile() {
@@ -65,10 +61,8 @@ class FilesExtractorTest extends TestCase {
 				}
 			}));
 
-		// iterator can return an array because will just need to traverse it
-		$this->iteratorFactory->method('getUserFolderRecursiveIterator')->willReturn([[$mockFile], $userFolderParent]);
-
-		$this->filesExporter->export('usertest', '/tmp/randomF');
+		$iterator = new \ArrayIterator([$mockFile]);
+		$this->filesExporter->export($iterator, $userFolderParent, '/tmp/randomF');
 		$content = \file_get_contents('/tmp/randomF/files/foo/bar.txt');
 		$this->assertEquals('Somecontent', $content);
 	}
@@ -88,14 +82,12 @@ class FilesExtractorTest extends TestCase {
 				}
 			}));
 
-		// iterator can return an array because will just need to traverse it
-		$this->iteratorFactory->method('getUserFolderRecursiveIterator')->willReturn([[$mockFolder], $userFolderParent]);
-
 		$this->filesystem->expects($this->once())
 			->method('mkdir')
 			->with($this->equalTo('/tmp/randomF/files/foo/courses'));
 
-		$this->filesExporter->export('usertest', '/tmp/randomF');
+		$iterator = new \ArrayIterator([$mockFolder]);
+		$this->filesExporter->export($iterator, $userFolderParent, '/tmp/randomF');
 	}
 
 	public function testExportFileAndFolder() {
@@ -133,10 +125,6 @@ class FilesExtractorTest extends TestCase {
 				}
 			}));
 
-		// iterator can return an array because will just need to traverse it
-		$this->iteratorFactory->method('getUserFolderRecursiveIterator')
-			->willReturn([[$mockFolder1, $mockFolder2, $mockFile1, $mockFile2], $userFolderParent]);
-
 		$this->filesystem->expects($this->exactly(2))
 			->method('mkdir')
 			->withConsecutive(
@@ -144,6 +132,7 @@ class FilesExtractorTest extends TestCase {
 				[$this->equalTo('/tmp/randomF/files/foo/courses')]
 			);
 
-		$this->filesExporter->export('usertest', '/tmp/randomF');
+		$iterator = new \ArrayIterator([$mockFolder1, $mockFolder2, $mockFile1, $mockFile2]);
+		$this->filesExporter->export($iterator, $userFolderParent, '/tmp/randomF');
 	}
 }

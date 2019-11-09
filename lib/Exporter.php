@@ -24,6 +24,7 @@ namespace OCA\DataExporter;
 
 use OCA\DataExporter\Extractor\FilesExtractor;
 use OCA\DataExporter\Extractor\MetadataExtractor;
+use OCA\DataExporter\Utilities\Iterators\Nodes\RecursiveNodeIteratorFactory;
 use OCA\DataExporter\Utilities\Path;
 use Symfony\Component\Filesystem\Filesystem;
 
@@ -37,12 +38,15 @@ class Exporter {
 	private $filesExtractor;
 	/** @var Filesystem  */
 	private $filesystem;
+	/** @var RecursiveNodeIteratorFactory  */
+	private $iteratorFactory;
 
-	public function __construct(Serializer $serializer, MetadataExtractor $metadataExtractor, FilesExtractor $filesExtractor, Filesystem $filesystem) {
+	public function __construct(Serializer $serializer, MetadataExtractor $metadataExtractor, FilesExtractor $filesExtractor, Filesystem $filesystem, RecursiveNodeIteratorFactory $iteratorFactory) {
 		$this->serializer = $serializer;
 		$this->metadataExtractor = $metadataExtractor;
 		$this->filesExtractor = $filesExtractor;
 		$this->filesystem = $filesystem;
+		$this->iteratorFactory = $iteratorFactory;
 	}
 
 	/**
@@ -66,8 +70,8 @@ class Exporter {
 		);
 
 		if ($exportFiles) {
-			$filesPath = Path::join($exportPath, 'files');
-			$this->filesExtractor->export($uid, $filesPath);
+			list($iterator, $baseFolder) = $this->iteratorFactory->getUserFolderRecursiveIterator($uid);
+			$this->filesExtractor->export($iterator, $baseFolder, Path::join($exportPath, 'files'));
 		}
 	}
 }

@@ -24,10 +24,12 @@
 
 namespace OCA\DataExporter\Tests\Unit;
 
+use OC\Files\Node\Folder;
 use OCA\DataExporter\Exporter;
 use OCA\DataExporter\Extractor\FilesExtractor;
 use OCA\DataExporter\Extractor\MetadataExtractor;
 use OCA\DataExporter\Serializer;
+use OCA\DataExporter\Utilities\Iterators\Nodes\RecursiveNodeIteratorFactory;
 use Symfony\Component\Filesystem\Filesystem;
 use Test\TestCase;
 
@@ -45,6 +47,8 @@ class ExporterTest extends TestCase {
 	private $filesExtractor;
 	/** @var Filesystem | \PHPUnit_Framework_MockObject_MockObject  */
 	private $filesystem;
+	/** @var RecursiveNodeIteratorFactory| \PHPUnit_Framework_MockObject_MockObject  */
+	private $iteratorFactory;
 
 	/**
 	 * Set up the test
@@ -57,6 +61,7 @@ class ExporterTest extends TestCase {
 		$this->metadataExtractor = $this->createMock(MetadataExtractor::class);
 		$this->filesExtractor = $this->createMock(FilesExtractor::class);
 		$this->filesystem = $this->createMock(Filesystem::class);
+		$this->iteratorFactory = $this->createMock(RecursiveNodeIteratorFactory::class);
 	}
 
 	/**
@@ -72,19 +77,26 @@ class ExporterTest extends TestCase {
 			->expects($this->once())
 			->method('extract')
 			->with('testuser');
+
+		$iter = [new \ArrayIterator([]), $this->createMock(Folder::class)];
 		$this->filesExtractor
-			->expects($this->once())
-			->method('export')
-			->with('testuser', '/tmp/testuser/files');
+			->expects($this->exactly(1))
+			->method('export')->withConsecutive(
+				[$iter[0], $iter[1], '/tmp/testuser/files']
+			);
 		$this->filesystem
 			->expects($this->once())
 			->method('dumpFile')
 			->with('/tmp/testuser/user.json');
+		$this->iteratorFactory
+			->method('getUserFolderRecursiveIterator')
+			->willReturn($iter);
 		$exporter = new Exporter(
 			$this->serializer,
 			$this->metadataExtractor,
 			$this->filesExtractor,
-			$this->filesystem
+			$this->filesystem,
+			$this->iteratorFactory
 		);
 
 		$exporter->export('testuser', '/tmp');

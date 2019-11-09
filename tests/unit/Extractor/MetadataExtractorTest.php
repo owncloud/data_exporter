@@ -44,6 +44,8 @@ class MetadataExtractorTest extends TestCase {
 	private $filesMetadataExtractor;
 	/** @var SharesExtractor | \PHPUnit_Framework_MockObject_MockObject */
 	private $sharesExtractor;
+	/** @var MetadataExtractor\TrashBinExtractor | \PHPUnit_Framework_MockObject_MockObject */
+	private $trashBinExtractor;
 	/** @var IURLGenerator | \PHPUnit_Framework_MockObject_MockObject */
 	private $urlGenerator;
 	/** @var MetadataExtractor */
@@ -55,6 +57,7 @@ class MetadataExtractorTest extends TestCase {
 		$this->preferencesExtractor = $this->createMock(PreferencesExtractor::class);
 		$this->filesMetadataExtractor = $this->createMock(FilesMetadataExtractor::class);
 		$this->sharesExtractor = $this->createMock(SharesExtractor::class);
+		$this->trashBinExtractor = $this->createMock(MetadataExtractor\TrashBinExtractor::class);
 		$this->urlGenerator = $this->createMock(IURLGenerator::class);
 
 		$this->metadataExtractor = new MetadataExtractor(
@@ -62,6 +65,7 @@ class MetadataExtractorTest extends TestCase {
 			$this->preferencesExtractor,
 			$this->filesMetadataExtractor,
 			$this->sharesExtractor,
+			$this->trashBinExtractor,
 			$this->urlGenerator
 		);
 	}
