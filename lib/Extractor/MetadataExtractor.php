@@ -26,9 +26,12 @@ namespace OCA\DataExporter\Extractor;
 use OCA\DataExporter\Extractor\MetadataExtractor\FilesMetadataExtractor;
 use OCA\DataExporter\Extractor\MetadataExtractor\PreferencesExtractor;
 use OCA\DataExporter\Extractor\MetadataExtractor\SharesExtractor;
+use OCA\DataExporter\Extractor\MetadataExtractor\TrashBinExtractor;
 use OCA\DataExporter\Extractor\MetadataExtractor\UserExtractor;
 use OCA\DataExporter\Model\Metadata;
+use OCP\Files\NotFoundException;
 use OCP\IURLGenerator;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Responsible for assembling all model objects which are required
@@ -48,14 +51,19 @@ class MetadataExtractor {
 	private $filesMetadataExtractor;
 	/** @var SharesExtractor */
 	private $sharesExtractor;
+	/** @var TrashBinExtractor */
+	private $trashBinExtractor;
 	/** @var IURLGenerator */
 	private $urlGenerator;
+	/** @var OptionsResolver  */
+	private $optionsResolver;
 
 	/**
 	 * @param UserExtractor $userExtractor
 	 * @param PreferencesExtractor $preferencesExtractor
 	 * @param FilesMetadataExtractor $filesMetadataExtractor
 	 * @param SharesExtractor $sharesExtractor
+	 * @param TrashBinExtractor $trashBinExtractor
 	 * @param IURLGenerator $urlGenerator
 	 */
 	public function __construct(
@@ -63,13 +71,23 @@ class MetadataExtractor {
 		PreferencesExtractor $preferencesExtractor,
 		FilesMetadataExtractor $filesMetadataExtractor,
 		SharesExtractor $sharesExtractor,
+		TrashBinExtractor $trashBinExtractor,
 		IURLGenerator $urlGenerator
 	) {
 		$this->userExtractor = $userExtractor;
 		$this->preferencesExtractor = $preferencesExtractor;
 		$this->filesMetadataExtractor = $filesMetadataExtractor;
+		$this->trashBinExtractor = $trashBinExtractor;
 		$this->sharesExtractor = $sharesExtractor;
 		$this->urlGenerator = $urlGenerator;
+
+		$optionsResolver = new OptionsResolver();
+		$this->configureOptions($optionsResolver);
+		$this->optionsResolver = $optionsResolver;
+	}
+
+	private function configureOptions(OptionsResolver $resolver) {
+		$resolver->setRequired("trashBinAvailable");
 	}
 
 	/**
@@ -80,7 +98,8 @@ class MetadataExtractor {
 	 * @throws \Exception
 	 * @throws \RuntimeException if user can not be read
 	 */
-	public function extract($uid, $exportPath, $extractFileIds = true) {
+	public function extract($uid, $exportPath, $options = []) {
+		$options = $this->optionsResolver->resolve($options);
 		$user = $this->userExtractor->extract($uid);
 		$user->setPreferences($this->preferencesExtractor->extract($uid));
 		$metadata = new Metadata();
@@ -88,7 +107,16 @@ class MetadataExtractor {
 			->setUser($user)
 			->setOriginServer($this->urlGenerator->getAbsoluteURL('/'));
 
-		$this->filesMetadataExtractor->extract($uid, $exportPath, $extractFileIds);
+		$this->filesMetadataExtractor->extract($uid, $exportPath);
+
+		if ($options['trashBinAvailable']) {
+			try {
+				$this->trashBinExtractor->extract($uid, $exportPath);
+			} catch (NotFoundException $ex) {
+				//TODO: Log Folder not found in storage
+			}
+		}
+
 		$this->sharesExtractor->extract($uid, $exportPath);
 
 		return $metadata;

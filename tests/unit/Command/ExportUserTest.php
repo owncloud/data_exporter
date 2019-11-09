@@ -24,6 +24,7 @@ namespace OCA\DataExporter\Tests\Unit\Command;
 
 use OCA\DataExporter\Command\ExportUser;
 use OCA\DataExporter\Exporter;
+use OCA\DataExporter\Platform;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 
@@ -38,7 +39,7 @@ class ExportUserTest extends TestCase {
 	public function setUp(): void {
 		$this->exporter = $this->getMockBuilder(Exporter::class)->disableOriginalConstructor()->getMock();
 
-		$command = new ExportUser($this->exporter);
+		$command = new ExportUser($this->exporter, $this->createMock(Platform::class));
 		$this->commandTester = new CommandTester($command);
 	}
 
@@ -49,7 +50,8 @@ class ExportUserTest extends TestCase {
 
 		$this->commandTester->execute([
 			'userId' => 'user0',
-			'exportDirectory' => '/tmp'
+			'exportDirectory' => '/tmp',
+			['trashBinAvailable' => true]
 		]);
 	}
 }

@@ -22,6 +22,7 @@
  */
 namespace OCA\DataExporter\Utilities\Iterators\Nodes;
 
+use OCP\Files\Folder;
 use OCP\Files\IRootFolder;
 
 class RecursiveNodeIteratorFactory {
@@ -63,5 +64,22 @@ class RecursiveNodeIteratorFactory {
 		$conditionDifferentStorage = new SkipNodeConditionDifferentStorage($userFolder->getStorage()->getId());
 		$nodeIterator->addSkipCondition($conditionDifferentStorage);
 		return [new \RecursiveIteratorIterator($nodeIterator, $mode), $userFolder];
+	}
+
+	/**
+	 * @param string $userId
+	 * @param int $mode
+	 * @return array
+	 * @throws \OCP\Files\NotFoundException
+	 */
+	public function getTrashBinRecursiveIterator($userId, $mode = \RecursiveIteratorIterator::SELF_FIRST) {
+		$trashBinFolder = $this->rootFolder->getUserFolder($userId)->getParent()->get('/files_trashbin/files');
+		if (!$trashBinFolder instanceof Folder) {
+			throw new \InvalidArgumentException('Only folders can be passed to iterator');
+		}
+		$nodeIterator = new RecursiveNodeIterator($trashBinFolder);
+		$conditionDifferentStorage = new SkipNodeConditionDifferentStorage($trashBinFolder->getStorage()->getId());
+		$nodeIterator->addSkipCondition($conditionDifferentStorage);
+		return [new \RecursiveIteratorIterator($nodeIterator, $mode), $trashBinFolder];
 	}
 }

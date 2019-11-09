@@ -94,7 +94,7 @@ class MetadataExtractorTest extends TestCase {
 			->with('testuser')
 			->willReturn([$preference]);
 
-		$metadata = $this->metadataExtractor->extract('testuser', '/testuser');
+		$metadata = $this->metadataExtractor->extract('testuser', '/testuser', ['trashBinAvailable' => true]);
 		self::assertEquals($user->isEnabled(), $metadata->getUser()->isEnabled());
 		self::assertEquals($user->getUserId(), $metadata->getUser()->getUserId());
 		self::assertEquals($user->getEmail(), $metadata->getUser()->getEmail());

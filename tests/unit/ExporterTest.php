@@ -80,9 +80,10 @@ class ExporterTest extends TestCase {
 
 		$iter = [new \ArrayIterator([]), $this->createMock(Folder::class)];
 		$this->filesExtractor
-			->expects($this->exactly(1))
+			->expects($this->exactly(2))
 			->method('export')->withConsecutive(
-				[$iter[0], $iter[1], '/tmp/testuser/files']
+				[$iter[0], $iter[1], '/tmp/testuser/files'],
+				[$iter[0], $iter[1], '/tmp/testuser/files_trashbin']
 			);
 		$this->filesystem
 			->expects($this->once())
@@ -90,6 +91,9 @@ class ExporterTest extends TestCase {
 			->with('/tmp/testuser/user.json');
 		$this->iteratorFactory
 			->method('getUserFolderRecursiveIterator')
+			->willReturn($iter);
+		$this->iteratorFactory
+			->method('getTrashBinRecursiveIterator')
 			->willReturn($iter);
 		$exporter = new Exporter(
 			$this->serializer,
@@ -99,6 +103,6 @@ class ExporterTest extends TestCase {
 			$this->iteratorFactory
 		);
 
-		$exporter->export('testuser', '/tmp');
+		$exporter->export('testuser', '/tmp', ['trashBinAvailable' => true]);
 	}
 }

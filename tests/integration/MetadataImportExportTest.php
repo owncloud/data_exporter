@@ -27,9 +27,12 @@ use OCA\DataExporter\Extractor\MetadataExtractor;
 use OCA\DataExporter\Importer\FilesImporter;
 use OCA\DataExporter\Importer\MetadataImporter;
 use OCA\DataExporter\Importer\MetadataImporter\UserImporter;
+use OCA\DataExporter\Importer\TrashBinImporter;
 use OCA\DataExporter\Model\File;
 use OCA\DataExporter\Model\Metadata;
+use OCA\DataExporter\Model\TrashBinFile;
 use OCA\DataExporter\Serializer;
+use OCA\DataExporter\Utilities\Iterators\Nodes\RecursiveNodeIteratorFactory;
 use OCP\IGroup;
 use OCP\IGroupManager;
 use org\bovigo\vfs\vfsStream;
@@ -57,6 +60,9 @@ JSONL;
 	const USER_CONTENT = <<< JSONL
 {"date":"2019-08-05T12:21:14+00:00","originServer":"http:\/\/localhost\/","user":{"userId":"testuser","displayName":"someUser","email":"test@owncloud.com","quota":"default","backend":"Database","enabled":true,"groups":["admin","people"],"preferences":[{"appId":"core","configKey":"lang","configValue":"de"},{"appId":"core","configKey":"timezone","configValue":"Europe\/Berlin"}]}}
 JSONL;
+	const TRASH_BIN_CONTENT = <<< JSONL
+{"deletionTimestamp":1573301236,"originalLocation":"someFolder","originalName":"user_ldap-0.13.0.tar.gz","type":"file","path":"\/user_ldap-0.13.0.tar.gz.d1573301236","eTag":"66a2151e70d144e9b0acdc37b71c3ff2","permissions":27,"mtime":1570180669}
+JSONL;
 
 	public function setUp(): void {
 		parent::setUp();
@@ -83,6 +89,12 @@ JSONL;
 		$filesImporter = \OC::$server->query(FilesImporter::class);
 		/** @var Serializer $serializer */
 		$serializer = \OC::$server->query(Serializer::class);
+		/** @var RecursiveNodeIteratorFactory $iteratorFactory */
+		$iteratorFactory = \OC::$server->query(RecursiveNodeIteratorFactory::class);
+		/** @var MetadataExtractor\TrashBinExtractor $trashBinMetaDataExtractor */
+		$trashBinMetaDataExtractor = \OC::$server->query(MetadataExtractor\TrashBinExtractor::class);
+		/** @var TrashBinImporter $trashBinImporter */
+		$trashBinImporter = \OC::$server->query(TrashBinImporter::class);
 
 		$directoryTree = [
 			'testimport' => [
@@ -90,11 +102,16 @@ JSONL;
 					'shares.jsonl' => $this::SHARES_CONTENT,
 					'files.jsonl' => $this::FILES_CONTENT,
 					'user.json' => $this::USER_CONTENT,
+					'trashbin.jsonl' => $this::TRASH_BIN_CONTENT,
 					'files' => [
 						'files' => [
 							'someFile.txt' => 'This is a test!',
 							'someFolder' => []
 						]
+					],
+					'files_trashbin' => [
+						'user_ldap-0.13.0.tar.gz.d1573301236' => '',
+
 					]
 				]
 			],
@@ -114,8 +131,9 @@ JSONL;
 		$filesImporter->import('testuser', $fileSystem->url() . '/testimport/testuser');
 		// @todo Shares do not import / export cleanly because of conversion
 		// to federated
+		$trashBinImporter->import('testuser', $fileSystem->url() . '/testimport/testuser');
 
-		$metadataExported = $metadataExtractor->extract('testuser', $fileSystem->url() . '/testexport');
+		$metadataExported = $metadataExtractor->extract('testuser', $fileSystem->url() . '/testexport', ['trashBinAvailable' => true]);
 		$metadataExported->setDate($date);
 		$metadataExported->getUser()->setBackend('Database');
 		$user = $metadataExported->getUser();
@@ -128,12 +146,14 @@ JSONL;
 			'Export metadata does not match after import/export cycle'
 		);
 		$filesMetadataExtractor->extract('testuser', $fileSystem->url() . '/testexport/testuser');
-		$filesExtractor->export('testuser', $fileSystem->url() . '/testexport/testuser');
+		list($iter, $baseFolder) = $iteratorFactory->getUserFolderRecursiveIterator('testuser');
+		$filesExtractor->export($iter, $baseFolder, $fileSystem->url() . '/testexport/testuser');
 		$filesMetadata = \explode(
 			PHP_EOL,
 			\file_get_contents($fileSystem->url() . '/testexport/testuser/files.jsonl')
 
 		);
+
 		$expectedFilesMetadata = \explode(
 			PHP_EOL,
 			\file_get_contents($fileSystem->url() . '/testexport/testuser/files.jsonl')
@@ -143,6 +163,28 @@ JSONL;
 				$expectedObject = $serializer->deserialize($expected, File::class);
 				$actualObject = $serializer->deserialize($filesMetadata[$key], File::class);
 				// @todo Etag of parent doesn't match
+				$actualObject->setEtag($expectedObject->getEtag());
+				$this->assertEquals($expectedObject, $actualObject);
+			}
+		}
+
+		$trashBinMetaDataExtractor->extract('testuser', $fileSystem->url() . '/testexport/testuser');
+
+		$actualTrashBinMetadata = \explode(
+			PHP_EOL,
+			\file_get_contents($fileSystem->url() . '/testexport/testuser/trashbin.jsonl')
+		);
+
+		$expectedTrashBinMetadata = \explode(
+			PHP_EOL,
+			\file_get_contents($fileSystem->url() . '/testimport/testuser/trashbin.jsonl')
+		);
+		foreach ($expectedTrashBinMetadata as $key => $expected) {
+			if (!empty($expected)) {
+				$expectedObject = $serializer->deserialize($expected, TrashBinFile::class);
+				$actualObject = $serializer->deserialize($actualTrashBinMetadata[$key], TrashBinFile::class);
+				// @todo Etag of parent doesn't match
+				$actualObject->setMtime($expectedObject->getMtime());
 				$actualObject->setEtag($expectedObject->getEtag());
 				$this->assertEquals($expectedObject, $actualObject);
 			}

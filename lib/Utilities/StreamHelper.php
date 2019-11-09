@@ -25,6 +25,7 @@ namespace OCA\DataExporter\Utilities;
 use OCA\DataExporter\Importer\ImportException;
 use OCA\DataExporter\Model\File;
 use OCA\DataExporter\Model\Share;
+use OCA\DataExporter\Model\TrashBinFile;
 use OCA\DataExporter\Serializer;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Serializer\Exception\UnexpectedValueException;
@@ -101,7 +102,7 @@ class StreamHelper {
 	 * @param resource $resource
 	 * @param string $type
 	 *
-	 * @return Share | File | object | bool
+	 * @return Share | File | TrashBinFile | object | bool
 	 */
 	public function readlnFromStream($resource, $type) {
 		try {

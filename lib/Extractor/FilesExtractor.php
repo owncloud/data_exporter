@@ -23,7 +23,6 @@
  */
 namespace OCA\DataExporter\Extractor;
 
-use OC\Files\Node\Node;
 use OCA\DataExporter\Utilities\Path;
 use OCP\Files\File;
 use OCP\Files\Folder;
@@ -45,7 +44,6 @@ class FilesExtractor {
 	 * @throws \OCP\Files\NotPermittedException
 	 */
 	public function export(\Traversable $iterator, Folder $baseFolder, $exportPath) {
-		/** @var \OCP\Files\Node $node */
 		foreach ($iterator as $node) {
 			$nodePath = $node->getPath();
 			$relativeFileCachePath = $baseFolder->getRelativePath($nodePath);
