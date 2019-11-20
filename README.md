@@ -8,3 +8,5 @@ A cli tool which allows exporting and importing user-data like settings, files a
 
 See [docs](https://github.com/owncloud/data_exporter/tree/master/docs) for more details.
 See [Contributing](https://raw.github.com/owncloud/data_exporter/master/.github/CONTRIBUTING.md)
+
+Trigger CI
