@@ -41,6 +41,12 @@ clean-composer-dev-deps:
 	rm -Rf vendor
 	rm -Rf vendor-bin/**/vendor vendor-bin/**/composer.lock
 
+composer.lock: composer.json
+	@echo composer.lock is not up to date.
+
+vendor: composer.lock
+	$(COMPOSER_BIN) install --no-dev
+
 vendor/bamarni/composer-bin-plugin: composer.lock
 	composer install
 
@@ -96,11 +102,11 @@ test-php-phan: vendor-bin/phan/vendor
 	$(PHAN) --config-file .phan/config.php --require-config-exists
 
 .PHONY: test-php-unit
-test-php-unit:
+test-php-unit: $(composer_deps) $(composer_dev_deps)
 	$(PHPUNIT) --configuration ./phpunit.xml --testsuite unit
 
 .PHONY: test-php-unit-dbg
-test-php-unit-dbg:
+test-php-unit-dbg: $(composer_deps) $(composer_dev_deps)
 	$(PHPUNITDBG) --configuration ./phpunit.xml --testsuite unit --coverage-clover ./tests/output/clover.xml
 
 .PHONY: test-php-integration
