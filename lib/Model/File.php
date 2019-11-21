@@ -34,7 +34,10 @@ class File {
 	const TYPE_FILE = 'file';
 	const ROOT_FOLDER_PATH = '/files/';
 
+	/** @var string */
 	private $type;
+	/** @var int */
+	private $id;
 	/** @var string */
 	private $path;
 	/** @var mixed */
@@ -58,6 +61,20 @@ class File {
 	public function setType($type) {
 		$this->type = $type;
 		return $this;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getId() {
+		return $this->id;
+	}
+
+	/**
+	 * @param mixed $id
+	 */
+	public function setId($id) {
+		$this->id = (int) $id;
 	}
 
 	/**
