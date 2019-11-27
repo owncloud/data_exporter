@@ -85,10 +85,13 @@ class StreamHelper {
 	 * @param resource $resource
 	 * @param Share | File $entity
 	 *
+	 * @param array $ignoreAttributes
 	 * @return void
 	 */
-	public function writelnToStream($resource, $entity) {
+	public function writelnToStream($resource, $entity, $ignoreAttributes = []) {
+		$this->serializer->setIgnoredAttributes($ignoreAttributes);
 		$data = $this->serializer->serialize($entity);
+		$this->serializer->setIgnoredAttributes([]);
 		\fwrite($resource, $data . PHP_EOL);
 	}
 

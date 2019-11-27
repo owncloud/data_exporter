@@ -51,13 +51,18 @@ class FilesMetadataExtractor {
 	/**
 	 * @param string $userId
 	 * @param string $exportPath
+	 * @param bool $extractFileIds
 	 *
 	 * @return void
 	 *
 	 * @throws NoUserException
 	 */
-	public function extract($userId, $exportPath) {
+	public function extract($userId, $exportPath, $extractFileIds = false) {
 		list($iterator, $baseFolder) = $this->iteratorFactory->getUserFolderRecursiveIterator($userId);
+		$ignoredAttributes = ['id'];
+		if ($extractFileIds === true) {
+			$ignoredAttributes = [];
+		}
 
 		$filename = Path::join($exportPath, $this::FILE_NAME);
 		$this->streamFile = $this->streamHelper->initStream($filename, 'ab', true);
@@ -68,9 +73,10 @@ class FilesMetadataExtractor {
 			->setPath('/')
 			->setETag($baseFolder->getEtag())
 			->setMtime($baseFolder->getMTime())
-			->setPermissions($baseFolder->getPermissions());
+			->setPermissions($baseFolder->getPermissions())
+			->setId($baseFolder->getId());
 
-		$this->streamHelper->writelnToStream($this->streamFile, $rootFolder);
+		$this->streamHelper->writelnToStream($this->streamFile, $rootFolder, $ignoredAttributes);
 
 		foreach ($iterator as $node) {
 			$nodePath = $node->getPath();
@@ -98,7 +104,7 @@ class FilesMetadataExtractor {
 				$file->setType(File::TYPE_FOLDER);
 			}
 
-			$this->streamHelper->writelnToStream($this->streamFile, $file);
+			$this->streamHelper->writelnToStream($this->streamFile, $file, $ignoredAttributes);
 		}
 		$this->streamHelper->closeStream($this->streamFile);
 	}
