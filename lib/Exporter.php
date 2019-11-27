@@ -56,9 +56,10 @@ class Exporter {
 	 *
 	 * @return void
 	 */
-	public function export($uid, $exportDirectoryPath, $exportFiles = true) {
+	public function export($uid, $exportDirectoryPath, $exportFiles = true, $exportFileIds = false) {
 		$exportPath = Path::join($exportDirectoryPath, $uid);
-		$metaData = $this->metadataExtractor->extract($uid, $exportPath);
+		$metaData = $this->metadataExtractor->extract($uid, $exportPath, $exportFileIds);
+
 		$this->filesystem->dumpFile(
 			Path::join($exportPath, '/user.json'),
 			$this->serializer->serialize($metaData)

@@ -32,13 +32,16 @@ class Serializer {
 
 	/** @var \Symfony\Component\Serializer\Serializer  */
 	private $serializer;
+	/** @var ObjectNormalizer  */
+	private $objectNormalizer;
 
 	public function __construct() {
+		$this->objectNormalizer = new ObjectNormalizer(null, null, null, new PhpDocExtractor());
 		$encoders = [new JsonEncoder()];
 		$normalizers = [
 			new DateTimeNormalizer(),
 			new ArrayDenormalizer(),
-			new ObjectNormalizer(null, null, null, new PhpDocExtractor())
+			$this->objectNormalizer,
 		];
 
 		$this->serializer = new \Symfony\Component\Serializer\Serializer($normalizers, $encoders);
@@ -65,5 +68,9 @@ class Serializer {
 	 */
 	public function deserialize($data, $type) {
 		return $this->serializer->deserialize($data, $type, 'json', []);
+	}
+
+	public function setIgnoredAttributes($attributes = []) {
+		$this->objectNormalizer->setIgnoredAttributes($attributes);
 	}
 }
