@@ -87,7 +87,8 @@ class MetadataExtractor {
 	}
 
 	private function configureOptions(OptionsResolver $resolver) {
-		$resolver->setRequired("trashBinAvailable");
+		$resolver->setRequired('trashBinAvailable');
+		$resolver->setDefaults(['exportFileIds' => false]);
 	}
 
 	/**
@@ -107,7 +108,7 @@ class MetadataExtractor {
 			->setUser($user)
 			->setOriginServer($this->urlGenerator->getAbsoluteURL('/'));
 
-		$this->filesMetadataExtractor->extract($uid, $exportPath);
+		$this->filesMetadataExtractor->extract($uid, $exportPath, $options['exportFileIds']);
 
 		if ($options['trashBinAvailable']) {
 			try {

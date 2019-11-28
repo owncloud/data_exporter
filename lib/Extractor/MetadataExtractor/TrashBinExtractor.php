@@ -69,8 +69,12 @@ class TrashBinExtractor {
 	 *
 	 * @throws NoUserException
 	 */
-	public function extract($userId, $exportPath) {
+	public function extract($userId, $exportPath, $extractFileIds = false) {
 		list($iterator, $baseFolder) = $this->iteratorFactory->getTrashBinRecursiveIterator($userId);
+		$ignoredAttributes = ['id'];
+		if ($extractFileIds === true) {
+			$ignoredAttributes = [];
+		}
 
 		$filename = Path::join($exportPath, $this::FILE_NAME);
 		$this->streamFile = $this->streamHelper->initStream($filename, 'ab', true);
@@ -85,6 +89,7 @@ class TrashBinExtractor {
 			$file->setETag($node->getEtag());
 			$file->setMtime($node->getMTime());
 			$file->setPermissions($node->getPermissions());
+			$file->setId($node->getId());
 
 			$originalName = $this->getOriginalName($node);
 			$deletionTimestamp = $this->getDeleteTimestamp($node);
@@ -103,7 +108,7 @@ class TrashBinExtractor {
 				$file->setType(File::TYPE_FOLDER);
 			}
 
-			$this->streamHelper->writelnToStream($this->streamFile, $file);
+			$this->streamHelper->writelnToStream($this->streamFile, $file, $ignoredAttributes);
 		}
 		$this->streamHelper->closeStream($this->streamFile);
 	}

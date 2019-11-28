@@ -58,7 +58,7 @@ class Exporter {
 
 	private function configureOptions(OptionsResolver $resolver) {
 		$resolver
-			->setDefaults(['exportFiles' => true])
+			->setDefaults(['exportFiles' => true, 'exportFileIds' => false])
 			->setRequired("trashBinAvailable");
 	}
 
