@@ -151,6 +151,6 @@ JSONL;
 
 	public function tearDown(): void {
 		$this->testGroup->delete();
-		return parent::tearDown();
+		parent::tearDown();
 	}
 }

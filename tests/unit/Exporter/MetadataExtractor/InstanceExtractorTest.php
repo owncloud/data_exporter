@@ -54,7 +54,6 @@ class InstanceExtractorTest extends TestCase {
 			$this->config,
 			$this->urlGenerator
 		);
-		return parent::setUp();
 	}
 
 	public function testExtract() {
