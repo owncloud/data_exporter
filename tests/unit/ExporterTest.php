@@ -51,7 +51,7 @@ class ExporterTest extends TestCase {
 	 *
 	 * @return void
 	 */
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
 		$this->serializer = $this->createMock(Serializer::class);
 		$this->metadataExtractor = $this->createMock(MetadataExtractor::class);

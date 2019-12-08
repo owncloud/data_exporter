@@ -39,7 +39,7 @@ class FilesExtractorTest extends TestCase {
 	/** @var FilesExporter */
 	private $filesExporter;
 
-	protected function setUp() {
+	protected function setUp(): void {
 		$this->iteratorFactory = $this->createMock(RecursiveNodeIteratorFactory::class);
 		$this->filesystem = $this->createMock(Filesystem::class);
 

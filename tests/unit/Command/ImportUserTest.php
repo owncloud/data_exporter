@@ -35,7 +35,7 @@ class ImportUserTest extends TestCase {
 	/** @var CommandTester */
 	private $commandTester;
 
-	public function setUp() {
+	public function setUp(): void {
 		$this->importer = $this->getMockBuilder(Importer::class)
 			->disableOriginalConstructor()
 			->getMock();

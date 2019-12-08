@@ -26,7 +26,7 @@ class UserImporterTest extends \Test\TestCase {
 	private $testEmail;
 	private $testGroups = ['group1', 'group2'];
 
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
 		$this->userManager = \OC::$server->getUserManager();
 		$this->groupManager = \OC::$server->getGroupManager();

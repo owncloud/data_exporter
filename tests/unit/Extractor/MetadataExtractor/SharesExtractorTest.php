@@ -61,7 +61,7 @@ class SharesExtractorTest extends TestCase {
 	 */
 	private $resource;
 
-	protected function setUp() {
+	protected function setUp(): void {
 		parent::setUp();
 
 		$this->manager = $this->createMock(IManager::class);

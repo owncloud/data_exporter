@@ -39,7 +39,7 @@ class InstanceDataImporterTest extends TestCase {
 	/** @var \PHPUnit_Framework_MockObject_MockObject */
 	private $groupManager;
 
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
 
 		$this->config = $this->getMockBuilder(IConfig::class)->getMock();

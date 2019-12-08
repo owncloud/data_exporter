@@ -35,7 +35,7 @@ class RecursiveNodeIteratorTest extends TestCase {
 	/** RecursiveNodeIterator */
 	private $iterator;
 
-	protected function setUp() {
+	protected function setUp(): void {
 		$this->folder = $this->createMock(Folder::class);
 
 		$this->iterator = new RecursiveNodeIterator($this->folder);

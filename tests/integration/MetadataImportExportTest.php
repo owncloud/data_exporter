@@ -58,7 +58,7 @@ JSONL;
 {"date":"2019-08-05T12:21:14+00:00","originServer":"http:\/\/localhost\/","user":{"userId":"testuser","displayName":"someUser","email":"test@owncloud.com","quota":"default","backend":"Database","enabled":true,"groups":["admin","people"],"preferences":[{"appId":"core","configKey":"lang","configValue":"de"},{"appId":"core","configKey":"timezone","configValue":"Europe\/Berlin"}]}}
 JSONL;
 
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
 		/** @var IGroupManager $groupManager */
 		$groupManager = \OC::$server->getGroupManager();
@@ -149,7 +149,7 @@ JSONL;
 		}
 	}
 
-	public function tearDown() {
+	public function tearDown(): void {
 		$this->testGroup->delete();
 		return parent::tearDown();
 	}

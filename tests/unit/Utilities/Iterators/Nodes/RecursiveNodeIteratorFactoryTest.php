@@ -39,7 +39,7 @@ class RecursiveNodeIteratorFactoryTest extends TestCase {
 	/** @var RecursiveNodeIteratorFactory */
 	private $factory;
 
-	protected function setUp() {
+	protected function setUp(): void {
 		$this->rootFolder = $this->createMock(IRootFolder::class);
 
 		$this->setUpFolderStructure();  // $this->userFolder set in this method

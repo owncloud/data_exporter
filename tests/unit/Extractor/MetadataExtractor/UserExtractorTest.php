@@ -42,7 +42,7 @@ class UserExtractorTest extends TestCase {
 	/** @var GetPasswordHashQuery | \PHPUnit\Framework\MockObject\MockObject   */
 	private $queryMock;
 
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
 
 		$this->userManager = $this->createMock(IUserManager::class);

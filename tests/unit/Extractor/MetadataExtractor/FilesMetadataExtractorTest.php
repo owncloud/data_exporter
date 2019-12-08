@@ -45,7 +45,7 @@ class FilesMetadataExtractorTest extends TestCase {
 	 */
 	private $streamHelper;
 
-	protected function setUp() {
+	protected function setUp(): void {
 		$this->iteratorFactory = $this->createMock(RecursiveNodeIteratorFactory::class);
 		$this->streamHelper = $this->createMock(StreamHelper::class);
 

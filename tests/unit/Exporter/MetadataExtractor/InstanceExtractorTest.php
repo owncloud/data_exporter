@@ -45,7 +45,7 @@ class InstanceExtractorTest extends TestCase {
 	 */
 	private $extractor;
 
-	public function setUp() {
+	public function setUp(): void {
 		$this->groupManager = $this->getMockBuilder(IGroupManager::class)->getMock();
 		$this->config = $this->getMockBuilder(IConfig::class)->getMock();
 		$this->urlGenerator = $this->getMockBuilder(IURLGenerator::class)->getMock();
