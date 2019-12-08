@@ -41,7 +41,7 @@ class MigrateShareTest extends TestCase {
 	/** @var CommandTester */
 	private $commandTester;
 
-	protected function setUp() {
+	protected function setUp(): void {
 		parent::setUp();
 
 		$this->userManager = $this->createMock(IUserManager::class);

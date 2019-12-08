@@ -50,7 +50,7 @@ class InstanceExporterTest extends TestCase {
 	/**
 	 * Set up the tests
 	 */
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
 		$this->instanceExtractor = $this->createMock(InstanceExtractor::class);
 		$this->serializer = $this->createMock(Serializer::class);

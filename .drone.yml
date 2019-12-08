@@ -1521,7 +1521,7 @@ steps:
   - rsync -aIX /tmp/testrunner /var/www/owncloud
   - cp -r /var/www/owncloud/testrunner/apps/data_exporter /var/www/owncloud/server/apps/
   - cd /var/www/owncloud/testrunner
-  - make install-composer-deps vendor-bin-deps
+  - make install-composer-deps
 
 - name: install-app-data_exporter
   pull: always
@@ -1637,7 +1637,7 @@ steps:
   - rsync -aIX /tmp/testrunner /var/www/owncloud
   - cp -r /var/www/owncloud/testrunner/apps/data_exporter /var/www/owncloud/server/apps/
   - cd /var/www/owncloud/testrunner
-  - make install-composer-deps vendor-bin-deps
+  - make install-composer-deps
 
 - name: install-app-data_exporter
   pull: always
@@ -1753,7 +1753,7 @@ steps:
   - rsync -aIX /tmp/testrunner /var/www/owncloud
   - cp -r /var/www/owncloud/testrunner/apps/data_exporter /var/www/owncloud/server/apps/
   - cd /var/www/owncloud/testrunner
-  - make install-composer-deps vendor-bin-deps
+  - make install-composer-deps
 
 - name: install-app-data_exporter
   pull: always
@@ -1869,7 +1869,7 @@ steps:
   - rsync -aIX /tmp/testrunner /var/www/owncloud
   - cp -r /var/www/owncloud/testrunner/apps/data_exporter /var/www/owncloud/server/apps/
   - cd /var/www/owncloud/testrunner
-  - make install-composer-deps vendor-bin-deps
+  - make install-composer-deps
 
 - name: install-app-data_exporter
   pull: always
@@ -1984,7 +1984,7 @@ steps:
   - rsync -aIX /tmp/testrunner /var/www/owncloud
   - cp -r /var/www/owncloud/testrunner/apps/data_exporter /var/www/owncloud/server/apps/
   - cd /var/www/owncloud/testrunner
-  - make install-composer-deps vendor-bin-deps
+  - make install-composer-deps
 
 - name: install-app-data_exporter
   pull: always
@@ -2100,7 +2100,7 @@ steps:
   - rsync -aIX /tmp/testrunner /var/www/owncloud
   - cp -r /var/www/owncloud/testrunner/apps/data_exporter /var/www/owncloud/server/apps/
   - cd /var/www/owncloud/testrunner
-  - make install-composer-deps vendor-bin-deps
+  - make install-composer-deps
 
 - name: install-app-data_exporter
   pull: always
@@ -2216,7 +2216,7 @@ steps:
   - rsync -aIX /tmp/testrunner /var/www/owncloud
   - cp -r /var/www/owncloud/testrunner/apps/data_exporter /var/www/owncloud/server/apps/
   - cd /var/www/owncloud/testrunner
-  - make install-composer-deps vendor-bin-deps
+  - make install-composer-deps
 
 - name: install-app-data_exporter
   pull: always
@@ -2332,7 +2332,7 @@ steps:
   - rsync -aIX /tmp/testrunner /var/www/owncloud
   - cp -r /var/www/owncloud/testrunner/apps/data_exporter /var/www/owncloud/server/apps/
   - cd /var/www/owncloud/testrunner
-  - make install-composer-deps vendor-bin-deps
+  - make install-composer-deps
 
 - name: install-app-data_exporter
   pull: always
@@ -2448,7 +2448,7 @@ steps:
   - rsync -aIX /tmp/testrunner /var/www/owncloud
   - cp -r /var/www/owncloud/testrunner/apps/data_exporter /var/www/owncloud/server/apps/
   - cd /var/www/owncloud/testrunner
-  - make install-composer-deps vendor-bin-deps
+  - make install-composer-deps
 
 - name: install-app-data_exporter
   pull: always
@@ -2563,7 +2563,7 @@ steps:
   - rsync -aIX /tmp/testrunner /var/www/owncloud
   - cp -r /var/www/owncloud/testrunner/apps/data_exporter /var/www/owncloud/server/apps/
   - cd /var/www/owncloud/testrunner
-  - make install-composer-deps vendor-bin-deps
+  - make install-composer-deps
 
 - name: install-app-data_exporter
   pull: always

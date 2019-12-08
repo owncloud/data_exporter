@@ -38,7 +38,7 @@ class ShareConverterTest extends TestCase {
 	/** @var ShareConverter */
 	private $shareConverter;
 
-	protected function setUp() {
+	protected function setUp(): void {
 		parent::setUp();
 
 		$this->shareManager = $this->createMock(IManager::class);

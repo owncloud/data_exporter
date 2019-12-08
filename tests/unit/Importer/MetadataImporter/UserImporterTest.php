@@ -42,7 +42,7 @@ class UserImporterTest extends TestCase {
 	/** @var UserImporter */
 	private $importer;
 
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
 
 		$this->userManager = $this->createMock(IUserManager::class);

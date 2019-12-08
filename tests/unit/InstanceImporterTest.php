@@ -59,7 +59,7 @@ class InstanceImporterTest extends TestCase {
 	 *
 	 * @throws \org\bovigo\vfs\vfsStreamException
 	 */
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
 		$this->instanceDataImporter = $this->createMock(InstanceDataImporter::class);
 		$this->serializer = $this->createMock(Serializer::class);

@@ -35,7 +35,7 @@ class ExportUserTest extends TestCase {
 	/** @var CommandTester */
 	private $commandTester;
 
-	public function setUp() {
+	public function setUp(): void {
 		$this->exporter = $this->getMockBuilder(Exporter::class)->disableOriginalConstructor()->getMock();
 
 		$command = new ExportUser($this->exporter);

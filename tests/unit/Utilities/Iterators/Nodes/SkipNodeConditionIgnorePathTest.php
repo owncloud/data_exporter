@@ -36,7 +36,7 @@ class SkipNodeConditionIgnorePathTest extends TestCase {
 	/** @var SkipNodeConditionIgnorePath */
 	private $skipNodeCondition;
 
-	protected function setUp() {
+	protected function setUp(): void {
 		$this->folder = $this->createMock(Folder::class);
 		$this->paths = [];
 	}

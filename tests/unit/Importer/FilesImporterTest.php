@@ -65,7 +65,7 @@ class FilesImporterTest extends TestCase {
 	 *
 	 * @return void
 	 */
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
 		$this->filesystem = $this->createMock(Filesystem::class);
 		$this->rootFolder = $this->createMock(IRootFolder::class);

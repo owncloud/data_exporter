@@ -35,7 +35,7 @@ class ImportInstanceTest extends TestCase {
 	/** @var CommandTester */
 	private $commandTester;
 
-	public function setUp() {
+	public function setUp(): void {
 		$this->importer = $this->getMockBuilder(InstanceImporter::class)
 			->disableOriginalConstructor()
 			->getMock();

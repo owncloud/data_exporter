@@ -59,7 +59,7 @@ class ShareImporterTest extends TestCase {
 	/** @var StreamHelper | \PHPUnit\Framework\MockObject\MockObject*/
 	private $streamHelper;
 
-	protected function setUp() {
+	protected function setUp(): void {
 		$this->shareManager = $this->createMock(IManager::class);
 		$this->rootFolder = $this->createMock(IRootFolder::class);
 		$this->userManager = $this->createMock(IUserManager::class);

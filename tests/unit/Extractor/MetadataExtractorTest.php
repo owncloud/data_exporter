@@ -49,7 +49,7 @@ class MetadataExtractorTest extends TestCase {
 	/** @var MetadataExtractor */
 	private $metadataExtractor;
 
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
 		$this->userExtractor = $this->createMock(UserExtractor::class);
 		$this->preferencesExtractor = $this->createMock(PreferencesExtractor::class);
