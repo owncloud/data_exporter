@@ -92,10 +92,11 @@ class UserExtractorTest extends TestCase {
 	}
 
 	/**
-	 * @expectedException \RuntimeException
-	 * @expectedExceptionMessage Could not extract user metadata for user 'doesnotexist'
 	 */
 	public function testUnknownUser() {
+		$this->expectException(\RuntimeException::class);
+		$this->expectExceptionMessage('Could not extract user metadata for user \'doesnotexist\'');
+
 		$this->userExtractor->extract('doesnotexist');
 	}
 }

@@ -82,9 +82,10 @@ class InstanceImporterTest extends TestCase {
 	}
 
 	/**
-	 * @expectedException \OCA\DataExporter\Importer\ImportException
 	 */
 	public function testImportFileNotValidPath() {
+		$this->expectException(\OCA\DataExporter\Importer\ImportException::class);
+
 		$instanceImporter = new InstanceImporter(
 			$this->serializer,
 			$this->instanceDataImporter,

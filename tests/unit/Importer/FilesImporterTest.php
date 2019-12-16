@@ -196,10 +196,11 @@ class FilesImporterTest extends TestCase {
 	}
 
 	/**
-	 * @expectedException \OCA\DataExporter\Importer\ImportException
-	 * @expectedExceptionMessage Import failed on vfs://tmp/testuser/files.jsonl on line 2: File 'vfs://tmp/testuser/files/files/AFolder
 	 */
 	public function testFilesImporterError() {
+		$this->expectException(\OCA\DataExporter\Importer\ImportException::class);
+		$this->expectExceptionMessage('Import failed on vfs://tmp/testuser/files.jsonl on line 2: File \'vfs://tmp/testuser/files/files/AFolder');
+
 		// User Folder
 		$mockFolder1 = $this->createMock(Folder::class);
 		$mockFolder1->method('getPath')->willReturn('/testuser/files');
@@ -291,9 +292,10 @@ class FilesImporterTest extends TestCase {
 	}
 
 	/**
-	 * @expectedException RuntimeException
 	 */
 	public function testFilesImporterError2() {
+		$this->expectException(\RuntimeException::class);
+
 		// User Folder
 		$userFolder = $this->createMock(Folder::class);
 		$userFolder->method('getPath')->willReturn('files/');

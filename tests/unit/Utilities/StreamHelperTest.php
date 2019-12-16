@@ -130,11 +130,12 @@ JSONL;
 	}
 
 	/**
-	 * @expectedException \OCA\DataExporter\Importer\ImportException
 	 *
 	 * @return void
 	 */
 	public function testReadCorruptedFile() {
+		$this->expectException(\OCA\DataExporter\Importer\ImportException::class);
+
 		$fileContent = <<< JSONL
 {"type":"file","path":"files\/welcome.txt","eTag":"234s34ser234","permissions":31,"mtime":1565267598}
 {"type":"folder","path:"files\/someFolder","eTag":"234s34ser234","permissions":31,"mtime":1565267598}
