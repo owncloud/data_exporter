@@ -46,6 +46,14 @@ class ImportUser extends Command {
 			->addOption('as', 'a', InputOption::VALUE_REQUIRED, 'Import the user under a different user id');
 	}
 
+	/**
+	 * Executes the current command.
+	 *
+	 * @param InputInterface $input
+	 * @param OutputInterface $output
+	 *
+	 * @return int|null|void
+	 */
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		try {
 			$this->importer->import(
