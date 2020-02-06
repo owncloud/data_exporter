@@ -48,6 +48,14 @@ class ExportUser extends Command {
 			->addOption('with-file-ids', 'i', InputOption::VALUE_NONE, 'Export file-ids in file-metadata');
 	}
 
+	/**
+	 * Executes the current command.
+	 *
+	 * @param InputInterface $input
+	 * @param OutputInterface $output
+	 *
+	 * @return int|null|void
+	 */
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		try {
 			$this->exporter->export(
