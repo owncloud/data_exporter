@@ -25,6 +25,7 @@ namespace OCA\DataExporter;
 
 use OCA\DataExporter\Importer\ImportException;
 use OCA\DataExporter\Importer\MetadataImporter;
+use OCA\DataExporter\Importer\TrashBinImporter;
 use OCA\DataExporter\Model\Metadata;
 use OCA\DataExporter\Utilities\Path;
 use Symfony\Component\Filesystem\Filesystem;
@@ -41,6 +42,8 @@ class Importer {
 	private $filesystem;
 	/** @var FilesImporter  */
 	private $filesImporter;
+	/** @var TrashBinImporter */
+	private $trashBinImporter;
 	/** @var ShareImporter */
 	private $shareImporter;
 
@@ -48,6 +51,7 @@ class Importer {
 		Serializer $serializer,
 		MetadataImporter $metadataImporter,
 		FilesImporter $filesImporter,
+		TrashBinImporter $trashBinImporter,
 		ShareImporter $shareImporter,
 		Filesystem $filesystem
 	) {
@@ -55,6 +59,7 @@ class Importer {
 		$this->filesystem = $filesystem;
 		$this->serializer = $serializer;
 		$this->filesImporter = $filesImporter;
+		$this->trashBinImporter = $trashBinImporter;
 		$this->shareImporter = $shareImporter;
 	}
 
@@ -90,6 +95,12 @@ class Importer {
 			$metadata->getUser()->getUserId(),
 			$pathToExportDir
 		);
+
+		$this->trashBinImporter->import(
+			$metadata->getUser()->getUserId(),
+			$pathToExportDir
+		);
+
 		$this->shareImporter->import(
 			$metadata->getUser()->getUserId(),
 			$pathToExportDir,

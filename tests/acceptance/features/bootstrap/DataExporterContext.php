@@ -21,6 +21,7 @@
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
+use Behat\Behat\Hook\Scope\AfterScenarioScope;
 use TestHelpers\SetupHelper;
 
 require_once 'bootstrap.php';
@@ -34,6 +35,14 @@ class DataExporterContext implements Context {
 	 * @var FeatureContext
 	 */
 	private $featureContext;
+	/**
+	 * @var TrashbinContext
+	 */
+	private $trashBinContext;
+	/**
+	 * @var OccContext
+	 */
+	private $occContext;
 
 	/**
 	 * The relative path from the folder containing this Context PHP file to the test data
@@ -74,6 +83,8 @@ class DataExporterContext implements Context {
 	 */
 	private $lastExportUser;
 
+	private $importedUsers = [];
+
 	/**
 	 * Path to metadata of last export e.g /home/user/exports/user0/metadata.json
 	 *
@@ -94,6 +105,8 @@ class DataExporterContext implements Context {
 		$environment = $scope->getEnvironment();
 		// Get all the contexts you need in this context
 		$this->featureContext = $environment->getContext('FeatureContext');
+		$this->occContext = $environment->getContext('OccContext');
+		$this->trashBinContext = $environment->getContext('TrashbinContext');
 		SetupHelper::init(
 			$this->featureContext->getAdminUsername(),
 			$this->featureContext->getAdminPassword(),
@@ -109,14 +122,22 @@ class DataExporterContext implements Context {
 	/**
 	 * @AfterScenario
 	 *
+	 * @param AfterScenarioScope $as
+	 *
 	 * @return void
+	 *
+	 * @throws Exception
 	 */
-	public function deleteLastExport() {
+	public function afterScenario(AfterScenarioScope $as) {
 		$this->scenarioDir = null;
 		$this->lastExportBasePath = null;
 		$this->lastExportPath = null;
 		$this->lastExportUser = null;
 		$this->lastExportMetadataPath = null;
+
+		foreach ($this->importedUsers as $uid) {
+			SetupHelper::runOcc(['user:delete', $uid], 'admin', 'admin');
+		}
 	}
 
 	/**
@@ -185,6 +206,11 @@ class DataExporterContext implements Context {
 	public function importUserUsingTheOccCommand($path) {
 		$importPath = self::path("$this->dataDir/$path");
 		$this->featureContext->runOcc(['instance:import:user', $importPath]);
+
+		$meta = \json_decode(\file_get_contents("$importPath/user.json"), true);
+		if (isset($meta['user'], $meta['user']['userId'])) {
+			$this->importedUsers[] = $meta['user']['userId'];
+		}
 	}
 
 	/**

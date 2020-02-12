@@ -24,8 +24,10 @@ namespace OCA\DataExporter;
 
 use OCA\DataExporter\Extractor\FilesExtractor;
 use OCA\DataExporter\Extractor\MetadataExtractor;
+use OCA\DataExporter\Utilities\Iterators\Nodes\RecursiveNodeIteratorFactory;
 use OCA\DataExporter\Utilities\Path;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class Exporter {
 
@@ -37,37 +39,61 @@ class Exporter {
 	private $filesExtractor;
 	/** @var Filesystem  */
 	private $filesystem;
+	/** @var RecursiveNodeIteratorFactory  */
+	private $iteratorFactory;
+	/** @var OptionsResolver  */
+	private $optionsResolver;
 
-	public function __construct(Serializer $serializer, MetadataExtractor $metadataExtractor, FilesExtractor $filesExtractor, Filesystem $filesystem) {
+	public function __construct(Serializer $serializer, MetadataExtractor $metadataExtractor, FilesExtractor $filesExtractor, Filesystem $filesystem, RecursiveNodeIteratorFactory $iteratorFactory) {
 		$this->serializer = $serializer;
 		$this->metadataExtractor = $metadataExtractor;
 		$this->filesExtractor = $filesExtractor;
 		$this->filesystem = $filesystem;
+		$this->iteratorFactory = $iteratorFactory;
+
+		$optionsResolver = new OptionsResolver();
+		$this->configureOptions($optionsResolver);
+		$this->optionsResolver = $optionsResolver;
+	}
+
+	private function configureOptions(OptionsResolver $resolver) {
+		$resolver
+			->setDefaults(['exportFiles' => true, 'exportFileIds' => false])
+			->setRequired("trashBinAvailable");
 	}
 
 	/**
 	 * @param string $uid
 	 * @param string $exportDirectoryPath
-	 * @param bool $exportFiles
+	 * @param array $options
+	 * @return void
 	 *
 	 * @throws \OCP\Files\NotFoundException
 	 * @throws \OCP\Files\NotPermittedException
-	 * @throws \Exception
-	 *
-	 * @return void
+	 * @throws \OC\User\NoUserException
 	 */
-	public function export($uid, $exportDirectoryPath, $exportFiles = true, $exportFileIds = false) {
+	public function export($uid, $exportDirectoryPath, $options = []) {
+		$options = $this->optionsResolver->resolve($options);
 		$exportPath = Path::join($exportDirectoryPath, $uid);
-		$metaData = $this->metadataExtractor->extract($uid, $exportPath, $exportFileIds);
+		$metaData = $this->metadataExtractor->extract($uid, $exportPath, [
+			'trashBinAvailable' => $options['trashBinAvailable'],
+			'exportFileIds' => $options['exportFileIds']
+			]
+		);
 
 		$this->filesystem->dumpFile(
 			Path::join($exportPath, '/user.json'),
 			$this->serializer->serialize($metaData)
 		);
 
-		if ($exportFiles) {
-			$filesPath = Path::join($exportPath, 'files');
-			$this->filesExtractor->export($uid, $filesPath);
+		if ($options['exportFiles']) {
+			list($iterator, $baseFolder) = $this->iteratorFactory->getUserFolderRecursiveIterator($uid);
+			$this->filesExtractor->export($iterator, $baseFolder, Path::join($exportPath, 'files'));
+
+			if ($options['trashBinAvailable']) {
+				list($iterator, $baseFolder) = $this->iteratorFactory->getTrashBinRecursiveIterator($uid);
+				$this->filesExtractor->export($iterator, $baseFolder, Path::join($exportPath, 'files_trashbin'));
+			}
 		}
 	}
 }

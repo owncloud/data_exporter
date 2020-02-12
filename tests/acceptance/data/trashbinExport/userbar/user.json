@@ -1,0 +1,27 @@
+{
+  "date": "2018-10-18T13:12:05+00:00",
+  "originServer": "http:\/\/localhost:8000\/",
+  "user": {
+    "userId": "userbar",
+    "displayName": "User Bar",
+    "email": "bar@example.com",
+    "quota": "default",
+    "backend": "Database",
+    "enabled": true,
+    "groups": [
+      "admin"
+    ],
+    "preferences": [
+      {
+        "appId": "core",
+        "configKey": "lang",
+        "configValue": "en"
+      },
+      {
+        "appId": "core",
+        "configKey": "timezone",
+        "configValue": "Europe\/Berlin"
+      }
+    ]
+  }
+}

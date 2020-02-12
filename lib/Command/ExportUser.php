@@ -23,6 +23,7 @@
 namespace OCA\DataExporter\Command;
 
 use OCA\DataExporter\Exporter;
+use OCA\DataExporter\Platform;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -34,9 +35,13 @@ class ExportUser extends Command {
 	/** @var Exporter  */
 	private $exporter;
 
-	public function __construct(Exporter $exporter) {
+	/** @var Platform  */
+	private $platform;
+
+	public function __construct(Exporter $exporter, Platform $platform) {
 		parent::__construct();
 		$this->exporter = $exporter;
+		$this->platform = $platform;
 	}
 
 	protected function configure() {
@@ -58,12 +63,13 @@ class ExportUser extends Command {
 	 */
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		try {
-			$this->exporter->export(
-				$input->getArgument('userId'),
-				$input->getArgument('exportDirectory'),
-				!$input->getOption('no-files'),
-				$input->getOption('with-file-ids')
-			);
+			$uid = $input->getArgument('userId');
+			$exportDirectory = $input->getArgument('exportDirectory');
+			$this->exporter->export($uid, $exportDirectory, [
+				'exportFiles' => !$input->getOption('no-files'),
+				'trashBinAvailable' => $this->platform->isAppEnabledForUser('files_trashbin', $uid),
+				'exportFileIds' => $input->getOption('with-file-ids')
+			]);
 		} catch (\Exception $e) {
 			$output->writeln("<error>{$e->getMessage()}</error>");
 		}
