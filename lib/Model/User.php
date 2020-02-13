@@ -45,7 +45,7 @@ class User {
 	private $backend;
 	/** @var boolean */
 	private $enabled;
-	/** @var string */
+	/** @var string|null */
 	private $passwordHash;
 	/** @var string[] */
 	private $groups = [];
@@ -99,7 +99,7 @@ class User {
 	}
 
 	/**
-	 * @param string $passwordHash
+	 * @param string|null $passwordHash
 	 * @return User
 	 */
 	public function setPasswordHash($passwordHash) {
