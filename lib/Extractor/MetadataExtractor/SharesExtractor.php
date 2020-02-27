@@ -24,6 +24,7 @@
 namespace OCA\DataExporter\Extractor\MetadataExtractor;
 
 use OCA\DataExporter\Model\Share;
+use OCA\DataExporter\Platform;
 use OCA\DataExporter\Utilities\StreamHelper;
 use OCP\Files\IRootFolder;
 use OCP\Files\NotFoundException;
@@ -55,23 +56,31 @@ class SharesExtractor {
 	private $streamFile;
 
 	/**
+	 * @var Platform
+	 */
+	private $platform;
+
+	/**
 	 * SharesExtractor constructor.
 	 *
 	 * @param IManager $manager
 	 * @param IRootFolder $rootFolder
 	 * @param IConfig $config
 	 * @param StreamHelper $streamHelper
+	 * @param Platform $platform
 	 */
 	public function __construct(
 		IManager $manager,
 		IRootFolder $rootFolder,
 		IConfig $config,
-		StreamHelper $streamHelper
+		StreamHelper $streamHelper,
+		Platform $platform
 	) {
 		$this->manager = $manager;
 		$this->rootFolder = $rootFolder;
 		$this->config = $config;
 		$this->streamHelper = $streamHelper;
+		$this->platform = $platform;
 	}
 
 	/**
@@ -90,7 +99,7 @@ class SharesExtractor {
 
 		$this->getUserShares($userId);
 		$this->getGroupShares($userId);
-		if (\version_compare($ocVersion, '10', '<')) {
+		if (\version_compare($ocVersion, '10', '<') || $this->platform->getVendor() === 'nextcloud') {
 			$this->getLinkShares9($userId);
 		} else {
 			$this->getLinkShares($userId);

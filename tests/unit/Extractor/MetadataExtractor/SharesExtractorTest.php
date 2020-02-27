@@ -24,6 +24,7 @@ namespace OCA\DataExporter\Tests\Unit\Extractor\MetadataExtractor;
 
 use OCA\DataExporter\Extractor\MetadataExtractor\SharesExtractor;
 use OCA\DataExporter\Model\Share;
+use OCA\DataExporter\Platform;
 use OCA\DataExporter\Utilities\StreamHelper;
 use OCP\Files\Folder;
 use OCP\Files\IRootFolder;
@@ -61,6 +62,11 @@ class SharesExtractorTest extends TestCase {
 	 */
 	private $resource;
 
+	/**
+	 * @var Platform | \PHPUnit\Framework\MockObject\MockObject
+	 */
+	private $platform;
+
 	protected function setUp(): void {
 		parent::setUp();
 
@@ -68,12 +74,13 @@ class SharesExtractorTest extends TestCase {
 		$this->rootFolder = $this->createMock(IRootFolder::class);
 		$this->config = $this->createMock(IConfig::class);
 		$this->streamHelper = $this->createMock(StreamHelper::class);
+		$this->platform = $this->createMock(Platform::class);
 		$this->config
 			->method('getSystemValue')
 			->with('version', '')
 			->willReturn('10.1.0');
 
-		$this->sharesExtractor = new SharesExtractor($this->manager, $this->rootFolder, $this->config, $this->streamHelper);
+		$this->sharesExtractor = new SharesExtractor($this->manager, $this->rootFolder, $this->config, $this->streamHelper, $this->platform);
 		$directoryTree = [
 			'testexport' => [
 				'usertest' => [
@@ -120,7 +127,23 @@ class SharesExtractorTest extends TestCase {
 		return $share;
 	}
 
-	public function testExtract() {
+	public function platformProvider() {
+		return [
+			['10.0.5', 'owncloud'],
+		];
+	}
+
+	/**
+	 * @dataProvider platformProvider
+	 */
+	public function testExtract($platformVersion, $platformVendor) {
+		$this->config->method('getSystemValue')
+			->with($this->equalTo('version'), $this->equalTo(''))
+			->willReturn($platformVersion);
+
+		$this->platform->method('getVendor')
+			->willReturn($platformVendor);
+
 		$user = 'usertest';
 		$expiration = new \DateTime();
 		$expiration->setTimestamp(1556150400);
@@ -217,8 +240,18 @@ class SharesExtractorTest extends TestCase {
 		$this->sharesExtractor->extract($user, '/usertest');
 	}
 
-	public function testExtractNoData() {
+	/**
+	 * @dataProvider platformProvider
+	 */
+	public function testExtractNoData($platformVersion, $platformVendor) {
 		$user = 'usertest';
+
+		$this->config->method('getSystemValue')
+			->with($this->equalTo('version'), $this->equalTo(''))
+			->willReturn($platformVersion);
+
+		$this->platform->method('getVendor')
+			->willReturn($platformVendor);
 
 		$this->manager->method('getSharesBy')
 			->will(
@@ -244,7 +277,17 @@ class SharesExtractorTest extends TestCase {
 		$this->sharesExtractor->extract($user, '/usertest');
 	}
 
-	public function testExtractLinksWithExpirationAndPassword() {
+	/**
+	 * @dataProvider platformProvider
+	 */
+	public function testExtractLinksWithExpirationAndPassword($platformVersion, $platformVendor) {
+		$this->config->method('getSystemValue')
+			->with($this->equalTo('version'), $this->equalTo(''))
+			->willReturn($platformVersion);
+
+		$this->platform->method('getVendor')
+			->willReturn($platformVendor);
+
 		$user = 'usertest';
 		$testDateTime = new \DateTime();
 		$testDateTime->setTimestamp(12345678);
@@ -348,7 +391,8 @@ class SharesExtractorTest extends TestCase {
 			$this->manager,
 			$this->rootFolder,
 			$this->config,
-			$this->streamHelper
+			$this->streamHelper,
+			$this->platform
 		);
 
 		$user = 'usertest';
