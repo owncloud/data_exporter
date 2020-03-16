@@ -1,0 +1,3 @@
+{"deletionTimestamp":1584354832,"originalLocation":"AFolder","originalName":"DeletedFile.txt","type":"file","path":"\/DeletedFile.txt.d1584354832","eTag":"a8b178703a22f3968c2a47539e9e6945","permissions":27,"mtime":1584354829}
+{"deletionTimestamp":1584354831,"originalLocation":"AFolder","originalName":"DeletedFolder","type":"folder","path":"\/DeletedFolder.d1584354831","eTag":"5e6f560bdb0bc","permissions":31,"mtime":1584354827}
+{"deletionTimestamp":null,"originalLocation":null,"originalName":null,"type":"file","path":"\/DeletedFolder.d1584354831\/fileinfolder.txt","eTag":"2277e90b10ec435bc7db6a4ae098556b","permissions":27,"mtime":1584354827}
