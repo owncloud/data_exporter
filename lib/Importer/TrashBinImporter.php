@@ -120,7 +120,7 @@ class TrashBinImporter {
 
 				if ($fileMetadata->getType() === File::TYPE_FILE) {
 					$file = $homeFolder->newFile($fileCachePath);
-					$src = \fopen($pathToFileInExport, "rb+");
+					$src = \fopen($pathToFileInExport, "rb");
 					if (!\is_resource($src)) {
 						throw new \RuntimeException("Couldn't read file in export $pathToFileInExport");
 					}
