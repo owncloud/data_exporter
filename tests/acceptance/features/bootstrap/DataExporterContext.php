@@ -23,6 +23,8 @@ use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Behat\Hook\Scope\AfterScenarioScope;
 use TestHelpers\SetupHelper;
+use TestHelpers\HttpRequestHelper;
+use PHPUnit\Framework\Assert;
 
 require_once 'bootstrap.php';
 
@@ -93,6 +95,13 @@ class DataExporterContext implements Context {
 	private $lastExportMetadataPath;
 
 	/**
+	 * Path to metadata of last export trashbin  e.g /home/user/exports/user0/trashbinMetadata.json
+	 *
+	 * @var string
+	 */
+	private $lastExportTrashMetadataPath;
+
+	/**
 	 * @BeforeScenario
 	 *
 	 * @param BeforeScenarioScope $scope
@@ -134,6 +143,7 @@ class DataExporterContext implements Context {
 		$this->lastExportPath = null;
 		$this->lastExportUser = null;
 		$this->lastExportMetadataPath = null;
+		$this->lastExportTrashMetadataPath = null;
 
 		foreach ($this->importedUsers as $uid) {
 			SetupHelper::runOcc(['user:delete', $uid], 'admin', 'admin');
@@ -160,6 +170,7 @@ class DataExporterContext implements Context {
 		$this->lastExportPath = self::path("{$this->lastExportBasePath}/$user/");
 		$this->lastExportUser = $user;
 		$this->lastExportMetadataPath = "{$this->lastExportPath}files.jsonl";
+		$this->lastExportTrashMetadataPath = "{$this->lastExportPath}trashbin.jsonl";
 	}
 
 	/**
@@ -192,6 +203,19 @@ class DataExporterContext implements Context {
 	public function theLastExportShouldContainFileWithContent($path, $content) {
 		$this->assertFileExistsInLastExportMetadata($path);
 		$this->assertFilePhysicallyExistInLastExportWithContent($path, $content);
+	}
+
+	/**
+	 * @Then the last export should contain file :path with content :content in trashbin
+	 *
+	 * @param string $path
+	 * @param string $content
+	 *
+	 * @return void
+	 */
+	public function theLastExportShouldContainFileWithContentInTrashbin($path, $content) {
+		$this->assertFileExistsInLastExportMetadata($path, true);
+		$this->assertFilePhysicallyExistInLastExportWithContent($path, $content, true);
 	}
 
 	/**
@@ -256,14 +280,47 @@ class DataExporterContext implements Context {
 	/**
 	 * @param string $filename
 	 * @param string $content
+	 * @param bool $trash
 	 *
 	 * @return void
 	 */
-	private function assertFilePhysicallyExistInLastExportWithContent($filename, $content) {
-		$this->featureContext->theFileWithContentShouldExistInTheServerRoot(
-			self::path("$this->lastExportPath/files/$filename"),
-			$content
-		);
+	private function assertFilePhysicallyExistInLastExportWithContent($filename, $content, $trash = false) {
+		if ($trash) {
+			$this->featureContext->listTrashbinFileInServerRoot(self::path("$this->lastExportPath/files_trashbin"));
+			$matches = [];
+			foreach (HttpRequestHelper::getResponseXml($this->featureContext->getResponse())->data->element as $item) {
+				$file = (string)$item;
+				if (\strpos($file, $filename) === 0) {
+					$matches[] = $file;
+				}
+			}
+			$fileFoundWithMatchingContent = false;
+			foreach ($matches as $match) {
+				$path = "$this->lastExportPath/files_trashbin/$match";
+				$this->featureContext->readFileInServerRoot($path);
+				Assert::assertSame(
+					200,
+					$this->featureContext->getResponse()->getStatusCode(),
+					"Failed to read the file {$path}"
+				);
+				$fileContent = HttpRequestHelper::getResponseXml($this->featureContext->getResponse());
+				$fileContent = (string)$fileContent->data->element->contentUrlEncoded;
+				$fileContent = \urldecode($fileContent);
+
+				if ($fileContent === $content) {
+					$fileFoundWithMatchingContent = true;
+					break;
+				}
+			}
+			if (!$fileFoundWithMatchingContent) {
+				Assert::fail("The content of the file does not match with '{$content}'");
+			}
+		} else {
+			$this->featureContext->theFileWithContentShouldExistInTheServerRoot(
+				self::path("$this->lastExportPath/files/$filename"),
+				$content
+			);
+		}
 	}
 
 	/**
@@ -286,13 +343,17 @@ class DataExporterContext implements Context {
 
 	/**
 	 * @param string $filename
+	 * @param bool $trash
 	 *
 	 * @return void
 	 */
-	private function assertFileExistsInLastExportMetadata($filename) {
-		$fileContent = $this->readFileFromServerRoot($this->lastExportMetadataPath);
+	private function assertFileExistsInLastExportMetadata($filename, $trash = false) {
+		if ($trash) {
+			$fileContent = $this->readFileFromServerRoot($this->lastExportTrashMetadataPath);
+		} else {
+			$fileContent = $this->readFileFromServerRoot($this->lastExportMetadataPath);
+		}
 		$fileContents = \explode(PHP_EOL, $fileContent);
-
 		if (!isset($fileContents) || empty($fileContents)) {
 			\PHPUnit\Framework\Assert::fail('Not a valid metadata file');
 		}
@@ -304,12 +365,14 @@ class DataExporterContext implements Context {
 					$file,
 					true
 				);
+				if ($trash) {
+					$fileMetadata['path'] = \preg_replace('/..[^d][0-9]{9}/', "", $fileMetadata['path']);
+				}
 				if (isset($fileMetadata['path']) && $fileMetadata['path'] === self::path("/$filename")) {
 					$isFileFoundInExport = true;
 				}
 			}
 		}
-
 		\PHPUnit\Framework\Assert::assertTrue(
 			$isFileFoundInExport,
 			"File $filename not found in metadata"
