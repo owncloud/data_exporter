@@ -95,5 +95,7 @@ class MigrateShare extends Command {
 			$output->writeln("<error>{$e->getMessage()}</error>");
 			return self::ERROR_CONVERSION_EXCEPTION;
 		}
+
+		return 0;
 	}
 }

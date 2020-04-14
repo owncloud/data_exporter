@@ -1,11 +1,12 @@
 <?php
-/**
- * @var Symfony\Component\Console\Application $application
- */
 
 // @codeCoverageIgnoreStart
 $config = \OC::$server->getConfig();
 $ocVersion = $config->getSystemValue('version', '');
+
+/**
+ * @var Symfony\Component\Console\Application $application
+ */
 if (isset($application) && \version_compare($ocVersion, '10', '<')) {
 	$exporter = \OC::$server->query(\OCA\DataExporter\Exporter::class);
 	$platform = \OC::$server->query(\OCA\DataExporter\Exporter::class);
