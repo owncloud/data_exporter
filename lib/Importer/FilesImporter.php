@@ -67,12 +67,12 @@ class FilesImporter {
 	public function import($userId, $exportPath) {
 		// Trigger creation of user-folder
 		$this->rootFolder->getUserFolder($userId);
-		/**
-		 * @var \OCP\Files\Folder $userFolder
-		 */
 		$filename = Path::join($exportPath, $this::FILE_NAME);
 		$exportRootFilesPath = Path::join($exportPath, '/files');
 
+		/**
+		 * @var \OCP\Files\Folder $userFolder
+		 */
 		$userFolder = $this->rootFolder->getUserFolder($userId);
 		$this->streamFile = $this
 			->streamHelper

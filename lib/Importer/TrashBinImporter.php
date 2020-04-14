@@ -79,12 +79,12 @@ class TrashBinImporter {
 		// Trigger creation of user-folder
 		$this->rootFolder->getUserFolder($userId);
 
-		/**
-		 * @var \OCP\Files\Folder $homeFolder
-		 */
 		$filename = Path::join($exportPath, $this::FILE_NAME);
 		$exportRootFilesPath = Path::join($exportPath, '/files_trashbin');
 
+		/**
+		 * @var \OCP\Files\Folder $homeFolder
+		 */
 		$homeFolder = $this->rootFolder->getUserFolder($userId)->getParent();
 
 		if (!$homeFolder->nodeExists('/files_trashbin')) {
