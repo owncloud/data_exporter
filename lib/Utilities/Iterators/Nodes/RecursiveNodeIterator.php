@@ -30,8 +30,8 @@ class RecursiveNodeIterator implements \RecursiveIterator {
 	/** @var Folder */
 	private $folder;
 
-	/** @var Node[]|null */
-	private $folderNodes = null;
+	/** @var Node[] */
+	private $folderNodes = [];
 
 	/** @var int|null */
 	private $nodeCount = null;
