@@ -25,8 +25,8 @@ Feature: An administrator wants to import a user using the commandline
   Scenario: Restore and rename files in trashbin after import
     Given a user has been imported from path "trashbinExport/usertrash" using the occ command
     And the administrator has changed the password of user "usertrash" to "123456"
-    And user "usertrash" has restored the folder with original path "AFolder/DeletedFolder"
-    And user "usertrash" has restored the file with original path "AFolder/DeletedFile.txt"
+    When user "usertrash" restores the folder with original path "AFolder/DeletedFolder" using the trashbin API
+    And user "usertrash" restores the file with original path "AFolder/DeletedFile.txt" using the trashbin API
     And as "usertrash" file "AFolder/DeletedFolder/fileinfolder.txt" should exist
     And as "usertrash" file "AFolder/DeletedFile.txt" should exist
     When user "usertrash" moves file "AFolder/DeletedFile.txt" to "AFolder/RestoredDeletedFile.txt" using the WebDAV API
@@ -34,3 +34,19 @@ Feature: An administrator wants to import a user using the commandline
     Then the HTTP status code should be "201"
     And as "usertrash" folder "AFolder/RestoredDeletedFolder" should exist
     And as "usertrash" file "AFolder/RestoredDeletedFile.txt" should exist
+
+  Scenario Outline: Share files after import
+    Given a user has been imported from path "trashbinExport/usertrash" using the occ command
+    And the administrator has changed the password of user "usertrash" to "123456"
+    And a user has been imported from path "simpleExport/userfoo" using the occ command
+    And the administrator has changed the password of user "userfoo" to "123456"
+    And using OCS API version "<ocs_api_version>"
+    When user "userfoo" shares file "AFolder/afile.txt" with user "usertrash" with permissions "read" using the sharing API
+    Then the OCS status code should be "<ocs_status_code>"
+    And the HTTP status code should be "200"
+    And as "usertrash" file "/afile.txt" should exist
+    And the content of file "afile.txt" for user "usertrash" should be "This is a File"
+    Examples:
+      | ocs_api_version | ocs_status_code |
+      | 1               | 100             |
+      | 2               | 200             |
