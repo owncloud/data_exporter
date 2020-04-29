@@ -2,6 +2,7 @@ git clo/.idea
 /build/
 /vendor
 tests/output
+.phpunit.result.cache
 .php_cs.cache
 vendor-bin/**/vendor
 vendor-bin/**/composer.lock
