@@ -1,0 +1,8 @@
+{"type":"folder","path":"\/","eTag":"5ea1577c33f40","permissions":31,"mtime":1587631996}
+{"type":"folder","path":"\/newFolder","eTag":"5ea1577c33f40","permissions":31,"mtime":1587631996}
+{"type":"file","path":"\/newFolder\/'quotes1'","eTag":"6e9103a2f38837d299c2aa7515a91840","permissions":27,"mtime":1585028374}
+{"type":"file","path":"\/newFolder\/str\u00e4ng\u00e9 \u0928\u0947\u092a\u093e\u0932\u0940 file","eTag":"dba33d5f71d4af1502f55bd2c0a69c3b","permissions":27,"mtime":1585028374}
+{"type":"folder","path":"\/newFolder\/testFolder","eTag":"5ea1576f354c0","permissions":31,"mtime":1587631970}
+{"type":"folder","path":"\/newFolder\/testFolder\/T1","eTag":"5ea1576f354c0","permissions":31,"mtime":1587631970}
+{"type":"folder","path":"\/newFolder\/testFolder\/T1\/T2","eTag":"5ea1576f354c0","permissions":31,"mtime":1587631983}
+{"type":"file","path":"\/newFolder\/testFolder\/T1\/T2\/afile.txt","eTag":"be3163ab280a2386951c36bef2b503cf","permissions":27,"mtime":1585028374}
