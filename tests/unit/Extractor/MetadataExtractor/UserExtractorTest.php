@@ -61,8 +61,8 @@ class UserExtractorTest extends TestCase {
 			->willReturn(true);
 		$this->userManager
 			->method('get')->willReturnMap([
-				['jcache', $mockUser],
-				['doesnotexist', null]
+				['jcache', false, $mockUser],
+				['doesnotexist', false, null]
 		]);
 
 		$this->groupManager = $this->createMock(IGroupManager::class);
