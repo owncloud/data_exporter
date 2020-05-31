@@ -72,14 +72,14 @@ class DataExporterContext implements Context {
 	private $lastExportBasePath;
 
 	/**
-	 * Path to last export e.g /home/user/exports/user0
+	 * Path to last export e.g /home/user/exports/Alice
 	 *
 	 * @var string
 	 */
 	private $lastExportPath;
 
 	/**
-	 * Username of the last exported user e.g user0
+	 * Username of the last exported user e.g Alice
 	 *
 	 * @var string
 	 */
@@ -88,14 +88,14 @@ class DataExporterContext implements Context {
 	private $importedUsers = [];
 
 	/**
-	 * Path to metadata of last export e.g /home/user/exports/user0/metadata.json
+	 * Path to metadata of last export e.g /home/user/exports/Alice/metadata.json
 	 *
 	 * @var string
 	 */
 	private $lastExportMetadataPath;
 
 	/**
-	 * Path to metadata of last export trashbin  e.g /home/user/exports/user0/trashbinMetadata.json
+	 * Path to metadata of last export trashbin  e.g /home/user/exports/Alice/trashbinMetadata.json
 	 *
 	 * @var string
 	 */

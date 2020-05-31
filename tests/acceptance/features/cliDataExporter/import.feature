@@ -1,5 +1,6 @@
 @cli @files_trashbin-app-required
 Feature: An administrator wants to import a user using the commandline
+
   Background:
     Given using new dav path
     And the administrator has enabled DAV tech_preview
@@ -73,4 +74,3 @@ Feature: An administrator wants to import a user using the commandline
     Then the HTTP status code should be "201"
     And as "testUser" file "/testFile.txt" should exist
     And the content of file "/testFile.txt" for user "testUser" should be "text in file in deleted folder"
-
