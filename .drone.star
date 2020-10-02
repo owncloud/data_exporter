@@ -276,6 +276,10 @@ def phpstan(ctx):
 							'echo "Repo name     : %s"' % ctx.repo.name,
 							'echo "Repo namespace: %s"' % ctx.repo.namespace,
 							'echo "Repo branch   : %s"' % ctx.repo.branch,
+							'echo "Build link       : %s"' % ctx.build.link,
+							'echo "Build sender     : %s"' % ctx.build.sender,
+							'echo "Build source     : %s"' % ctx.build.source,
+							'echo "Build source_repo: %s"' % ctx.build.source_repo,
 							'make test-php-phpstan'
 						]
 					}
