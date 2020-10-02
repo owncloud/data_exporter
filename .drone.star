@@ -70,7 +70,7 @@ config = {
 }
 
 def main(ctx):
-	before = beforePipelines()
+	before = beforePipelines(ctx)
 
 	stages = stagePipelines()
 	if (stages == False):
@@ -84,8 +84,8 @@ def main(ctx):
 
 	return before + stages + after
 
-def beforePipelines():
-	return codestyle() + jscodestyle() + phpstan() + phan()
+def beforePipelines(ctx):
+	return codestyle() + jscodestyle() + phpstan(ctx) + phan()
 
 def stagePipelines():
 	buildPipelines = build()
@@ -217,7 +217,7 @@ def jscodestyle():
 
 	return pipelines
 
-def phpstan():
+def phpstan(ctx):
 	pipelines = []
 
 	if 'phpstan' not in config:
@@ -272,6 +272,10 @@ def phpstan():
 						'image': 'owncloudci/php:%s' % phpVersion,
 						'pull': 'always',
 						'commands': [
+							'echo "Repo slug     : %s"' % ctx.repo.slug,
+							'echo "Repo name     : %s"' % ctx.repo.name,
+							'echo "Repo namespace: %s"' % ctx.repo.namespace,
+							'echo "Repo branch   : %s"' % ctx.repo.branch,
 							'make test-php-phpstan'
 						]
 					}
