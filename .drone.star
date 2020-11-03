@@ -226,6 +226,7 @@ def phpstan():
 	default = {
 		'phpVersions': ['7.2'],
 		'logLevel': '2',
+		'extraApps': {},
 	}
 
 	if 'defaults' in config:
@@ -265,6 +266,7 @@ def phpstan():
 				'steps':
 					installCore('daily-master-qa', 'sqlite', False) +
 					installApp(phpVersion) +
+					installExtraApps(phpVersion, params['extraApps']) +
 					setupServerAndApp(phpVersion, params['logLevel']) +
 				[
 					{
@@ -870,7 +872,7 @@ def acceptance():
 									},
 									'steps':
 										installCore(server, db, params['useBundledApp']) +
-										installTestrunner(phpVersion, params['useBundledApp']) +
+										installTestrunner('7.4', params['useBundledApp']) +
 										(installFederated(server, phpVersion, params['logLevel'], db, federationDbSuffix) + owncloudLog('federated') if params['federatedServerNeeded'] else []) +
 										installApp(phpVersion) +
 										installExtraApps(phpVersion, params['extraApps']) +
@@ -883,7 +885,7 @@ def acceptance():
 									[
 										({
 											'name': 'acceptance-tests',
-											'image': 'owncloudci/php:%s' % phpVersion,
+											'image': 'owncloudci/php:7.4',
 											'pull': 'always',
 											'environment': environment,
 											'commands': params['extraCommandsBeforeTestRun'] + [
