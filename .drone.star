@@ -90,13 +90,13 @@ def beforePipelines():
 def stagePipelines():
 	buildPipelines = build()
 	jsPipelines = javascript()
-	phpunitPipelines = phptests('phpunit')
-	phpintegrationPipelines = phptests('phpintegration')
+	phpUnitPipelines = phpTests('phpunit')
+	phpIntegrationPipelines = phpTests('phpintegration')
 	acceptancePipelines = acceptance()
-	if (buildPipelines == False) or (jsPipelines == False) or (phpunitPipelines == False) or (phpintegrationPipelines == False) or (acceptancePipelines == False):
+	if (buildPipelines == False) or (jsPipelines == False) or (phpUnitPipelines == False) or (phpIntegrationPipelines == False) or (acceptancePipelines == False):
 		return False
 
-	return buildPipelines + jsPipelines + phpunitPipelines + phpintegrationPipelines + acceptancePipelines
+	return buildPipelines + jsPipelines + phpUnitPipelines + phpIntegrationPipelines + acceptancePipelines
 
 def afterPipelines():
 	return [
@@ -543,7 +543,7 @@ def javascript():
 
 	return [result]
 
-def phptests(testType):
+def phpTests(testType):
 	pipelines = []
 
 	if testType not in config:
@@ -574,20 +574,20 @@ def phptests(testType):
 			for item in config['defaults'][testType]:
 				default[item] = config['defaults'][testType][item]
 
-	phptestConfig = config[testType]
+	phpTestConfig = config[testType]
 
-	if type(phptestConfig) == "bool":
-		if phptestConfig:
+	if type(phpTestConfig) == "bool":
+		if phpTestConfig:
 			# the config has just True, so specify an empty dict that will get the defaults
-			phptestConfig = {}
+			phpTestConfig = {}
 		else:
 			return pipelines
 
-	if len(phptestConfig) == 0:
+	if len(phpTestConfig) == 0:
 		# the PHP test config is an empty dict, so specify a single section that will get the defaults
-		phptestConfig = {'doDefault': {}}
+		phpTestConfig = {'doDefault': {}}
 
-	for category, matrix in phptestConfig.items():
+	for category, matrix in phpTestConfig.items():
 		params = {}
 		for item in default:
 			params[item] = matrix[item] if item in matrix else default[item]
@@ -610,7 +610,7 @@ def phptests(testType):
 
 		if ((config['app'] != 'files_primary_s3') and (filesPrimaryS3NeededForCeph or filesPrimaryS3NeededForScality)):
 			# If we are not already 'files_primary_s3' and we need S3 storage, then install the 'files_primary_s3' app
-			extraAppsDict  = {
+			extraAppsDict = {
 				'files_primary_s3': 'composer install'
 			}
 			for app, command in params['extraApps'].items():
@@ -788,7 +788,7 @@ def acceptance():
 
 			if ((config['app'] != 'files_primary_s3') and (filesPrimaryS3NeededForCeph or filesPrimaryS3NeededForScality)):
 				# If we are not already 'files_primary_s3' and we need S3 object storage, then install the 'files_primary_s3' app
-				extraAppsDict  = {
+				extraAppsDict = {
 					'files_primary_s3': 'composer install'
 				}
 				for app, command in params['extraApps'].items():
@@ -852,7 +852,7 @@ def acceptance():
 									environment['MAILHOG_HOST'] = 'email'
 
 								if params['ldapNeeded']:
-									environment['TEST_EXTERNAL_USER_BACKENDS'] = True
+									environment['TEST_WITH_LDAP'] = True
 
 								if (cephS3Needed or scalityS3Needed):
 									environment['OC_TEST_ON_OBJECTSTORE'] = '1'
@@ -1324,7 +1324,7 @@ def setupScality(serviceParams):
 		'commands': setupCommands + ([
 			'php occ s3:create-bucket owncloud --accept-warning'
 		] if createFirstBucket else []) + ([
-			'for I in $(seq 1 9); do php ./occ s3:create-bucket  owncloud$I --accept-warning; done',
+			'for I in $(seq 1 9); do php ./occ s3:create-bucket owncloud$I --accept-warning; done',
 		] if createExtraBuckets else [])
 	}]
 
