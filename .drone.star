@@ -963,8 +963,6 @@ def acceptance(ctx):
 										'refs/pull/**',
 										'refs/tags/**'
 									]
-									for branch in config['branches']:
-										result['trigger']['ref'].append('refs/heads/%s' % branch)
 								else:
 									result['trigger']['cron'] = params['cron']
 
