@@ -9,3 +9,6 @@ vendor-bin/**/composer.lock
 
 # SonarCloud scanner
 .scannerwork
+
+# SonarCloud scanner
+.scannerwork
