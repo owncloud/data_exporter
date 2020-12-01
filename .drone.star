@@ -70,7 +70,6 @@ config = {
 }
 
 def main(ctx):
-	
 	before = beforePipelines()
 
 	coverageTests = coveragePipelines(ctx)
@@ -585,7 +584,7 @@ def phpTests(ctx, testType):
 	default = {
 		'phpVersions': ['7.2', '7.3', '7.4'],
 		'databases': [
-			'sqlite', 'mariadb:10.2', 'mysql:5.5', 'mysql:5.7', 'postgres:9.4', 'oracle'
+			'sqlite', 'mariadb:10.2', 'mysql:8.0', 'postgres:9.4', 'oracle'
 		],
 		'coverage': True,
 		'includeKeyInMatrixName': False,
@@ -1028,7 +1027,19 @@ def sonarAnalysis(ctx, phpVersion = '7.4'):
 						'drone.owncloud.com'
 					],
 				}
-			}
+			},
+			{
+				'name': 'purge-cache',
+				'image': 'minio/mc',
+				'environment': {
+					'MC_HOST_cache': {
+						'from_secret': 'cache_s3_connection_url'
+					}
+				},
+				'commands': [
+				'mc rm --recursive --force cache/cache/%s/%s' % (ctx.repo.slug, ctx.build.commit + '-${DRONE_BUILD_NUMBER}'),
+				]
+			},
 		],
 		'depends_on': [],
 		'trigger': {
@@ -1085,7 +1096,7 @@ def notify():
 def databaseService(db):
 	dbName = getDbName(db)
 	if (dbName == 'mariadb') or (dbName == 'mysql'):
-		return [{
+		service = {
 			'name': dbName,
 			'image': db,
 			'pull': 'always',
@@ -1095,7 +1106,10 @@ def databaseService(db):
 				'MYSQL_DATABASE': getDbDatabase(db),
 				'MYSQL_ROOT_PASSWORD': getDbRootPassword()
 			}
-		}]
+		}
+		if (db == 'mysql:8.0'):
+			service['command'] = ['--default-authentication-plugin=mysql_native_password']
+		return [service]
 
 	if dbName == 'postgres':
 		return [{
