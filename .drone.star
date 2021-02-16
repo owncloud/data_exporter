@@ -29,7 +29,7 @@ config = {
 				'7.4',
 			],
 			'databases': [
-				'mysql:5.5',
+				'mysql:8.0',
 			],
 			'coverage': False
 		},
@@ -47,7 +47,7 @@ config = {
 				'7.4',
 			],
 			'databases': [
-				'mysql:5.5',
+				'mysql:8.0',
 			],
 			'coverage': False
 		},
@@ -60,8 +60,7 @@ config = {
 			],
 			'databases': [
 				'mariadb:10.2',
-				'mysql:5.5',
-				'mysql:5.7',
+				'mysql:8.0',
 				'postgres:9.4',
 				'oracle'
 			],
