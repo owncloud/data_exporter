@@ -4,7 +4,7 @@ Feature: An administrator wants to export the files of his user using
 
   Background:
     Given using new dav path
-    And user "Alice" has been created with default attributes and skeleton files
+    And user "Alice" has been created with default attributes and small skeleton files
 
   Scenario: An uploaded file should be contained in an export.
     Given user "Alice" uploads file with content "hello" to "testfile.txt" using the WebDAV API
