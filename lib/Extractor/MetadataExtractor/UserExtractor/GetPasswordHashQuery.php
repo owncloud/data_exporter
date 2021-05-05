@@ -47,6 +47,7 @@ class GetPasswordHashQuery {
 	 */
 	public function execute($uid) {
 		$qb = $this->db->getQueryBuilder();
+		/* @phan-suppress-next-line PhanDeprecatedFunction */
 		$password = $qb->from('users')
 			->select('password')
 			->where($qb->expr()->eq('uid', $qb->createNamedParameter($uid)))
