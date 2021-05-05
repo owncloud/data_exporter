@@ -49,6 +49,7 @@ class GetLocationQuery {
 	 */
 	public function execute($uid, $filename, $timestamp) {
 		$qb = $this->db->getQueryBuilder();
+		/* @phan-suppress-next-line PhanDeprecatedFunction */
 		$location = $qb->from('files_trash')
 			->select('location')
 			->where($qb->expr()->eq('user', $qb->createNamedParameter($uid)))
