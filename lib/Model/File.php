@@ -30,9 +30,9 @@ namespace OCA\DataExporter\Model;
  * @codeCoverageIgnore
  */
 class File {
-	const TYPE_FOLDER = 'folder';
-	const TYPE_FILE = 'file';
-	const ROOT_FOLDER_PATH = '/files/';
+	public const TYPE_FOLDER = 'folder';
+	public const TYPE_FILE = 'file';
+	public const ROOT_FOLDER_PATH = '/files/';
 
 	/** @var string */
 	private $type;

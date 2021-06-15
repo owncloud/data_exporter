@@ -65,7 +65,8 @@ class InstanceExtractorTest extends TestCase {
 
 		$this->urlGenerator->method('getAbsoluteUrl')->willReturn('https://myinstance.com/');
 		$this->groupManager->method('search')->willReturn([$group]);
-		$this->config->method('getSystemValue')->will($this->returnValueMap([
+		$this->config->method('getSystemValue')->will($this->returnValueMap(
+			[
 				['instanceid', '',  'someinstanceid'],
 				['secret', '', 'somesecret'],
 				['passwordsalt', '', 'somepasswordsalt']

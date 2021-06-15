@@ -4,6 +4,7 @@ git clo/.idea
 tests/output
 .phpunit.result.cache
 .php_cs.cache
+.php-cs-fixer.cache
 vendor-bin/**/vendor
 vendor-bin/**/composer.lock
 

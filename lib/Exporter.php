@@ -75,7 +75,10 @@ class Exporter {
 	public function export($uid, $exportDirectoryPath, $options = []) {
 		$options = $this->optionsResolver->resolve($options);
 		$exportPath = Path::join($exportDirectoryPath, $uid);
-		$metaData = $this->metadataExtractor->extract($uid, $exportPath, [
+		$metaData = $this->metadataExtractor->extract(
+			$uid,
+			$exportPath,
+			[
 			'trashBinAvailable' => $options['trashBinAvailable'],
 			'exportFileIds' => $options['exportFileIds']
 			]

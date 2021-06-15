@@ -29,10 +29,10 @@ namespace OCA\DataExporter\Model;
  * @codeCoverageIgnore
  */
 class Share {
-	const SHARETYPE_USER = 'user';
-	const SHARETYPE_GROUP = 'group';
-	const SHARETYPE_LINK = 'link';
-	const SHARETYPE_REMOTE = 'remote';
+	public const SHARETYPE_USER = 'user';
+	public const SHARETYPE_GROUP = 'group';
+	public const SHARETYPE_LINK = 'link';
+	public const SHARETYPE_REMOTE = 'remote';
 
 	/** @var string */
 	private $path;

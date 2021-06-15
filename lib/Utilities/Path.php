@@ -24,7 +24,7 @@
 namespace OCA\DataExporter\Utilities;
 
 class Path {
-	const REGEX = '#/+#';
+	public const REGEX = '#/+#';
 
 	/**
 	 * Joins paths, removes duplicate and adds missing slashes. Preservers

@@ -86,12 +86,12 @@ vendor-bin/behat/composer.lock: vendor-bin/behat/composer.json
 
 .PHONY: test-php-style
 test-php-style: vendor-bin/owncloud-codestyle/vendor vendor-bin/php_codesniffer/vendor
-	$(PHP_CS_FIXER) fix -v --diff --diff-format udiff --dry-run --allow-risky yes
+	$(PHP_CS_FIXER) fix -v --diff --dry-run --allow-risky yes
 	$(PHP_CODESNIFFER) --runtime-set ignore_warnings_on_exit --standard=phpcs.xml tests/acceptance
 
 .PHONY: test-php-style-fix
 test-php-style-fix: vendor-bin/owncloud-codestyle/vendor
-	$(PHP_CS_FIXER) fix -v --diff --diff-format udiff --allow-risky yes
+	$(PHP_CS_FIXER) fix -v --diff --allow-risky yes
 
 .PHONY: test-php-phpstan
 test-php-phpstan: vendor-bin/phpstan/vendor

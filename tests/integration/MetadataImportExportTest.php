@@ -46,21 +46,21 @@ class MetadataImportExportTest extends \Test\TestCase {
 
 	/** @var IGroup $testGroup */
 	private $testGroup;
-	const FILES_CONTENT = <<< JSONL
+	public const FILES_CONTENT = <<< JSONL
 {"type":"folder","path":"\/files","eTag":"5d481eb6273f6","permissions":31}
 {"type":"file","path":"\/files\/someFile.txt","eTag":"0f7c0b5154f85e7aa74a54d361feb7d5","permissions":27}
 {"type":"folder","path":"\/files\/someFolder","eTag":"5d481eb6273f6","permissions":31}
 
 JSONL;
-	const SHARES_CONTENT = <<< JSONL
+	public const SHARES_CONTENT = <<< JSONL
 {"path":"\/someFile.txt","shareType":"remote","type":"file","owner":"testuser","sharedBy":"testuser","sharedWith":"testuser2@http://localhost","permissions":19,"expirationDate":null,"password":null,"name":null,"token":null}
 {"path":"\/someFolder","shareType":"group","type":"folder","owner":"testuser","sharedBy":"testuser","sharedWith":"people","permissions":31,"expirationDate":null,"password":null,"name":null,"token":null}
 
 JSONL;
-	const USER_CONTENT = <<< JSONL
+	public const USER_CONTENT = <<< JSONL
 {"date":"2019-08-05T12:21:14+00:00","originServer":"http:\/\/localhost\/","user":{"userId":"testuser","displayName":"someUser","email":"test@owncloud.com","quota":"default","backend":"Database","enabled":true,"groups":["admin","people"],"preferences":[{"appId":"core","configKey":"lang","configValue":"de"},{"appId":"core","configKey":"timezone","configValue":"Europe\/Berlin"}]}}
 JSONL;
-	const TRASH_BIN_CONTENT = <<< JSONL
+	public const TRASH_BIN_CONTENT = <<< JSONL
 {"deletionTimestamp":1573301236,"originalLocation":"someFolder","originalName":"user_ldap-0.13.0.tar.gz","type":"file","path":"\/user_ldap-0.13.0.tar.gz.d1573301236","eTag":"66a2151e70d144e9b0acdc37b71c3ff2","permissions":27,"mtime":1570180669}
 JSONL;
 
@@ -151,7 +151,6 @@ JSONL;
 		$filesMetadata = \explode(
 			PHP_EOL,
 			\file_get_contents($fileSystem->url() . '/testexport/testuser/files.jsonl')
-
 		);
 
 		$expectedFilesMetadata = \explode(

@@ -31,7 +31,7 @@ use OCA\DataExporter\Utilities\StreamHelper;
 use OCP\Files\Node;
 
 class FilesMetadataExtractor {
-	const FILE_NAME = 'files.jsonl';
+	public const FILE_NAME = 'files.jsonl';
 	/** @var RecursiveNodeIteratorFactory  */
 	private $iteratorFactory;
 	/**
