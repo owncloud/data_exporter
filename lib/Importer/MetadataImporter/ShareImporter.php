@@ -36,7 +36,7 @@ use OCP\Share as ShareConstants;
 use OCP\Share\IManager;
 
 class ShareImporter {
-	const FILE_NAME = 'shares.jsonl';
+	public const FILE_NAME = 'shares.jsonl';
 	/** @var IManager */
 	private $shareManager;
 	/** @var IRootFolder */
@@ -128,9 +128,10 @@ class ShareImporter {
 				 * @var Share $shareModel
 				 */
 				$shareModel = $this->streamHelper->readlnFromStream(
-					$this->streamFile, Share::class
+					$this->streamFile,
+					Share::class
 				)
-				) !== false
+			) !== false
 			) {
 				switch ($shareModel->getShareType()) {
 					case Share::SHARETYPE_USER:

@@ -58,7 +58,8 @@ class InstanceDataImporterTest extends TestCase {
 
 		$this->config->expects($this->once())
 			->method('setSystemValues')
-			->with($this->equalTo([
+			->with($this->equalTo(
+				[
 					'instanceid' => 'someid',
 					'passwordsalt' => 'somesalt',
 					'secret' => 'secret'

@@ -31,10 +31,10 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class MigrateShare extends Command {
-	const ERROR_MISSING_USER = 1;
-	const ERROR_BAD_REQUEST = 2;
-	const ERROR_WRONG_JSON = 3;
-	const ERROR_CONVERSION_EXCEPTION = 4;
+	public const ERROR_MISSING_USER = 1;
+	public const ERROR_BAD_REQUEST = 2;
+	public const ERROR_WRONG_JSON = 3;
+	public const ERROR_CONVERSION_EXCEPTION = 4;
 	/** @var ShareConverter */
 	private $shareConverter;
 	/** @var IClientService*/

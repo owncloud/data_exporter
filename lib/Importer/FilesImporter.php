@@ -30,7 +30,7 @@ use Symfony\Component\Filesystem\Filesystem;
 use OCA\DataExporter\Utilities\Path;
 
 class FilesImporter {
-	const FILE_NAME = 'files.jsonl';
+	public const FILE_NAME = 'files.jsonl';
 	/** @var Filesystem */
 	private $filesystem;
 	/** @var IRootFolder */
@@ -87,7 +87,8 @@ class FilesImporter {
 				$fileMetadata = $this->streamHelper->readlnFromStream(
 					$this->streamFile,
 					File::class
-				))
+				)
+			)
 				!== false
 			) {
 				$fileCachePath = $fileMetadata->getPath();

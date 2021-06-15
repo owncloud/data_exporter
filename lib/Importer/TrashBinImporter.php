@@ -37,7 +37,7 @@ use OCA\DataExporter\Utilities\Path;
  * @package OCA\DataExporter\Importer
  */
 class TrashBinImporter {
-	const FILE_NAME = 'trashbin.jsonl';
+	public const FILE_NAME = 'trashbin.jsonl';
 	/** @var Filesystem */
 	private $filesystem;
 	/** @var IRootFolder */
@@ -108,7 +108,8 @@ class TrashBinImporter {
 				$fileMetadata = $this->streamHelper->readlnFromStream(
 					$this->streamFile,
 					TrashBinFile::class
-				))
+				)
+			)
 				!== false
 			) {
 				$fileCachePath = Path::join('/files_trashbin/files/', $fileMetadata->getPath());

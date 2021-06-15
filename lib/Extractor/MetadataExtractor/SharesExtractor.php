@@ -33,7 +33,7 @@ use OCP\Share as ShareConstants;
 use OCP\Share\IManager;
 
 class SharesExtractor {
-	const FILE_NAME = 'shares.jsonl';
+	public const FILE_NAME = 'shares.jsonl';
 	/**
 	 * @var IManager
 	 */

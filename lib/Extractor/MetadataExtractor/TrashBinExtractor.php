@@ -38,7 +38,7 @@ use OCP\Files\Node;
  * @package OCA\DataExporter\Extractor\MetadataExtractor
  */
 class TrashBinExtractor {
-	const FILE_NAME = 'trashbin.jsonl';
+	public const FILE_NAME = 'trashbin.jsonl';
 	/** @var RecursiveNodeIteratorFactory  */
 	private $iteratorFactory;
 	/**
