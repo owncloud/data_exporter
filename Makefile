@@ -1,9 +1,6 @@
 SHELL := /bin/bash
 
 COMPOSER_BIN := $(shell command -v composer 2> /dev/null)
-ifndef COMPOSER_BIN
-    $(error composer is not available on your system, please install composer)
-endif
 
 # bin file definitions
 PHPUNIT=php -d zend.enable_gc=0  "$(PWD)/../../lib/composer/bin/phpunit"
