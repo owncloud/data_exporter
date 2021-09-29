@@ -6,7 +6,6 @@ dir = {
 }
 
 config = {
-    "app": "data_exporter",
     "rocketchat": {
         "channel": "builds",
         "from_secret": "private_rocketchat",
@@ -1661,7 +1660,7 @@ def installAppPhp(ctx, phpVersion):
 def installAppJavaScript(ctx):
     nothingToDo = True
     commandArray = [
-        "cd %s/apps/%s" % (dir["server"], config["app"]),
+        "cd %s/apps/%s" % (dir["server"], ctx.repo.name),
     ]
 
     if "appInstallCommandJavaScript" in config:
@@ -1679,7 +1678,7 @@ def installAppJavaScript(ctx):
 
     return [
         {
-            "name": "install-app-js-%s" % config["app"],
+            "name": "install-app-js-%s" % ctx.repo.name,
             "image": "owncloudci/nodejs:%s" % getNodeJsVersion(),
             "pull": "always",
             "commands": commandArray,
