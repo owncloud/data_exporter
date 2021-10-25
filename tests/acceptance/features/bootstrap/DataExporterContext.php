@@ -109,7 +109,7 @@ class DataExporterContext implements Context {
 	 * @return void
 	 * @throws Exception
 	 */
-	public function setUpScenario(BeforeScenarioScope $scope) {
+	public function setUpScenario(BeforeScenarioScope $scope):void {
 		// Get the environment
 		$environment = $scope->getEnvironment();
 		// Get all the contexts you need in this context
@@ -131,13 +131,11 @@ class DataExporterContext implements Context {
 	/**
 	 * @AfterScenario
 	 *
-	 * @param AfterScenarioScope $as
-	 *
 	 * @return void
 	 *
 	 * @throws Exception
 	 */
-	public function afterScenario(AfterScenarioScope $as) {
+	public function afterScenario():void {
 		$this->scenarioDir = null;
 		$this->lastExportBasePath = null;
 		$this->lastExportPath = null;
@@ -160,7 +158,10 @@ class DataExporterContext implements Context {
 	 * @return void
 	 * @throws Exception
 	 */
-	public function exportUserUsingTheOccCommand($user, $path) {
+	public function exportUserUsingTheOccCommand(
+		string $user,
+		string $path
+	):void {
 		$internalPath = self::path("{$this->scenarioDir}/$path");
 		$serverRoot = $this->featureContext->getServerRoot();
 		$this->featureContext->mkDirOnServer($internalPath);
@@ -183,7 +184,7 @@ class DataExporterContext implements Context {
 	 *
 	 * @return void
 	 */
-	public function theLastExportShouldContainFile($path) {
+	public function theLastExportShouldContainFile(string $path):void {
 		self::assertPathContainsExport($this->lastExportPath);
 		$this->assertFilePhysicallyExistInLastExport($path, "File $path does not exist");
 		$this->assertFileExistsInLastExportMetadata($path);
@@ -200,7 +201,10 @@ class DataExporterContext implements Context {
 	 *
 	 * @return void
 	 */
-	public function theLastExportShouldContainFileWithContent($path, $content) {
+	public function theLastExportShouldContainFileWithContent(
+		string $path,
+		string $content
+	):void {
 		$this->assertFileExistsInLastExportMetadata($path);
 		$this->assertFilePhysicallyExistInLastExportWithContent($path, $content);
 	}
@@ -213,7 +217,10 @@ class DataExporterContext implements Context {
 	 *
 	 * @return void
 	 */
-	public function theLastExportShouldContainFileWithContentInTrashbin($path, $content) {
+	public function theLastExportShouldContainFileWithContentInTrashbin(
+		string $path,
+		string $content
+	):void {
 		$this->assertFileExistsInLastExportMetadata($path, true);
 		$this->assertFilePhysicallyExistInLastExportWithContent($path, $content, true);
 	}
@@ -227,7 +234,7 @@ class DataExporterContext implements Context {
 	 * @return void
 	 * @throws Exception
 	 */
-	public function importUserUsingTheOccCommand($path) {
+	public function importUserUsingTheOccCommand(string $path):void {
 		$importPath = self::path("$this->dataDir/$path");
 		$this->featureContext->runOcc(['instance:import:user', $importPath]);
 
@@ -242,7 +249,7 @@ class DataExporterContext implements Context {
 	 *
 	 * @return void
 	 */
-	private static function assertPathContainsExport($path) {
+	private static function assertPathContainsExport(string $path):void {
 		\PHPUnit\Framework\Assert::assertDirectoryExists(
 			$path,
 			"Export directory $path does not exist"
@@ -270,7 +277,10 @@ class DataExporterContext implements Context {
 	 *
 	 * @return void
 	 */
-	private function assertFilePhysicallyExistInLastExport($filename, $message = '') {
+	private function assertFilePhysicallyExistInLastExport(
+		string $filename,
+		string $message = ''
+	):void {
 		\PHPUnit\Framework\Assert::assertFileExists(
 			self::path("{$this->lastExportPath}/files/$filename"),
 			$message
@@ -284,7 +294,11 @@ class DataExporterContext implements Context {
 	 *
 	 * @return void
 	 */
-	private function assertFilePhysicallyExistInLastExportWithContent($filename, $content, $trash = false) {
+	private function assertFilePhysicallyExistInLastExportWithContent(
+		string $filename,
+		string $content,
+		bool $trash = false
+	):void {
 		if ($trash) {
 			$this->featureContext->listTrashbinFileInServerRoot(self::path("$this->lastExportPath/files_trashbin"));
 			$matches = [];
@@ -328,7 +342,7 @@ class DataExporterContext implements Context {
 	 *
 	 * @return string
 	 */
-	private function readFileFromServerRoot($path) {
+	private function readFileFromServerRoot(string $path):string {
 		$this->featureContext->readFileInServerRoot($path);
 		PHPUnit\Framework\Assert::assertSame(
 			200,
@@ -347,7 +361,10 @@ class DataExporterContext implements Context {
 	 *
 	 * @return void
 	 */
-	private function assertFileExistsInLastExportMetadata($filename, $trash = false) {
+	private function assertFileExistsInLastExportMetadata(
+		string $filename,
+		bool $trash = false
+	):void {
 		if ($trash) {
 			$fileContent = $this->readFileFromServerRoot($this->lastExportTrashMetadataPath);
 		} else {
@@ -386,7 +403,7 @@ class DataExporterContext implements Context {
 	 *
 	 * @return string
 	 */
-	private static function path($path) {
+	private static function path(string $path):string {
 		return \preg_replace('#/+#', '/', $path);
 	}
 }
