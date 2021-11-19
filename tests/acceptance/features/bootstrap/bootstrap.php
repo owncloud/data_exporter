@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @author Ilja Neumann <ineumann@owncloud.com>
  * @copyright Copyright (c) 2018, ownCloud GmbH
