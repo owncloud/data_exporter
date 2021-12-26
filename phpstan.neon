@@ -2,4 +2,9 @@ parameters:
   bootstrapFiles:
     - %currentWorkingDirectory%/../../lib/base.php
   ignoreErrors:
-
+    -
+      message: '#Dead catch - OCP\\Files\\NotFoundException is never thrown in the try block.#'
+      path: lib/Extractor/MetadataExtractor.php
+    -
+      message: '#Property OCA\\DataExporter\\Model\\Share::\$type is never read, only written.#'
+      path: lib/Model/Share.php
