@@ -311,7 +311,7 @@ class DataExporterContext implements Context {
 			$fileFoundWithMatchingContent = false;
 			foreach ($matches as $match) {
 				$path = "$this->lastExportPath/files_trashbin/$match";
-				$this->featureContext->readFileInServerRoot($path);
+				$this->featureContext->readFileInServerRootForCore($path);
 				Assert::assertSame(
 					200,
 					$this->featureContext->getResponse()->getStatusCode(),
@@ -343,7 +343,7 @@ class DataExporterContext implements Context {
 	 * @return string
 	 */
 	private function readFileFromServerRoot(string $path):string {
-		$this->featureContext->readFileInServerRoot($path);
+		$this->featureContext->readFileInServerRootForCore($path);
 		PHPUnit\Framework\Assert::assertSame(
 			200,
 			$this->featureContext->getResponse()->getStatusCode(),
