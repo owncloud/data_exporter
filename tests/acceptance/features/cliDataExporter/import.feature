@@ -74,3 +74,8 @@ Feature: An administrator wants to import a user using the commandline
     Then the HTTP status code should be "201"
     And as "testUser" file "/testFile.txt" should exist
     And the content of file "/testFile.txt" for user "testUser" should be "text in file in deleted folder"
+
+  Scenario: An attempt to import from a non-existent export should fail
+    When a user is imported from path "simpleExport/unknown" using the occ command
+    Then the command should have failed with exit code 1
+    And the command output should contain the text "user.json not found"

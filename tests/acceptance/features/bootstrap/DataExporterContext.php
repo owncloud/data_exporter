@@ -238,9 +238,11 @@ class DataExporterContext implements Context {
 		$importPath = self::path("$this->dataDir/$path");
 		$this->featureContext->runOcc(['instance:import:user', $importPath]);
 
-		$meta = \json_decode(\file_get_contents("$importPath/user.json"), true);
-		if (isset($meta['user'], $meta['user']['userId'])) {
-			$this->importedUsers[] = $meta['user']['userId'];
+		if ($this->occContext->theOccCommandExitStatusWasSuccess()) {
+			$meta = \json_decode(\file_get_contents("$importPath/user.json"), true);
+			if (isset($meta['user'], $meta['user']['userId'])) {
+				$this->importedUsers[] = $meta['user']['userId'];
+			}
 		}
 	}
 

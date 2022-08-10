@@ -66,7 +66,14 @@ class Platform {
 		return $this->version['OC_VersionString'];
 	}
 
-	public function isAppEnabledForUser($appId, $uid) {
-		return $this->appManager->isEnabledForUser($appId, $uid);
+	/**
+	 * Check if an app is enabled for user
+	 *
+	 * @param string $appId
+	 * @param \OCP\IUser $user
+	 * @return bool
+	 */
+	public function isAppEnabledForUser($appId, $user) {
+		return $this->appManager->isEnabledForUser($appId, $user);
 	}
 }
