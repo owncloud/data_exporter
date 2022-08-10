@@ -11,7 +11,11 @@ if (isset($application) && \version_compare($ocVersion, '10', '<')) {
 	$exporter = \OC::$server->query(\OCA\DataExporter\Exporter::class);
 	$platform = \OC::$server->query(\OCA\DataExporter\Exporter::class);
 	$application->add(
-		new \OCA\DataExporter\Command\ExportUser($exporter, $platform)
+		new \OCA\DataExporter\Command\ExportUser(
+			$exporter,
+			$platform,
+			\OC::$server->getUserManager()
+		)
 	);
 }
 // @codeCoverageIgnoreEnd

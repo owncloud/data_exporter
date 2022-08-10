@@ -25,10 +25,14 @@ namespace OCA\DataExporter\Tests\Unit\Command;
 use OCA\DataExporter\Command\ExportUser;
 use OCA\DataExporter\Exporter;
 use OCA\DataExporter\Platform;
+use OCP\IUserManager;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 
 class ExportUserTest extends TestCase {
+
+	/** @var IUserManager */
+	private $userManager;
 
 	/** @var \PHPUnit_Framework_MockObject_MockObject|Exporter */
 	private $exporter;
@@ -38,8 +42,13 @@ class ExportUserTest extends TestCase {
 
 	public function setUp(): void {
 		$this->exporter = $this->getMockBuilder(Exporter::class)->disableOriginalConstructor()->getMock();
+		$this->userManager = \OC::$server->getUserManager();
 
-		$command = new ExportUser($this->exporter, $this->createMock(Platform::class));
+		$command = new ExportUser(
+			$this->exporter,
+			$this->createMock(Platform::class),
+			$this->userManager
+		);
 		$this->commandTester = new CommandTester($command);
 	}
 
