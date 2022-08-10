@@ -76,6 +76,7 @@ class ImportInstance extends Command {
 			);
 		} catch (\Exception $e) {
 			$output->writeln("<error>{$e->getMessage()}</error>");
+			return 1;
 		}
 	}
 }

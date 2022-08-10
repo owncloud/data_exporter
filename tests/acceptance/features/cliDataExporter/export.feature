@@ -63,3 +63,8 @@ Feature: An administrator wants to export the files of his user using
       | '"quotes1"'             |
       | "'quotes2'"             |
       | "strängé नेपाली folder" |
+
+  Scenario: An attempt to export an unknown user should fail
+    When user "unknown" is exported to path "/tmp/fooSomething" using the occ command
+    Then the command should have failed with exit code 1
+    And the command output should contain the text "Could not extract user metadata for user"
