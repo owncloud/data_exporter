@@ -165,7 +165,9 @@ class DataExporterContext implements Context {
 		$internalPath = self::path("{$this->scenarioDir}/$path");
 		$serverRoot = $this->featureContext->getServerRoot();
 		$this->featureContext->mkDirOnServer($internalPath);
-		$this->featureContext->runOcc(['instance:export:user', $user, self::path("$serverRoot/$internalPath")]);
+		$this->featureContext->setOccLastCode(
+			$this->featureContext->runOcc(['instance:export:user', $user, self::path("$serverRoot/$internalPath")])
+		);
 
 		$this->lastExportBasePath = $internalPath;
 		$this->lastExportPath = self::path("{$this->lastExportBasePath}/$user/");
@@ -236,7 +238,9 @@ class DataExporterContext implements Context {
 	 */
 	public function importUserUsingTheOccCommand(string $path):void {
 		$importPath = self::path("$this->dataDir/$path");
-		$this->featureContext->runOcc(['instance:import:user', $importPath]);
+		$this->featureContext->setOccLastCode(
+			$this->featureContext->runOcc(['instance:import:user', $importPath])
+		);
 
 		if ($this->occContext->theOccCommandExitStatusWasSuccess()) {
 			$meta = \json_decode(\file_get_contents("$importPath/user.json"), true);
