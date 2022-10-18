@@ -18,7 +18,7 @@ other via federation. Test if you can create remote-shares before starting this 
 
 Export the user on the **source instance**
 
-``$ ./occ export:user user1 /tmp/export``
+``$ ./occ instance:export:user user1 /tmp/export``
 
 This will create a folder /tmp/export/user1 which contains
 all the files and metadata of the user.
@@ -29,7 +29,7 @@ Copy the export to the **target instance** for example
 
 Import the user by running the import command on the **target instance**
 
-``$ ./occ import:user /tmp/export/user1``
+``$ ./occ instance:import:user /tmp/export/user1``
 
 This imports the user in to the **target instance** while converting all his outgoing-shares
 to federated shares pointing to the **source instance**.
@@ -37,7 +37,7 @@ to federated shares pointing to the **source instance**.
 As user1 now lives on **both instances** you might want to migrate all shares on the **source instance** so that
 they point to the **target instance**. You can run this command on the **source instance**
 
-``$ ./occ export:migrate:share user1 https://newinstance.com``
+``$ ./occ instance:export:migrate:share user1 https://newinstance.com``
 
 Finally you can delete user1 on the **source instance** (This can not be undone!):
 
