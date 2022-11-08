@@ -5,6 +5,7 @@ Feature: An administrator wants to import a user using the commandline
     Given using new dav path
     And the administrator has enabled DAV tech_preview
 
+
   Scenario: Import files only
     When a user is imported from path "simpleExport/userfoo" using the occ command
     And the administrator changes the password of user "userfoo" to "123456" using the provisioning API
@@ -12,6 +13,7 @@ Feature: An administrator wants to import a user using the commandline
     And as "userfoo" file "welcome.txt" should exist
     And as "userfoo" folder "AFolder" should exist
     And as "userfoo" file "AFolder/afile.txt" should exist
+
 
   Scenario: Import with trash-bin
     When a user is imported from path "trashbinExport/usertrash" using the occ command
@@ -22,6 +24,7 @@ Feature: An administrator wants to import a user using the commandline
     And as "usertrash" file "AFolder/DeletedFile.txt" should exist
     And the content of file "AFolder/DeletedFolder/fileinfolder.txt" for user "usertrash" should be "text in file in deleted folder"
     And the content of file "AFolder/DeletedFile.txt" for user "usertrash" should be "text in deleted file"
+
 
   Scenario: Restore and rename files in trashbin after user import
     Given a user has been imported from path "trashbinExport/usertrash" using the occ command
@@ -35,6 +38,7 @@ Feature: An administrator wants to import a user using the commandline
     Then the HTTP status code should be "201"
     And as "usertrash" folder "AFolder/RestoredDeletedFolder" should exist
     And as "usertrash" file "AFolder/RestoredDeletedFile.txt" should exist
+
 
   Scenario Outline: Share files after import
     Given a user has been imported from path "trashbinExport/usertrash" using the occ command
@@ -52,6 +56,7 @@ Feature: An administrator wants to import a user using the commandline
       | 1               | 100             |
       | 2               | 200             |
 
+
   Scenario Outline: Import file with special characters in its name
     When a user is imported from path "simpleExport/testUser" using the occ command
     Then user "testUser" should exist
@@ -62,11 +67,13 @@ Feature: An administrator wants to import a user using the commandline
       | 'quotes1'           |
       | strängé नेपाली file |
 
+
   Scenario: Import files from multi level sub-folder
     When a user is imported from path "simpleExport/testUser" using the occ command
     Then user "testUser" should exist
     And as "testUser" file "newFolder/testFolder/T1/T2/afile.txt" should exist
     And the content of file "newFolder/testFolder/T1/T2/afile.txt" for user "testUser" should be "This is a File"
+
 
   Scenario: Restore deleted file from multiple level of sub-folder
     Given a user has been imported from path "simpleExport/testUser" using the occ command
@@ -74,6 +81,7 @@ Feature: An administrator wants to import a user using the commandline
     Then the HTTP status code should be "201"
     And as "testUser" file "/testFile.txt" should exist
     And the content of file "/testFile.txt" for user "testUser" should be "text in file in deleted folder"
+
 
   Scenario: An attempt to import from a non-existent export should fail
     When a user is imported from path "simpleExport/unknown" using the occ command
