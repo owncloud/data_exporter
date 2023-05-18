@@ -56,7 +56,7 @@ class MigrateShare extends Command {
 			->addArgument('remoteServer', InputArgument::REQUIRED, 'The remote ownCloud server where the exported user is now, for example "https://myown.server:8080/owncloud"');
 	}
 
-	protected function execute(InputInterface $input, OutputInterface $output) {
+	protected function execute(InputInterface $input, OutputInterface $output): int {
 		/** @var string $userId */
 		$userId = $input->getArgument('userId');
 		if (!$this->userManager->userExists($userId)) {
