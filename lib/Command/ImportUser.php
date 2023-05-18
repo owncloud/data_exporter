@@ -52,9 +52,9 @@ class ImportUser extends Command {
 	 * @param InputInterface $input
 	 * @param OutputInterface $output
 	 *
-	 * @return int|null|void
+	 * @return int
 	 */
-	protected function execute(InputInterface $input, OutputInterface $output) {
+	protected function execute(InputInterface $input, OutputInterface $output): int {
 		try {
 			$this->importer->import(
 				$input->getArgument('importDirectory'),
@@ -64,5 +64,6 @@ class ImportUser extends Command {
 			$output->writeln("<error>{$e->getMessage()}</error>");
 			return 1;
 		}
+		return 0;
 	}
 }
