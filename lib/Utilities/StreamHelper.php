@@ -29,6 +29,7 @@ use OCA\DataExporter\Model\TrashBinFile;
 use OCA\DataExporter\Serializer;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Serializer\Exception\UnexpectedValueException;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 
 class StreamHelper {
 	/**
@@ -89,9 +90,7 @@ class StreamHelper {
 	 * @return void
 	 */
 	public function writelnToStream($resource, $entity, $ignoreAttributes = []) {
-		$this->serializer->setIgnoredAttributes($ignoreAttributes);
-		$data = $this->serializer->serialize($entity);
-		$this->serializer->setIgnoredAttributes([]);
+		$data = $this->serializer->serialize($entity, 'json', [AbstractNormalizer::IGNORED_ATTRIBUTES => $ignoreAttributes]);
 		\fwrite($resource, $data . PHP_EOL);
 	}
 

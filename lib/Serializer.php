@@ -51,11 +51,12 @@ class Serializer {
 	 * Serializes data in the appropriate format.
 	 *
 	 * @param mixed $data Any data
-	 *
+	 * @param string $format
+	 * @param array $context
 	 * @return string
 	 */
-	public function serialize($data) {
-		return $this->serializer->serialize($data, 'json', []);
+	public function serialize($data, string $format = 'json', array $context = []): string {
+		return $this->serializer->serialize($data, $format, $context);
 	}
 
 	/**
@@ -68,9 +69,5 @@ class Serializer {
 	 */
 	public function deserialize($data, $type) {
 		return $this->serializer->deserialize($data, $type, 'json', []);
-	}
-
-	public function setIgnoredAttributes($attributes = []) {
-		$this->objectNormalizer->setIgnoredAttributes($attributes);
 	}
 }
