@@ -6,7 +6,7 @@
 	<description>A cli tool which allows exporting and importing user-data like settings, files and shares to migrate data from one instance in to another.</description>
 	<licence>GPLv2</licence>
 	<author>Ilja Neumann</author>
-	<version>0.2.2</version>
+	<version>0.3.0</version>
 	<category>tools</category>
 	<namespace>DataExporter</namespace>
 	<commands>
@@ -17,7 +17,7 @@
 		<command>OCA\DataExporter\Command\MigrateShare</command>
 	</commands>
 	<dependencies>
-		<owncloud min-version="9.0.1" max-version="10.12" />
+		<owncloud min-version="10.11" max-version="10" />
 		<nextcloud min-version="9.0.1" max-version="19" />
 	</dependencies>
 </info>
