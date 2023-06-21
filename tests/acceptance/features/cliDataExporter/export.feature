@@ -74,3 +74,13 @@ Feature: An administrator wants to export the files of his user using
     When user "unknown" is exported to path "/tmp/fooSomething" using the occ command
     Then the command should have failed with exit code 1
     And the command output should contain the text "Could not extract user metadata for user"
+
+  @issue-209
+  Scenario: export a user after clearing out the items in their trash bin
+    Given user "Alice" has uploaded file with content "hello" to "testfile1.txt"
+    And user "Alice" has uploaded file with content "hello world" to "testfile2.txt"
+    And user "Alice" has deleted file "/testfile1.txt"
+    And user "Alice" has emptied the trashbin
+    When user "Alice" is exported to path "/tmp/fooSomething" using the occ command
+    Then the command should have been successful
+    And the last export should contain file "/testfile2.txt" with content "hello world"
