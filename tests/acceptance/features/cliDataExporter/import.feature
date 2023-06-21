@@ -1,5 +1,8 @@
 @cli @files_trashbin-app-required
 Feature: An administrator wants to import a user using the commandline
+  As an admin
+  I want to import a user from a old to a new instance
+  So that all shared data with other user on the old instance is preserved
 
   Background:
     Given using new dav path

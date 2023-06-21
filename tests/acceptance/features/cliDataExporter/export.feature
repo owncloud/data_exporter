@@ -1,6 +1,8 @@
 @cli
-Feature: An administrator wants to export the files of his user using
-  the commandline
+Feature: An administrator wants to export the files of his user using the commandline
+  As an admin
+  I want to export a user from a old to a new instance
+  So that all shared data with other user on the old instance is preserved
 
   Background:
     Given using new dav path
