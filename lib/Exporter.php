@@ -26,6 +26,7 @@ use OCA\DataExporter\Extractor\FilesExtractor;
 use OCA\DataExporter\Extractor\MetadataExtractor;
 use OCA\DataExporter\Utilities\Iterators\Nodes\RecursiveNodeIteratorFactory;
 use OCA\DataExporter\Utilities\Path;
+use OCP\Files\NotFoundException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -68,7 +69,7 @@ class Exporter {
 	 * @param array $options
 	 * @return void
 	 *
-	 * @throws \OCP\Files\NotFoundException
+	 * @throws NotFoundException
 	 * @throws \OCP\Files\NotPermittedException
 	 * @throws \OC\User\NoUserException
 	 */
@@ -94,7 +95,13 @@ class Exporter {
 			$this->filesExtractor->export($iterator, $baseFolder, Path::join($exportPath, 'files'));
 
 			if ($options['trashBinAvailable']) {
-				list($iterator, $baseFolder) = $this->iteratorFactory->getTrashBinRecursiveIterator($uid);
+				try {
+					list($iterator, $baseFolder) = $this->iteratorFactory->getTrashBinRecursiveIterator($uid);
+				} catch (NotFoundException $e) {
+					// If the user has never deleted anything, then the trashbin folder will not exist.
+					// In this case, there is no need to export the trashbin.
+					return;
+				}
 				$this->filesExtractor->export($iterator, $baseFolder, Path::join($exportPath, 'files_trashbin'));
 			}
 		}

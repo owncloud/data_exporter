@@ -84,3 +84,10 @@ Feature: An administrator wants to export the files of his user using
     When user "Alice" is exported to path "/tmp/fooSomething" using the occ command
     Then the command should have been successful
     And the last export should contain file "/testfile2.txt" with content "hello world"
+
+  @issue-209
+  Scenario: export a user before any resources are deleted
+    Given user "Alice" has uploaded file with content "hello world" to "testfile1.txt"
+    When user "Alice" is exported to path "/tmp/fooSomething" using the occ command
+    Then the command should have been successful
+    And the last export should contain file "/testfile1.txt" with content "hello world"
