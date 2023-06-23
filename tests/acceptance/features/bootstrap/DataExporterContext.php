@@ -435,9 +435,7 @@ class DataExporterContext implements Context {
 	 */
 	public function theCommandOutputContainsTheTextWithPath(string $text, string $path):void {
 		$fullPath = getcwd() . '/tests/acceptance/features/bootstrap/../../data/' . $path;
-
 		$expectedOutput = str_replace("%path%", $fullPath, $text);
-
 		$commandOutput = $this->featureContext->getStdOutOfOccCommand();
 		$lines = SetupHelper::findLines(
 			$commandOutput,

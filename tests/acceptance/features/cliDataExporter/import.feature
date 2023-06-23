@@ -91,7 +91,7 @@ Feature: An administrator wants to import a user using the commandline
   @issue-210
   Scenario: importing a user with empty trash bin
     When a user is imported from path "emptyTrashbinExport/usertrash" using the occ command
-    Then the command should have failed with exit code 0
+    Then the command should have been successful
     And user "usertrash" should exist
     And as "usertrash" folder "AFolder" should exist
     And as "usertrash" file "AFolder/fileInFolder.txt" should exist
