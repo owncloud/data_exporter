@@ -95,3 +95,10 @@ Feature: An administrator wants to import a user using the commandline
     And user "usertrash" should exist
     And as "usertrash" folder "AFolder" should exist
     And as "usertrash" file "AFolder/fileInFolder.txt" should exist
+
+  @issue-210
+  Scenario: importing without trash bin
+    When a user is imported from path "noTrashbinImport/testuser1" using the occ command
+    Then the command should have been successful
+    And user "testuser1" should exist
+    And as "testuser1" file "welcome.txt" should exist

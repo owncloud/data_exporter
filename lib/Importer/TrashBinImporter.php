@@ -98,6 +98,15 @@ class TrashBinImporter {
 		$this->streamFile = $this
 			->streamHelper
 			->initStream($filename, 'rb');
+
+		if ($this->streamFile === false) {
+			// If the exported user had no trashbin at all,
+			// then there might be no trashbin to import,
+			// and not even an empty trashbin.jsonl
+			// In this case, just return.
+			return;
+		}
+
 		$this->currentLine = 1;
 
 		try {
