@@ -228,8 +228,26 @@ class DataExporterContext implements Context {
 	}
 
 	/**
-	 * @When a user is imported from path :path using the occ command
 	 * @Given a user has been imported from path :path using the occ command
+	 *
+	 * @param string $path
+	 *
+	 * @return void
+	 * @throws Exception
+	 */
+	public function importedUserUsingTheOccCommand(string $path):void {
+		$importPath = self::path("$this->dataDir/$path");
+		$this->importUserUsingTheOccCommand($path);
+		if ($this->occContext->theOccCommandExitStatusWasSuccess()) {
+			$meta = \json_decode(\file_get_contents("$importPath/user.json"), true);
+			if (isset($meta['user'], $meta['user']['userId'])) {
+				$this->importedUsers[] = $meta['user']['userId'];
+			}
+		}
+	}
+
+	/**
+	 * @When a user is imported from path :path using the occ command
 	 *
 	 * @param string $path
 	 *
@@ -241,13 +259,6 @@ class DataExporterContext implements Context {
 		$this->featureContext->setOccLastCode(
 			$this->featureContext->runOcc(['instance:import:user', $importPath])
 		);
-
-		if ($this->occContext->theOccCommandExitStatusWasSuccess()) {
-			$meta = \json_decode(\file_get_contents("$importPath/user.json"), true);
-			if (isset($meta['user'], $meta['user']['userId'])) {
-				$this->importedUsers[] = $meta['user']['userId'];
-			}
-		}
 	}
 
 	/**
@@ -411,5 +422,31 @@ class DataExporterContext implements Context {
 	 */
 	private static function path(string $path):string {
 		return \preg_replace('#/+#', '/', $path);
+	}
+
+	/**
+	 * @Then /^the command output should contain the text "([^"]*)" for path "([^"]*)"$/
+	 *
+	 * @param string $text
+	 * @param string $path
+	 *
+	 * @return void
+	 * @throws Exception
+	 */
+	public function theCommandOutputContainsTheTextWithPath(string $text, string $path):void {
+		$fullPath = getcwd() . '/tests/acceptance/features/bootstrap/../../data/' . $path;
+		$expectedOutput = str_replace("%path%", $fullPath, $text);
+		$commandOutput = $this->featureContext->getStdOutOfOccCommand();
+		$lines = SetupHelper::findLines(
+			$commandOutput,
+			$expectedOutput
+		);
+		Assert::assertGreaterThanOrEqual(
+			1,
+			\count($lines),
+			"The command output did not contain the expected text on stdout '$expectedOutput'\n" .
+			"The command output on stdout was:\n" .
+			$commandOutput
+		);
 	}
 }
