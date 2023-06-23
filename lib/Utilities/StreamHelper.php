@@ -52,14 +52,14 @@ class StreamHelper {
 	}
 
 	/**
-	 * SetUp the Stream for the export
-	 * Create empty file and open stream
+	 * SetUp the Stream for the export or import
+	 * Create empty file if requested
 	 *
 	 * @param string $file
 	 * @param string $mode
 	 * @param bool $createFile
 	 *
-	 * @return resource
+	 * @return resource|false
 	 */
 	public function initStream($file, $mode, $createFile = false) {
 		if ($createFile) {
@@ -69,7 +69,7 @@ class StreamHelper {
 	}
 
 	/**
-	 * close the Stream for the export
+	 * close the Stream for the export or import
 	 *
 	 * @param resource $resource
 	 *
@@ -81,7 +81,6 @@ class StreamHelper {
 
 	/**
 	 * Write line to the Stream for the export
-	 * Create empty file and open stream
 	 *
 	 * @param resource $resource
 	 * @param Share | File $entity
