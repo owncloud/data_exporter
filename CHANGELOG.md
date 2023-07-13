@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ### Changed
 
 - [#222](https://github.com/owncloud/data_exporter/pull/222) - [full-ci] Upgrade to Symfony5
+- Minimum core version 10.11, mimimum php version 7.4
 - Dependencies updated.
 - Strings updated.
 
