@@ -17,7 +17,8 @@
 		<command>OCA\DataExporter\Command\MigrateShare</command>
 	</commands>
 	<dependencies>
-		<owncloud min-version="10.11" max-version="10" />
+		<owncloud min-version="10.12" max-version="10" />
 		<nextcloud min-version="9.0.1" max-version="19" />
+		<php min-version="7.4" />
 	</dependencies>
 </info>
