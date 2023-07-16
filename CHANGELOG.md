@@ -9,9 +9,15 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ### Changed
 
 - [#222](https://github.com/owncloud/data_exporter/pull/222) - [full-ci] Upgrade to Symfony5
-- Minimum core version 10.11, mimimum php version 7.4
+- [#221](https://github.com/owncloud/data_exporter/pull/221) - Always return an int from Symfony Command execute method
+- Minimum core version 10.12, mimimum php version 7.4
 - Dependencies updated.
 - Strings updated.
+
+### Fixed
+
+- [#229](https://github.com/owncloud/data_exporter/pull/229) - Do not throw an exception if there is no trashbin to import
+- [#227](https://github.com/owncloud/data_exporter/pull/227) - Handle case when trashbin does not exist when exporting
 
 
 ## [0.2.1] - 2022-08-15
