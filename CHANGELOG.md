@@ -9,7 +9,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ### Changed
 
 - [#221](https://github.com/owncloud/data_exporter/pull/221) - Always return an int from Symfony Command execute method
-- mimimum php version 7.4
 - Dependencies updated.
 - Strings updated.
 
