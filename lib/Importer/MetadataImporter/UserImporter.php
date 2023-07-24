@@ -117,6 +117,7 @@ class UserImporter {
 		$user->setDisplayName($userModel->getDisplayName());
 		$user->setEMailAddress($userModel->getEmail());
 		$user->setEnabled($userModel->isEnabled());
+		$user->updateLastLoginTimestamp();
 		$passwordHash = $userModel->getPasswordHash();
 
 		if ($passwordHash !== null && !empty(\trim($passwordHash))) {
