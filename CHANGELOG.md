@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 
+- [#236](https://github.com/owncloud/data_exporter/pull/236) - Update LastLoginTimestamp when importing for a new user
 - [#222](https://github.com/owncloud/data_exporter/pull/222) - Upgrade to Symfony5
 
 ## [0.2.2] - 2023-07-16
