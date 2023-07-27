@@ -25,6 +25,7 @@ use Behat\Behat\Hook\Scope\AfterScenarioScope;
 use TestHelpers\SetupHelper;
 use TestHelpers\HttpRequestHelper;
 use PHPUnit\Framework\Assert;
+use TestHelpers\UserHelper;
 
 require_once 'bootstrap.php';
 
@@ -144,7 +145,12 @@ class DataExporterContext implements Context {
 		$this->lastExportTrashMetadataPath = null;
 
 		foreach ($this->importedUsers as $uid) {
-			SetupHelper::runOcc(['user:delete', $uid], 'admin', 'admin');
+			UserHelper::deleteUser(
+				$this->featureContext->getBaseUrl(),
+				$uid,
+				$this->featureContext->getAdminUsername(),
+				$this->featureContext->getAdminPassword()
+			);
 		}
 	}
 
@@ -236,14 +242,8 @@ class DataExporterContext implements Context {
 	 * @throws Exception
 	 */
 	public function importedUserUsingTheOccCommand(string $path):void {
-		$importPath = self::path("$this->dataDir/$path");
 		$this->importUserUsingTheOccCommand($path);
-		if ($this->occContext->theOccCommandExitStatusWasSuccess()) {
-			$meta = \json_decode(\file_get_contents("$importPath/user.json"), true);
-			if (isset($meta['user'], $meta['user']['userId'])) {
-				$this->importedUsers[] = $meta['user']['userId'];
-			}
-		}
+		$this->occContext->theCommandShouldHaveBeenSuccessful();
 	}
 
 	/**
@@ -259,6 +259,12 @@ class DataExporterContext implements Context {
 		$this->featureContext->setOccLastCode(
 			$this->featureContext->runOcc(['instance:import:user', $importPath])
 		);
+		if ($this->occContext->theOccCommandExitStatusWasSuccess()) {
+			$meta = \json_decode(\file_get_contents("$importPath/user.json"), true);
+			if (isset($meta['user'], $meta['user']['userId'])) {
+				$this->importedUsers[] = $meta['user']['userId'];
+			}
+		}
 	}
 
 	/**
