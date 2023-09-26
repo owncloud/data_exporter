@@ -48,7 +48,7 @@ class FilesExtractor {
 			$nodePath = $node->getPath();
 			$relativeFileCachePath = $baseFolder->getRelativePath($nodePath);
 			// $relativeFileCachePath is expected to have a leading slash always
-			$path = Path::join("${exportPath}${relativeFileCachePath}");
+			$path = Path::join("$exportPath$relativeFileCachePath");
 
 			if ($node instanceof File) {
 				@\mkdir(\pathinfo($path, PATHINFO_DIRNAME), 0777, true);
