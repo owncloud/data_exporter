@@ -121,6 +121,9 @@ class TrashBinImporter {
 			)
 				!== false
 			) {
+				/**
+				 * @var TrashBinFile $fileMetadata
+				 */
 				$fileCachePath = Path::join('/files_trashbin/files/', $fileMetadata->getPath());
 				$pathToFileInExport = Path::join($exportRootFilesPath, $fileMetadata->getPath());
 
