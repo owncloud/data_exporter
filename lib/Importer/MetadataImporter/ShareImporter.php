@@ -133,6 +133,9 @@ class ShareImporter {
 				)
 			) !== false
 			) {
+				/**
+				 * @var Share $shareModel
+				 */
 				switch ($shareModel->getShareType()) {
 					case Share::SHARETYPE_USER:
 						if ($shareModel->getOwner() === $userId) {

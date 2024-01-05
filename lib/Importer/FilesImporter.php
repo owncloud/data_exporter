@@ -91,6 +91,9 @@ class FilesImporter {
 			)
 				!== false
 			) {
+				/**
+				 * @var File $fileMetadata
+				 */
 				$fileCachePath = $fileMetadata->getPath();
 				$pathToFileInExport = Path::join($exportRootFilesPath, $fileCachePath);
 
